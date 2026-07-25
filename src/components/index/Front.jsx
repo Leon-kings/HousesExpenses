@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 // // Front.jsx
 // import { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
@@ -16,9 +15,18 @@
 // import HelpIcon from "@mui/icons-material/Help";
 // import SavingsIcon from "@mui/icons-material/Savings";
 // import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+// import PhoneIcon from "@mui/icons-material/Phone";
 
 // // Simple email format check used for the "accepted" tick + validation
 // const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+// // Phone number validation (basic - allows various formats)
+// const isValidPhone = (value) => {
+//   if (!value) return false;
+//   // Remove all non-digit characters for validation
+//   const digits = value.replace(/\D/g, "");
+//   return digits.length >= 10 && digits.length <= 15;
+// };
 
 // // Password strength scorer — used for the strength meter + gating submit
 // const getPasswordStrength = (password) => {
@@ -59,6 +67,7 @@
 //     name: "Admin User",
 //     role: "admin",
 //     id: 1,
+//     phone: "+1234567890",
 //   },
 // };
 
@@ -86,6 +95,7 @@
 //   const [registerData, setRegisterData] = useState({
 //     name: "",
 //     email: "",
+//     phone: "",
 //     password: "",
 //     confirmPassword: "",
 //   });
@@ -115,6 +125,8 @@
 //   const registerValid = {
 //     name: registerData.name.trim().length > 0,
 //     email: isValidEmail(registerData.email),
+//     phone:
+//       registerData.phone.trim().length > 0 && isValidPhone(registerData.phone),
 //     password: registerData.password.length >= 6 && !isPasswordWeak,
 //     confirmPassword:
 //       registerData.confirmPassword.length > 0 &&
@@ -144,6 +156,9 @@
 //     if (!registerData.email.trim()) errors.email = "Email is required";
 //     else if (!isValidEmail(registerData.email))
 //       errors.email = "Enter a valid email address";
+//     if (!registerData.phone.trim()) errors.phone = "Phone number is required";
+//     else if (!isValidPhone(registerData.phone))
+//       errors.phone = "Enter a valid phone number (10-15 digits)";
 //     if (!registerData.password.trim()) errors.password = "Password is required";
 //     else if (registerData.password.length < 6)
 //       errors.password = "Password must be at least 6 characters";
@@ -197,17 +212,20 @@
 //     setIsLoading(true);
 
 //     // Simulate network delay
-//     await new Promise(resolve => setTimeout(resolve, 800));
+//     await new Promise((resolve) => setTimeout(resolve, 800));
 
 //     try {
 //       // Check against demo users
-//       if (loginData.email === DEMO_USERS.admin.email &&
-//           loginData.password === DEMO_USERS.admin.password) {
+//       if (
+//         loginData.email === DEMO_USERS.admin.email &&
+//         loginData.password === DEMO_USERS.admin.password
+//       ) {
 //         const userData = {
 //           id: DEMO_USERS.admin.id,
 //           name: DEMO_USERS.admin.name,
 //           email: DEMO_USERS.admin.email,
 //           role: DEMO_USERS.admin.role,
+//           phone: DEMO_USERS.admin.phone,
 //         };
 
 //         localStorage.setItem("authToken", "demo-admin-token-12345");
@@ -224,12 +242,17 @@
 //       } else {
 //         // For demo purposes, allow any email/password to login as regular user
 //         // if password length is at least 4 characters
-//         if (loginData.email && loginData.password && loginData.password.length >= 4) {
+//         if (
+//           loginData.email &&
+//           loginData.password &&
+//           loginData.password.length >= 4
+//         ) {
 //           const userData = {
 //             id: 2,
-//             name: loginData.email.split('@')[0] || "User",
+//             name: loginData.email.split("@")[0] || "User",
 //             email: loginData.email,
 //             role: "user",
+//             phone: "",
 //           };
 
 //           localStorage.setItem("authToken", "demo-user-token-67890");
@@ -268,7 +291,7 @@
 //     setIsRegisterLoading(true);
 
 //     // Simulate network delay
-//     await new Promise(resolve => setTimeout(resolve, 800));
+//     await new Promise((resolve) => setTimeout(resolve, 800));
 
 //     try {
 //       // Create new user (demo)
@@ -276,6 +299,7 @@
 //         id: Date.now(),
 //         name: registerData.name,
 //         email: registerData.email,
+//         phone: registerData.phone,
 //         role: "user",
 //       };
 
@@ -309,7 +333,7 @@
 //     }
 
 //     // Simulate network delay
-//     await new Promise(resolve => setTimeout(resolve, 500));
+//     await new Promise((resolve) => setTimeout(resolve, 500));
 
 //     toast.success("Message sent successfully!");
 //     setIsContactModalOpen(false);
@@ -385,15 +409,6 @@
 //               exit={{ scale: 0.9, opacity: 0, y: 20 }}
 //               className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 max-h-[90vh] overflow-y-auto relative"
 //             >
-//               {/* Demo Credentials Notice */}
-//               {/* <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200">
-//                 <p className="text-xs text-blue-700 text-center">
-//                   🔑 Demo: <strong>admin@example.com</strong> / <strong>admin</strong>
-//                   <br />
-//                   <span className="text-xs text-gray-500">Or use any email/password (min 4 chars) for user access</span>
-//                 </p>
-//               </div> */}
-
 //               <FormLogo />
 
 //               <div className="text-center mb-8">
@@ -662,6 +677,46 @@
 //                   )}
 //                 </div>
 
+//                 {/* Phone Number Field */}
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     Phone Number
+//                   </label>
+//                   <div className="relative">
+//                     <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+//                     <input
+//                       type="tel"
+//                       value={registerData.phone}
+//                       onChange={(e) => {
+//                         setRegisterData({
+//                           ...registerData,
+//                           phone: e.target.value,
+//                         });
+//                         if (registerSubmitted) {
+//                           setRegisterErrors((prev) => ({
+//                             ...prev,
+//                             phone: undefined,
+//                           }));
+//                         }
+//                       }}
+//                       className={`w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-2 focus:border-transparent transition-all ${
+//                         registerSubmitted && registerErrors.phone
+//                           ? "border-red-400 focus:ring-red-400"
+//                           : "border-gray-300 focus:ring-emerald-500"
+//                       }`}
+//                       placeholder="+1 (555) 000-0000"
+//                     />
+//                     {registerValid.phone && (
+//                       <CheckCircleIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-500" />
+//                     )}
+//                   </div>
+//                   {registerSubmitted && registerErrors.phone && (
+//                     <p className="text-xs text-red-500 mt-1">
+//                       {registerErrors.phone}
+//                     </p>
+//                   )}
+//                 </div>
+
 //                 <div>
 //                   <label className="block text-sm font-medium text-gray-700 mb-2">
 //                     Password
@@ -884,15 +939,12 @@
 //                   <CloseIcon className="w-6 h-6" />
 //                 </button>
 //               ) : (
-//                 <div className="absolute top-4 right-4 text-xs text-gray-400">
-
-//                 </div>
+//                 <div className="absolute top-4 right-4 text-xs text-gray-400"></div>
 //               )}
 
 //               <FormLogo />
 
 //               <div className="text-center mb-8">
-
 //                 <h2 className="text-3xl font-bold text-gray-800">Contact Us</h2>
 //                 <p className="text-gray-500 text-sm mt-2">
 //                   We'd love to hear from you
@@ -1122,6 +1174,8 @@ import HelpIcon from "@mui/icons-material/Help";
 import SavingsIcon from "@mui/icons-material/Savings";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PhoneIcon from "@mui/icons-material/Phone";
+import ErrorIcon from "@mui/icons-material/Error";
+import CheckIcon from "@mui/icons-material/Check";
 
 // Simple email format check used for the "accepted" tick + validation
 const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -1165,16 +1219,94 @@ const FormLogo = () => (
   </div>
 );
 
-// Static user data for demo
-const DEMO_USERS = {
-  admin: {
-    email: "admin@example.com",
-    password: "admin",
-    name: "Admin User",
-    role: "admin",
-    id: 1,
-    phone: "+1234567890",
-  },
+// API base URL
+const API_BASE =
+  "https://household-expenses-management-system.onrender.com/api";
+
+// Success Modal Component
+const SuccessModal = ({ isOpen, onClose, title, message, icon }) => {
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0, y: 30 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.8, opacity: 0, y: 30 }}
+        className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-center mb-4">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+            {icon || <CheckIcon className="w-10 h-10 text-green-600" />}
+          </div>
+        </div>
+        <h3 className="text-2xl font-bold text-gray-800 mb-2">
+          {title || "Success!"}
+        </h3>
+        <p className="text-gray-600 mb-6">
+          {message || "Operation completed successfully."}
+        </p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onClose}
+          className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300"
+        >
+          Continue
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// Error Modal Component
+const ErrorModal = ({ isOpen, onClose, title, message, icon }) => {
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0, y: 30 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.8, opacity: 0, y: 30 }}
+        className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-center mb-4">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+            {icon || <ErrorIcon className="w-10 h-10 text-red-600" />}
+          </div>
+        </div>
+        <h3 className="text-2xl font-bold text-gray-800 mb-2">
+          {title || "Error!"}
+        </h3>
+        <p className="text-gray-600 mb-6">
+          {message || "Something went wrong. Please try again."}
+        </p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onClose}
+          className="px-6 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300"
+        >
+          Try Again
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  );
 };
 
 export const Front = () => {
@@ -1188,6 +1320,20 @@ export const Front = () => {
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+
+  // Modal states for success/error
+  const [successModal, setSuccessModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    icon: null,
+  });
+  const [errorModal, setErrorModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    icon: null,
+  });
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -1304,148 +1450,209 @@ export const Front = () => {
     }
   }, [navigate]);
 
-  // Handle login with static credentials
+  // Handle login with API
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginSubmitted(true);
     const errors = validateLogin();
     setLoginErrors(errors);
     if (Object.keys(errors).length > 0) {
-      toast.error("Please fill in all required fields correctly");
+      setErrorModal({
+        isOpen: true,
+        title: "Validation Error",
+        message: "Please fill in all required fields correctly",
+        icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+      });
       return;
     }
 
     setIsLoading(true);
 
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
     try {
-      // Check against demo users
-      if (
-        loginData.email === DEMO_USERS.admin.email &&
-        loginData.password === DEMO_USERS.admin.password
-      ) {
-        const userData = {
-          id: DEMO_USERS.admin.id,
-          name: DEMO_USERS.admin.name,
-          email: DEMO_USERS.admin.email,
-          role: DEMO_USERS.admin.role,
-          phone: DEMO_USERS.admin.phone,
-        };
+      const response = await fetch(`${API_BASE}/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginData.email,
+          password: loginData.password,
+        }),
+      });
 
-        localStorage.setItem("authToken", "demo-admin-token-12345");
-        localStorage.setItem("userData", JSON.stringify(userData));
+      const data = await response.json();
 
-        toast.success("Welcome Admin!");
+      if (!response.ok) {
+        throw new Error(data.message || "Invalid credentials");
+      }
 
-        // Close modals
+      // Store user data and token
+      localStorage.setItem("authToken", data.token || "token-" + Date.now());
+      localStorage.setItem("userData", JSON.stringify(data.user || data));
+
+      // Show success modal
+      setSuccessModal({
+        isOpen: true,
+        title: `Welcome${data.user?.name ? ` ${data.user.name}` : ""}!`,
+        message: "You have successfully logged in.",
+        icon: <CheckIcon className="w-10 h-10 text-green-600" />,
+      });
+
+      // Close modals after a brief delay
+      setTimeout(() => {
         setIsLoginModalOpen(false);
         setIsRegisterModalOpen(false);
         setIsContactModalOpen(false);
+        setSuccessModal({ isOpen: false, title: "", message: "", icon: null });
 
-        navigate("/dashboard");
-      } else {
-        // For demo purposes, allow any email/password to login as regular user
-        // if password length is at least 4 characters
-        if (
-          loginData.email &&
-          loginData.password &&
-          loginData.password.length >= 4
-        ) {
-          const userData = {
-            id: 2,
-            name: loginData.email.split("@")[0] || "User",
-            email: loginData.email,
-            role: "user",
-            phone: "",
-          };
-
-          localStorage.setItem("authToken", "demo-user-token-67890");
-          localStorage.setItem("userData", JSON.stringify(userData));
-
-          toast.success("Welcome!");
-
-          // Close modals
-          setIsLoginModalOpen(false);
-          setIsRegisterModalOpen(false);
-          setIsContactModalOpen(false);
-
-          navigate("/user/dashboard");
+        // Redirect based on role
+        if (data.user?.role === "admin") {
+          navigate("/dashboard");
         } else {
-          toast.error("Invalid credentials. Use admin@example.com / admin");
+          navigate("/user/dashboard");
         }
-      }
+      }, 1500);
     } catch (error) {
-      toast.error("Login failed. Please try again.");
+      setErrorModal({
+        isOpen: true,
+        title: "Login Failed",
+        message:
+          error.message || "Invalid email or password. Please try again.",
+        icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle registration
+  // Handle registration with API
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegisterSubmitted(true);
     const errors = validateRegister();
     setRegisterErrors(errors);
     if (Object.keys(errors).length > 0) {
-      toast.error("Please fill in all required fields correctly");
+      setErrorModal({
+        isOpen: true,
+        title: "Validation Error",
+        message: "Please fill in all required fields correctly",
+        icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+      });
       return;
     }
 
     setIsRegisterLoading(true);
 
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
     try {
-      // Create new user (demo)
-      const userData = {
-        id: Date.now(),
-        name: registerData.name,
-        email: registerData.email,
-        phone: registerData.phone,
-        role: "user",
-      };
+      const response = await fetch(`${API_BASE}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: registerData.name,
+          email: registerData.email,
+          phone: registerData.phone,
+          password: registerData.password,
+        }),
+      });
 
-      localStorage.setItem("authToken", "demo-user-token-" + Date.now());
-      localStorage.setItem("userData", JSON.stringify(userData));
+      const data = await response.json();
 
-      toast.success("Registration successful!");
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
 
-      // Close modals
-      setIsLoginModalOpen(false);
-      setIsRegisterModalOpen(false);
-      setIsContactModalOpen(false);
+      // Store user data and token
+      localStorage.setItem("authToken", data.token || "token-" + Date.now());
+      localStorage.setItem("userData", JSON.stringify(data.user || data));
 
-      navigate("/user/dashboard");
+      // Show success modal
+      setSuccessModal({
+        isOpen: true,
+        title: "Registration Successful!",
+        message: "Your account has been created successfully.",
+        icon: <CheckIcon className="w-10 h-10 text-green-600" />,
+      });
+
+      // Close modals and navigate
+      setTimeout(() => {
+        setIsLoginModalOpen(false);
+        setIsRegisterModalOpen(false);
+        setIsContactModalOpen(false);
+        setSuccessModal({ isOpen: false, title: "", message: "", icon: null });
+        navigate("/user/dashboard");
+      }, 1500);
     } catch (error) {
-      toast.error("Registration failed. Please try again.");
+      setErrorModal({
+        isOpen: true,
+        title: "Registration Failed",
+        message: error.message || "Registration failed. Please try again.",
+        icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+      });
     } finally {
       setIsRegisterLoading(false);
     }
   };
 
-  // Handle contact submission
+  // Handle contact submission with API
   const handleContactSubmit = async (e) => {
     e.preventDefault();
     setContactSubmitted(true);
     const errors = validateContact();
     setContactErrors(errors);
     if (Object.keys(errors).length > 0) {
-      toast.error("Please fill in all required fields");
+      setErrorModal({
+        isOpen: true,
+        title: "Validation Error",
+        message: "Please fill in all required fields",
+        icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+      });
       return;
     }
 
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      const response = await fetch(`${API_BASE}/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: contactData.name,
+          email: contactData.email,
+          subject: contactData.subject,
+          message: contactData.message,
+        }),
+      });
 
-    toast.success("Message sent successfully!");
-    setIsContactModalOpen(false);
-    setContactData({ name: "", email: "", subject: "", message: "" });
-    setContactErrors({});
-    setContactSubmitted(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to send message");
+      }
+
+      setSuccessModal({
+        isOpen: true,
+        title: "Message Sent!",
+        message: "We'll get back to you as soon as possible.",
+        icon: <CheckIcon className="w-10 h-10 text-green-600" />,
+      });
+
+      setTimeout(() => {
+        setIsContactModalOpen(false);
+        setContactData({ name: "", email: "", subject: "", message: "" });
+        setContactErrors({});
+        setContactSubmitted(false);
+        setSuccessModal({ isOpen: false, title: "", message: "", icon: null });
+      }, 1500);
+    } catch (error) {
+      setErrorModal({
+        isOpen: true,
+        title: "Failed to Send",
+        message: error.message || "Failed to send message. Please try again.",
+        icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+      });
+    }
   };
 
   // Switch between login and register modals
@@ -1472,6 +1679,28 @@ export const Front = () => {
         draggable
         pauseOnHover
         theme="colored"
+      />
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={successModal.isOpen}
+        onClose={() =>
+          setSuccessModal({ isOpen: false, title: "", message: "", icon: null })
+        }
+        title={successModal.title}
+        message={successModal.message}
+        icon={successModal.icon}
+      />
+
+      {/* Error Modal */}
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        onClose={() =>
+          setErrorModal({ isOpen: false, title: "", message: "", icon: null })
+        }
+        title={errorModal.title}
+        message={errorModal.message}
+        icon={errorModal.icon}
       />
 
       {/* Header with Brand */}
