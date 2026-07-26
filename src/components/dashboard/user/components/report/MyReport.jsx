@@ -1,4 +1,3 @@
-
 /* eslint-disable react-hooks/immutability */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable no-unused-vars */
@@ -40,6 +39,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import DownloadIcon from "@mui/icons-material/Download";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import PersonIcon from "@mui/icons-material/Person";
 
 const COLORS = [
   "#0088FE",
@@ -59,33 +59,30 @@ const API_URL = "https://household-expenses-management-system.onrender.com/api";
 
 // Environment configuration - safely get environment variables
 const getEnvVar = (key) => {
-  // Check window._env_ (runtime injection via env.js)
-  if (typeof window !== 'undefined' && window._env_ && window._env_[key]) {
+  if (typeof window !== "undefined" && window._env_ && window._env_[key]) {
     return window._env_[key];
   }
-  
-  // Check process.env (build-time variables)
+
   try {
-    if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    if (typeof process !== "undefined" && process.env && process.env[key]) {
       return process.env[key];
     }
   } catch (e) {
     // process.env might not be available
   }
-  
-  return '';
+
+  return "";
 };
 
 const ENV_CONFIG = {
-  groqApiKey: getEnvVar('REACT_APP_GROQ_API_KEY'),
-  geminiApiKey: getEnvVar('REACT_APP_GEMINI_API_KEY'),
-  apiBaseUrl: getEnvVar('REACT_APP_API_URL') || API_URL,
+  groqApiKey: getEnvVar("REACT_APP_GROQ_API_KEY"),
+  geminiApiKey: getEnvVar("REACT_APP_GEMINI_API_KEY"),
+  apiBaseUrl: getEnvVar("REACT_APP_API_URL") || API_URL,
 };
 
-// Log configuration status (for debugging)
-console.log('API Keys configured:', {
-  groq: ENV_CONFIG.groqApiKey ? '✅' : '❌',
-  gemini: ENV_CONFIG.geminiApiKey ? '✅' : '❌',
+console.log("API Keys configured:", {
+  groq: ENV_CONFIG.groqApiKey ? "✅" : "❌",
+  gemini: ENV_CONFIG.geminiApiKey ? "✅" : "❌",
   apiUrl: ENV_CONFIG.apiBaseUrl,
 });
 
@@ -106,16 +103,22 @@ api.interceptors.request.use((config) => {
 const StatCard = ({ title, value, icon, color, subtitle }) => (
   <motion.div
     whileHover={{ scale: 1.02, y: -2 }}
-    className={`bg-white rounded-2xl shadow-lg p-6 border-l-4 ${color}`}
+    className={`bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 ${color}`}
   >
     <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-500 font-medium">{title}</p>
-        <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
-        {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+      <div className="min-w-0">
+        <p className="text-xs sm:text-sm text-gray-500 font-medium truncate">
+          {title}
+        </p>
+        <p className="text-base sm:text-2xl font-bold text-gray-800 mt-1 truncate">
+          {value}
+        </p>
+        {subtitle && (
+          <p className="text-xs text-gray-400 mt-1 truncate">{subtitle}</p>
+        )}
       </div>
       <div
-        className={`w-12 h-12 bg-opacity-20 rounded-full flex items-center justify-center ${color.replace("border-", "bg-").replace("-500", "-100")}`}
+        className={`w-10 h-10 sm:w-12 sm:h-12 bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0 ${color.replace("border-", "bg-").replace("-500", "-100")}`}
       >
         {icon}
       </div>
@@ -123,7 +126,7 @@ const StatCard = ({ title, value, icon, color, subtitle }) => (
   </motion.div>
 );
 
-export const ReportDashboard = () => {
+export const MyReport = () => {
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("userData") || "null");
@@ -153,16 +156,15 @@ export const ReportDashboard = () => {
   useEffect(() => {
     const hasKeys = groqApiKey.length > 0 || geminiApiKey.length > 0;
     setApiKeysConfigured(hasKeys);
-    
+
     if (!hasKeys) {
       console.warn("⚠️ AI API keys not configured. Using fallback insights.");
-      console.info("💡 To enable AI insights, set REACT_APP_GROQ_API_KEY and/or REACT_APP_GEMINI_API_KEY");
     } else {
       console.log("✅ AI API keys configured successfully!");
     }
   }, [groqApiKey, geminiApiKey]);
 
-  // Fetch all data from API
+  // Fetch all data from API using /email/:email endpoints
   const fetchAllData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -176,40 +178,35 @@ export const ReportDashboard = () => {
       }
 
       const email = userData.email;
-      const isAdmin = userData.role === "admin" || userData.role === "Admin";
 
-      // Fetch expenses
-      const expenseParams = { email };
-      const expenseResponse = await api.get("/expenses", { params: expenseParams });
-      
+      if (!email) {
+        toast.error("User email not found");
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch expenses using /email/:email endpoint
+      const expenseResponse = await api.get(`/expenses/email/${email}`);
       if (expenseResponse.data.success) {
         setExpenses(expenseResponse.data.data || []);
       }
 
-      // Fetch incomes
-      const incomeParams = { email };
-      const incomeResponse = await api.get("/incomes", { params: incomeParams });
-      
+      // Fetch incomes using /email/:email endpoint
+      const incomeResponse = await api.get(`/incomes/email/${email}`);
       if (incomeResponse.data.success) {
         setIncomes(incomeResponse.data.data || []);
       }
 
-      // Fetch budgets
-      const budgetParams = { 
-        email, 
-        month: selectedMonth, 
-        year: selectedYear 
-      };
-      const budgetResponse = await api.get("/budgets", { params: budgetParams });
-      
+      // Fetch budgets using /email/:email endpoint with month and year params
+      const budgetResponse = await api.get(`/budgets/email/${email}`, {
+        params: { month: selectedMonth, year: selectedYear },
+      });
       if (budgetResponse.data.success) {
         setBudgets(budgetResponse.data.data || []);
       }
 
-      // Fetch savings
-      const savingsParams = { email };
-      const savingsResponse = await api.get("/savings", { params: savingsParams });
-      
+      // Fetch savings using /email/:email endpoint
+      const savingsResponse = await api.get(`/savings/email/${email}`);
       if (savingsResponse.data.success) {
         setSavings(savingsResponse.data.data || []);
       }
@@ -230,15 +227,15 @@ export const ReportDashboard = () => {
 
   // Combine transactions from expenses and incomes
   const getAllTransactions = useCallback(() => {
-    const expenseTransactions = expenses.map(e => ({
+    const expenseTransactions = expenses.map((e) => ({
       ...e,
-      type: 'expense',
+      type: "expense",
       id: e._id || e.id,
     }));
 
-    const incomeTransactions = incomes.map(i => ({
+    const incomeTransactions = incomes.map((i) => ({
       ...i,
-      type: 'income',
+      type: "income",
       id: i._id || i.id,
     }));
 
@@ -248,16 +245,23 @@ export const ReportDashboard = () => {
   // Calculate statistics
   const calculateStats = useCallback(() => {
     const allTransactions = getAllTransactions();
-    
+
     const totalIncome = incomes.reduce((sum, i) => sum + (i.amount || 0), 0);
     const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
     const savingsAmount = totalIncome - totalExpenses;
-    
+
     // Budget calculations
-    const totalBudgeted = budgets.reduce((sum, b) => sum + (b.allocatedAmount || 0), 0);
-    const totalSpent = budgets.reduce((sum, b) => sum + (b.spentAmount || 0), 0);
+    const totalBudgeted = budgets.reduce(
+      (sum, b) => sum + (b.allocatedAmount || 0),
+      0,
+    );
+    const totalSpent = budgets.reduce(
+      (sum, b) => sum + (b.spentAmount || 0),
+      0,
+    );
     const budgetRemaining = totalBudgeted - totalSpent;
-    const budgetUsed = totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0;
+    const budgetUsed =
+      totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0;
 
     // Category breakdown
     const categoryData = {};
@@ -283,7 +287,7 @@ export const ReportDashboard = () => {
     const monthlyData = {};
     allTransactions.forEach((t) => {
       const date = t.date ? new Date(t.date) : new Date();
-      const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
       if (!monthlyData[month]) {
         monthlyData[month] = { income: 0, expenses: 0 };
       }
@@ -303,9 +307,18 @@ export const ReportDashboard = () => {
       }));
 
     // Savings progress
-    const totalSavingsTarget = savings.reduce((sum, s) => sum + (s.targetAmount || 0), 0);
-    const totalSavingsCurrent = savings.reduce((sum, s) => sum + (s.currentAmount || 0), 0);
-    const savingsProgress = totalSavingsTarget > 0 ? (totalSavingsCurrent / totalSavingsTarget) * 100 : 0;
+    const totalSavingsTarget = savings.reduce(
+      (sum, s) => sum + (s.targetAmount || 0),
+      0,
+    );
+    const totalSavingsCurrent = savings.reduce(
+      (sum, s) => sum + (s.currentAmount || 0),
+      0,
+    );
+    const savingsProgress =
+      totalSavingsTarget > 0
+        ? (totalSavingsCurrent / totalSavingsTarget) * 100
+        : 0;
 
     return {
       totalIncome,
@@ -328,19 +341,41 @@ export const ReportDashboard = () => {
 
   const stats = calculateStats();
 
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount || 0);
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch {
+      return "N/A";
+    }
+  };
+
   // Generate fallback insights
   const generateFallbackInsights = useCallback(() => {
     const recommendations = [];
 
     if (stats.budgetUsed > 80) {
       recommendations.push(
-        `⚠️ Your spending is at ${Math.round(stats.budgetUsed)}% of budget. Consider reducing expenses in top categories.`
+        `⚠️ Your spending is at ${Math.round(stats.budgetUsed)}% of budget. Consider reducing expenses in top categories.`,
       );
     }
 
     if (stats.savings < stats.totalIncome * 0.2 && stats.totalIncome > 0) {
       recommendations.push(
-        `💰 Aim to save at least 20% of your income. Consider setting up automatic transfers to savings.`
+        `💰 Aim to save at least 20% of your income. Consider setting up automatic transfers to savings.`,
       );
     }
 
@@ -350,42 +385,50 @@ export const ReportDashboard = () => {
 
     if (topCategory && topCategory.expenses > 0) {
       recommendations.push(
-        `📊 Your highest expense category is "${topCategory.name}" (${formatCurrency(topCategory.expenses)}). Review if this spending can be optimized.`
+        `📊 Your highest expense category is "${topCategory.name}" (${formatCurrency(topCategory.expenses)}). Review if this spending can be optimized.`,
       );
     }
 
     if (stats.budgetRemaining > 0) {
       recommendations.push(
-        `✅ You have ${formatCurrency(stats.budgetRemaining)} remaining in your budget. Consider allocating this to savings or investments.`
+        `✅ You have ${formatCurrency(stats.budgetRemaining)} remaining in your budget. Consider allocating this to savings or investments.`,
       );
     }
 
     if (stats.savingsProgress < 50 && stats.totalSavingsTarget > 0) {
       recommendations.push(
-        `🎯 You're at ${Math.round(stats.savingsProgress)}% of your savings goal. Increase your monthly savings contribution.`
+        `🎯 You're at ${Math.round(stats.savingsProgress)}% of your savings goal. Increase your monthly savings contribution.`,
       );
     }
 
     if (recommendations.length === 0) {
       recommendations.push(
-        `🌟 You're doing well! Continue tracking your expenses and review your financial goals regularly.`
+        `🌟 You're doing well! Continue tracking your expenses and review your financial goals regularly.`,
       );
     }
 
     const health = stats.savings > 0 ? "Good" : "Needs Attention";
-    const spendingLevel = stats.budgetUsed > 80 ? "High" : stats.budgetUsed > 50 ? "Moderate" : "Low";
+    const spendingLevel =
+      stats.budgetUsed > 80
+        ? "High"
+        : stats.budgetUsed > 50
+          ? "Moderate"
+          : "Low";
 
     const summaryText = `Financial Health: ${health}. Spending level: ${spendingLevel}. Budget used: ${Math.round(stats.budgetUsed)}%. Total savings: ${formatCurrency(stats.savings)}.`;
 
     return {
       groq: summaryText + "\n\n" + recommendations.join("\n"),
-      gemini: summaryText + "\n\nDetailed Analysis:\n" + recommendations.map((r, i) => `${i + 1}. ${r}`).join("\n"),
+      gemini:
+        summaryText +
+        "\n\nDetailed Analysis:\n" +
+        recommendations.map((r, i) => `${i + 1}. ${r}`).join("\n"),
       summary: summaryText,
       recommendations: recommendations,
       timestamp: new Date().toISOString(),
       isFallback: true,
     };
-  }, [stats]);
+  }, [stats, formatCurrency]);
 
   // AI Analysis
   const analyzeTransactions = useCallback(async () => {
@@ -394,7 +437,7 @@ export const ReportDashboard = () => {
 
     try {
       const allTransactions = getAllTransactions();
-      
+
       // Prepare transaction summary for AI
       const summaryData = {
         totalIncome: stats.totalIncome,
@@ -456,7 +499,8 @@ PREDICTIONS: (Future outlook based on current trends)`;
               messages: [
                 {
                   role: "system",
-                  content: "You are a financial advisor AI. Provide concise, practical financial advice.",
+                  content:
+                    "You are a financial advisor AI. Provide concise, practical financial advice.",
                 },
                 {
                   role: "user",
@@ -471,7 +515,7 @@ PREDICTIONS: (Future outlook based on current trends)`;
                 Authorization: `Bearer ${groqApiKey}`,
                 "Content-Type": "application/json",
               },
-            }
+            },
           );
           groqResponse = groqResult.data.choices[0].message.content;
         }
@@ -511,9 +555,10 @@ Format the response as a structured analysis with clear sections.`;
                 temperature: 0.7,
                 maxOutputTokens: 800,
               },
-            }
+            },
           );
-          geminiResponse = geminiResult.data.candidates[0].content.parts[0].text;
+          geminiResponse =
+            geminiResult.data.candidates[0].content.parts[0].text;
         }
       } catch (error) {
         console.error("Gemini API error:", error);
@@ -544,15 +589,19 @@ Format the response as a structured analysis with clear sections.`;
     } finally {
       setIsAnalyzing(false);
     }
-  }, [stats, getAllTransactions, apiKeysConfigured, groqApiKey, geminiApiKey, generateFallbackInsights]);
-
-  // ... rest of your component code (exportReport, formatCurrency, formatDate, etc.)
-  // The rest of the code remains the same as in the previous version
+  }, [
+    stats,
+    getAllTransactions,
+    apiKeysConfigured,
+    groqApiKey,
+    geminiApiKey,
+    generateFallbackInsights,
+  ]);
 
   // Export report as CSV
   const exportReport = useCallback(() => {
     const allTransactions = getAllTransactions();
-    
+
     if (allTransactions.length === 0) {
       toast.warning("No transactions to export");
       return;
@@ -571,44 +620,22 @@ Format the response as a structured analysis with clear sections.`;
       headers.join(","),
       ...rows.map((r) => r.join(",")),
     ].join("\n");
-    
+
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `financial_report_${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `my_financial_report_${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
     toast.success("Report exported successfully!");
   }, [getAllTransactions]);
 
-  // Format currency
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount || 0);
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-    } catch {
-      return "N/A";
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading dashboard data...</p>
         </div>
       </div>
@@ -618,26 +645,33 @@ Format the response as a structured analysis with clear sections.`;
   const allTransactions = getAllTransactions();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-3 sm:p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
-              <BarChartIcon className="text-purple-600" />
-              Financial Reports
+              <BarChartIcon className="text-blue-600" />
+              My Reports
             </h2>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               Analyze your income, expenses, and get AI-powered insights
             </p>
             {user?.email && (
-              <p className="text-sm text-gray-500 mt-1">
-                User: {user.email}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs sm:text-sm text-gray-500">
+                  <PersonIcon className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" />
+                  {user.email}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                  User
+                </span>
+              </div>
             )}
             {!apiKeysConfigured && (
               <p className="text-xs text-yellow-600 mt-1">
-                ⚠️ AI insights are in fallback mode. Add API keys for full AI analysis.
+                ⚠️ AI insights are in fallback mode. Add API keys for full AI
+                analysis.
               </p>
             )}
             {apiKeysConfigured && (
@@ -651,40 +685,57 @@ Format the response as a structured analysis with clear sections.`;
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                className="px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((month, index) => (
-                  <option key={index} value={index}>{month}</option>
+                {[
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ].map((month, index) => (
+                  <option key={index} value={index}>
+                    {month}
+                  </option>
                 ))}
               </select>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                className="px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                {[2023, 2024, 2025, 2026, 2027].map(year => (
-                  <option key={year} value={year}>{year}</option>
+                {[2023, 2024, 2025, 2026, 2027].map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
                 ))}
               </select>
             </div>
             <button
               onClick={fetchAllData}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+              className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm sm:text-base"
             >
               <RefreshIcon className="w-4 h-4" />
-              <span className="text-sm font-medium hidden sm:inline">Refresh</span>
+              <span className="hidden xs:inline">Refresh</span>
             </button>
             <button
               onClick={exportReport}
-              className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+              className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm sm:text-base"
             >
               <DownloadIcon className="w-4 h-4" />
-              <span className="text-sm font-medium hidden sm:inline">Export</span>
+              <span className="hidden xs:inline">Export</span>
             </button>
             <button
               onClick={analyzeTransactions}
               disabled={isAnalyzing}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {isAnalyzing ? (
                 <div className="flex items-center gap-2">
@@ -703,7 +754,7 @@ Format the response as a structured analysis with clear sections.`;
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <StatCard
           title="Total Income"
           value={formatCurrency(stats.totalIncome)}
@@ -735,71 +786,79 @@ Format the response as a structured analysis with clear sections.`;
       </div>
 
       {/* Additional Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <p className="text-sm text-gray-500">Budget Remaining</p>
-          <p className="text-xl font-bold text-blue-600">{formatCurrency(stats.budgetRemaining)}</p>
+      <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-gray-500">Budget Remaining</p>
+          <p className="text-base sm:text-xl font-bold text-blue-600 truncate">
+            {formatCurrency(stats.budgetRemaining)}
+          </p>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <p className="text-sm text-gray-500">Savings Progress</p>
-          <p className="text-xl font-bold text-green-600">{stats.savingsProgress.toFixed(1)}%</p>
+        <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-gray-500">Savings Progress</p>
+          <p className="text-base sm:text-xl font-bold text-green-600">
+            {stats.savingsProgress.toFixed(1)}%
+          </p>
           <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-            <div 
+            <div
               className="bg-green-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${Math.min(stats.savingsProgress, 100)}%` }}
             />
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <p className="text-sm text-gray-500">Total Transactions</p>
-          <p className="text-xl font-bold text-purple-600">{stats.transactionCount}</p>
+        <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-gray-500">Total Transactions</p>
+          <p className="text-base sm:text-xl font-bold text-purple-600">
+            {stats.transactionCount}
+          </p>
           <p className="text-xs text-gray-400 mt-1">
-            {allTransactions.filter(t => t.type === 'income').length} income, {allTransactions.filter(t => t.type === 'expense').length} expenses
+            {allTransactions.filter((t) => t.type === "income").length} income,{" "}
+            {allTransactions.filter((t) => t.type === "expense").length}{" "}
+            expenses
           </p>
         </div>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Bar Chart - Category Breakdown */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-lg p-6"
+          className="bg-white rounded-2xl shadow-lg p-4 sm:p-6"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h3 className="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
               <BarChartIcon className="text-blue-600" />
               Category Breakdown
             </h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={() => setSelectedChart("bar")}
                 className={`p-1.5 rounded ${selectedChart === "bar" ? "bg-blue-100 text-blue-600" : "text-gray-400 hover:bg-gray-100"}`}
               >
-                <BarChartIcon className="w-5 h-5" />
+                <BarChartIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={() => setSelectedChart("pie")}
                 className={`p-1.5 rounded ${selectedChart === "pie" ? "bg-blue-100 text-blue-600" : "text-gray-400 hover:bg-gray-100"}`}
               >
-                <PieChartIcon className="w-5 h-5" />
+                <PieChartIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={() => setSelectedChart("line")}
                 className={`p-1.5 rounded ${selectedChart === "line" ? "bg-blue-100 text-blue-600" : "text-gray-400 hover:bg-gray-100"}`}
               >
-                <ShowChartIcon className="w-5 h-5" />
+                <ShowChartIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
-          <div className="h-64 sm:h-80">
+          <div className="h-56 sm:h-64 md:h-80">
             {stats.categoryChartData.length > 0 ? (
               selectedChart === "bar" && (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.categoryChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                     <YAxis />
                     <Tooltip formatter={(value) => formatCurrency(value)} />
                     <Legend />
@@ -808,36 +867,58 @@ Format the response as a structured analysis with clear sections.`;
                   </BarChart>
                 </ResponsiveContainer>
               )
-            ) : selectedChart === "pie" && stats.categoryChartData.filter(d => d.expenses > 0).length > 0 ? (
+            ) : selectedChart === "pie" &&
+              stats.categoryChartData.filter((d) => d.expenses > 0).length >
+                0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={stats.categoryChartData.filter(d => d.expenses > 0)}
+                    data={stats.categoryChartData.filter((d) => d.expenses > 0)}
                     dataKey="expenses"
                     nameKey="name"
                     cx="50%"
                     cy="50%"
                     outerRadius="80%"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
                     labelLine={false}
                   >
-                    {stats.categoryChartData.filter(d => d.expenses > 0).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                    {stats.categoryChartData
+                      .filter((d) => d.expenses > 0)
+                      .map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
                   </Pie>
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                 </PieChart>
               </ResponsiveContainer>
-            ) : selectedChart === "line" && stats.monthlyChartData.length > 0 ? (
+            ) : selectedChart === "line" &&
+              stats.monthlyChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={stats.monthlyChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                   <YAxis />
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                   <Legend />
-                  <Line type="monotone" dataKey="income" stroke="#00C49F" strokeWidth={2} name="Income" />
-                  <Line type="monotone" dataKey="expenses" stroke="#FF8042" strokeWidth={2} name="Expenses" />
+                  <Line
+                    type="monotone"
+                    dataKey="income"
+                    stroke="#00C49F"
+                    strokeWidth={2}
+                    name="Income"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="expenses"
+                    stroke="#FF8042"
+                    strokeWidth={2}
+                    name="Expenses"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
@@ -853,33 +934,59 @@ Format the response as a structured analysis with clear sections.`;
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg p-6"
+          className="bg-white rounded-2xl shadow-lg p-4 sm:p-6"
         >
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
             <ShowChartIcon className="text-green-600" />
             Monthly Trends
           </h3>
-          <div className="h-64 sm:h-80">
+          <div className="h-56 sm:h-64 md:h-80">
             {stats.monthlyChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stats.monthlyChartData}>
                   <defs>
-                    <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorIncome"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#00C49F" stopOpacity={0.8} />
                       <stop offset="95%" stopColor="#00C49F" stopOpacity={0} />
                     </linearGradient>
-                    <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorExpenses"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#FF8042" stopOpacity={0.8} />
                       <stop offset="95%" stopColor="#FF8042" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                   <YAxis />
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                   <Legend />
-                  <Area type="monotone" dataKey="income" stroke="#00C49F" fillOpacity={1} fill="url(#colorIncome)" name="Income" />
-                  <Area type="monotone" dataKey="expenses" stroke="#FF8042" fillOpacity={1} fill="url(#colorExpenses)" name="Expenses" />
+                  <Area
+                    type="monotone"
+                    dataKey="income"
+                    stroke="#00C49F"
+                    fillOpacity={1}
+                    fill="url(#colorIncome)"
+                    name="Income"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="expenses"
+                    stroke="#FF8042"
+                    fillOpacity={1}
+                    fill="url(#colorExpenses)"
+                    name="Expenses"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -896,126 +1003,150 @@ Format the response as a structured analysis with clear sections.`;
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-lg p-6 mb-8 border-l-4 border-purple-500"
+          className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border-l-4 border-blue-500"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-              <PsychologyIcon className="text-purple-600" />
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h3 className="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
+              <PsychologyIcon className="text-blue-600" />
               AI-Powered Financial Insights
               {aiInsights.isFallback && (
-                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">Fallback Mode</span>
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
+                  Fallback Mode
+                </span>
               )}
               {!aiInsights.isFallback && (
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">AI Powered</span>
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                  AI Powered
+                </span>
               )}
             </h3>
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <AutoAwesomeIcon className="w-4 h-4" />
-              <span>Analyzed {new Date(aiInsights.timestamp).toLocaleString()}</span>
+              <span>
+                Analyzed {new Date(aiInsights.timestamp).toLocaleString()}
+              </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Groq Insights */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 sm:p-4">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs font-bold">G</span>
                 </div>
                 <h4 className="font-semibold text-gray-800">Groq Analysis</h4>
               </div>
               <div className="prose prose-sm max-w-none">
                 {aiInsights.groq ? (
-                  <p className="text-gray-700 whitespace-pre-wrap text-sm">{aiInsights.groq}</p>
+                  <p className="text-gray-700 whitespace-pre-wrap text-xs sm:text-sm">
+                    {aiInsights.groq}
+                  </p>
                 ) : (
-                  <p className="text-gray-500 italic">{aiInsights.summary}</p>
+                  <p className="text-gray-500 italic text-xs sm:text-sm">
+                    {aiInsights.summary}
+                  </p>
                 )}
               </div>
             </div>
 
             {/* Gemini Insights */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-3 sm:p-4">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs font-bold">G</span>
                 </div>
                 <h4 className="font-semibold text-gray-800">Gemini Analysis</h4>
               </div>
               <div className="prose prose-sm max-w-none">
                 {aiInsights.gemini ? (
-                  <p className="text-gray-700 whitespace-pre-wrap text-sm">{aiInsights.gemini}</p>
+                  <p className="text-gray-700 whitespace-pre-wrap text-xs sm:text-sm">
+                    {aiInsights.gemini}
+                  </p>
                 ) : (
-                  <p className="text-gray-500 italic">{aiInsights.summary}</p>
+                  <p className="text-gray-500 italic text-xs sm:text-sm">
+                    {aiInsights.summary}
+                  </p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Recommendations */}
-          {aiInsights.recommendations && aiInsights.recommendations.length > 0 && (
-            <div className="mt-4 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-              <h4 className="font-semibold text-gray-800 flex items-center gap-2 mb-2">
-                <LightbulbIcon className="text-yellow-600" />
-                Key Recommendations
-              </h4>
-              <ul className="space-y-1">
-                {aiInsights.recommendations.map((rec, index) => (
-                  <li key={index} className="text-sm text-gray-700 flex items-start gap-2">
-                    <span className="text-yellow-600 mt-0.5">•</span>
-                    <span>{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {aiInsights.recommendations &&
+            aiInsights.recommendations.length > 0 && (
+              <div className="mt-4 p-3 sm:p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                <h4 className="font-semibold text-gray-800 flex items-center gap-2 mb-2 text-sm sm:text-base">
+                  <LightbulbIcon className="text-yellow-600" />
+                  Key Recommendations
+                </h4>
+                <ul className="space-y-1">
+                  {aiInsights.recommendations.map((rec, index) => (
+                    <li
+                      key={index}
+                      className="text-xs sm:text-sm text-gray-700 flex items-start gap-2"
+                    >
+                      <span className="text-yellow-600 mt-0.5">•</span>
+                      <span>{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
         </motion.div>
       )}
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={analyzeTransactions}
           disabled={isAnalyzing}
-          className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-2xl shadow-lg p-6 text-left hover:shadow-xl transition-all disabled:opacity-50"
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl shadow-lg p-4 sm:p-6 text-left hover:shadow-xl transition-all disabled:opacity-50"
         >
-          <PsychologyIcon className="w-8 h-8 mb-2" />
-          <h4 className="font-semibold">AI Analysis</h4>
-          <p className="text-sm opacity-90 mt-1">Get smart financial insights</p>
+          <PsychologyIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+          <h4 className="font-semibold text-sm sm:text-base">AI Analysis</h4>
+          <p className="text-xs sm:text-sm opacity-90 mt-1">
+            Get smart financial insights
+          </p>
         </motion.button>
 
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={exportReport}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl shadow-lg p-6 text-left hover:shadow-xl transition-all"
+          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl shadow-lg p-4 sm:p-6 text-left hover:shadow-xl transition-all"
         >
-          <DownloadIcon className="w-8 h-8 mb-2" />
-          <h4 className="font-semibold">Export Report</h4>
-          <p className="text-sm opacity-90 mt-1">Download as CSV</p>
+          <DownloadIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+          <h4 className="font-semibold text-sm sm:text-base">Export Report</h4>
+          <p className="text-xs sm:text-sm opacity-90 mt-1">Download as CSV</p>
         </motion.button>
 
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={fetchAllData}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl shadow-lg p-6 text-left hover:shadow-xl transition-all"
+          className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl shadow-lg p-4 sm:p-6 text-left hover:shadow-xl transition-all"
         >
-          <RefreshIcon className="w-8 h-8 mb-2" />
-          <h4 className="font-semibold">Refresh Data</h4>
-          <p className="text-sm opacity-90 mt-1">Update your transactions</p>
+          <RefreshIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+          <h4 className="font-semibold text-sm sm:text-base">Refresh Data</h4>
+          <p className="text-xs sm:text-sm opacity-90 mt-1">
+            Update your transactions
+          </p>
         </motion.button>
 
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl shadow-lg p-6 text-left hover:shadow-xl transition-all"
+          className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl shadow-lg p-4 sm:p-6 text-left hover:shadow-xl transition-all"
           onClick={() => window.print()}
         >
-          <CalendarTodayIcon className="w-8 h-8 mb-2" />
-          <h4 className="font-semibold">Print Report</h4>
-          <p className="text-sm opacity-90 mt-1">Generate printable version</p>
+          <CalendarTodayIcon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+          <h4 className="font-semibold text-sm sm:text-base">Print Report</h4>
+          <p className="text-xs sm:text-sm opacity-90 mt-1">
+            Generate printable version
+          </p>
         </motion.button>
       </div>
     </div>

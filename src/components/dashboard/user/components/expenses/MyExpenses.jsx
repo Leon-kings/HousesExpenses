@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/static-components */
@@ -26,6 +25,7 @@ import WarningIcon from "@mui/icons-material/Warning";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import PersonIcon from "@mui/icons-material/Person";
 
 // API Base URL
 const API_URL = "https://household-expenses-management-system.onrender.com/api";
@@ -44,136 +44,128 @@ api.interceptors.request.use((config) => {
 });
 
 // Memoized Expense Form Component
-const ExpenseForm = memo(({ formData, setFormData, onSubmit, submitLabel, isLoading, categories, onCancel }) => {
-  return (
-    <form onSubmit={onSubmit} className="space-y-4">
+const ExpenseForm = memo(({ formData, setFormData, onSubmit, submitLabel, isLoading, categories, onCancel }) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Description *
+      </label>
+      <input
+        type="text"
+        value={formData.description}
+        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        placeholder="Enter description"
+        required
+      />
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Description *
+          Category *
         </label>
-        <input
-          type="text"
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="Enter description"
+        <select
+          value={formData.category}
+          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           required
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category *
-          </label>
-          <select
-            value={formData.category}
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            required
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Type *
-          </label>
-          <select
-            value={formData.type}
-            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            required
-          >
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Amount ($) *
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.amount}
-            onChange={(e) =>
-              setFormData({ ...formData, amount: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            placeholder="0.00"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Date *
-          </label>
-          <input
-            type="date"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            required
-          />
-        </div>
+        >
+          <option value="">Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          User Name *
+          Type *
+        </label>
+        <select
+          value={formData.type}
+          onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          required
+        >
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Amount ($) *
         </label>
         <input
-          type="text"
-          value={formData.user}
-          onChange={(e) => setFormData({ ...formData, user: e.target.value })}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="Enter user name"
+          type="number"
+          step="0.01"
+          min="0"
+          value={formData.amount}
+          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          placeholder="0.00"
           required
         />
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-        >
-          {isLoading ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              <span>Processing...</span>
-            </>
-          ) : (
-            <span>{submitLabel}</span>
-          )}
-        </button>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Date *
+        </label>
+        <input
+          type="date"
+          value={formData.date}
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          required
+        />
       </div>
-    </form>
-  );
-});
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        User Name *
+      </label>
+      <input
+        type="text"
+        value={formData.user}
+        onChange={(e) => setFormData({ ...formData, user: e.target.value })}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        placeholder="Enter user name"
+        required
+      />
+    </div>
+
+    <input type="hidden" value={formData.email} />
+
+    <div className="flex justify-end space-x-3 pt-4">
+      <button
+        type="button"
+        onClick={onCancel}
+        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+      >
+        {isLoading ? (
+          <>
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            <span>Processing...</span>
+          </>
+        ) : (
+          <span>{submitLabel}</span>
+        )}
+      </button>
+    </div>
+  </form>
+));
 
 // Memoized Modal Component
 const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
@@ -201,25 +193,25 @@ const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
           className={`bg-white rounded-3xl shadow-2xl ${sizes[size]} w-full max-h-[90vh] overflow-y-auto relative`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="sticky top-0 bg-white z-10 p-6 border-b border-gray-200 rounded-t-3xl">
+          <div className="sticky top-0 bg-white z-10 p-4 sm:p-6 border-b border-gray-200 rounded-t-3xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-800">{title}</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">{title}</h3>
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <CloseIcon className="w-6 h-6 text-gray-500" />
+                <CloseIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
               </button>
             </div>
           </div>
-          <div className="p-6">{children}</div>
+          <div className="p-4 sm:p-6">{children}</div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   );
 });
 
-export const ExpensesDashboard = () => {
+export const MyExpense = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(() => {
     try {
@@ -242,6 +234,7 @@ export const ExpensesDashboard = () => {
   const filterCategoryRef = useRef(filterCategory);
   const filterTypeRef = useRef(filterType);
   const isFirstLoadRef = useRef(true);
+  const isLoadingRef = useRef(false);
 
   // Notification states
   const [notifications, setNotifications] = useState([]);
@@ -293,35 +286,64 @@ export const ExpensesDashboard = () => {
     incomeCount: 0,
   });
 
-  // Load expenses from API - NO EMAIL FILTER (Admin sees all)
-  const loadExpenses = useCallback(async () => {
-    // Don't reload if already loading
-    if (isLoading) return;
+  // User is always a regular user for this component
+  const isAdmin = false;
+
+  // Redirect if no valid session
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    const userData = JSON.parse(localStorage.getItem("userData") || "null");
+
+    if (!token || !userData) {
+      navigate("/");
+      return;
+    }
+
+    if (!user) setUser(userData);
     
+    // Set user email in form data
+    if (userData?.email) {
+      setFormData(prev => ({ ...prev, email: userData.email, user: userData.name || "" }));
+    }
+    
+    // Load expenses only on initial mount
+    if (isFirstLoadRef.current) {
+      isFirstLoadRef.current = false;
+      loadExpenses();
+    }
+    
+    loadNotifications();
+  }, [navigate]);
+
+  // Load expenses from API using /email/:email endpoint
+  const loadExpenses = useCallback(async () => {
+    // Prevent concurrent loads
+    if (isLoadingRef.current) return;
+    
+    // If no user email, show warning
+    if (!user?.email) {
+      toast.warning("User email not found");
+      return;
+    }
+
+    isLoadingRef.current = true;
     setIsLoading(true);
+    
     try {
       // Use refs to get current filter values
-      const searchValue = searchTermRef.current;
-      const categoryValue = filterCategoryRef.current;
-      const typeValue = filterTypeRef.current;
+      const search = searchTermRef.current;
+      const category = filterCategoryRef.current;
+      const type = filterTypeRef.current;
 
-      // Build query params WITHOUT email
+      // Regular user - use /email/:email endpoint
+      const url = `/expenses/email/${user.email}`;
       const params = {};
+      
+      if (search) params.search = search;
+      if (category && category !== "all") params.category = category;
+      if (type && type !== "all") params.type = type;
 
-      if (searchValue) {
-        params.search = searchValue;
-      }
-
-      if (categoryValue && categoryValue !== "all") {
-        params.category = categoryValue;
-      }
-
-      if (typeValue && typeValue !== "all") {
-        params.type = typeValue;
-      }
-
-      // Use main /expenses endpoint - NO email filter
-      const response = await api.get("/expenses", { params });
+      const response = await api.get(url, { params });
       
       // Handle response
       if (response.data.success) {
@@ -348,8 +370,9 @@ export const ExpensesDashboard = () => {
       toast.error(error.response?.data?.message || "Failed to load expenses");
     } finally {
       setIsLoading(false);
+      isLoadingRef.current = false;
     }
-  }, [isLoading]); // Only depend on isLoading
+  }, [user?.email]);
 
   // Calculate stats from expenses
   const calculateStats = useCallback((expensesData) => {
@@ -377,40 +400,12 @@ export const ExpensesDashboard = () => {
     });
   }, []);
 
-  // Redirect if no valid session
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const userData = JSON.parse(localStorage.getItem("userData") || "null");
-
-    if (!token || !userData) {
-      navigate("/");
-      return;
-    }
-
-    if (!user) setUser(userData);
-    
-    // Set user email in form data
-    if (userData?.email) {
-      setFormData(prev => ({ ...prev, email: userData.email, user: userData.name || "" }));
-    }
-    
-    // Load expenses only on initial mount
-    if (isFirstLoadRef.current) {
-      isFirstLoadRef.current = false;
-      loadExpenses();
-    }
-    
-    loadNotifications();
-  }, [navigate, user, loadExpenses]);
-
   // Load notifications
   const loadNotifications = async () => {
     if (!user?.email) return;
     
     setNotificationLoading(true);
     try {
-      // You'll need to implement notifications API separately
-      // For now, just set empty notifications
       setNotifications([]);
       setUnreadCount(0);
     } catch (error) {
@@ -420,29 +415,14 @@ export const ExpensesDashboard = () => {
     }
   };
 
-  // Mark notification as read (placeholder)
-  const markNotificationRead = async (notificationId) => {
-    toast.info("Notification feature coming soon");
-  };
-
-  // Mark all notifications as read (placeholder)
-  const markAllNotificationsRead = async () => {
-    toast.info("Notification feature coming soon");
-  };
-
-  // Delete notification (placeholder)
-  const deleteNotification = async (notificationId) => {
-    toast.info("Notification feature coming soon");
-  };
-
-  // Handle search and filter - update refs and trigger load with debounce
+  // Handle search and filter - update refs and trigger load
   useEffect(() => {
     // Update refs with current values
     searchTermRef.current = searchTerm;
     filterCategoryRef.current = filterCategory;
     filterTypeRef.current = filterType;
 
-    // Debounce the load - only after user stops typing
+    // Debounce the load
     const timer = setTimeout(() => {
       // Skip if this is the initial load
       if (!isFirstLoadRef.current) {
@@ -601,7 +581,7 @@ export const ExpensesDashboard = () => {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
-    doc.text("HEMS - Expenses Report", 14, 25);
+    doc.text("HEMS - My Expenses Report", 14, 25);
 
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(12);
@@ -614,7 +594,7 @@ export const ExpensesDashboard = () => {
       14,
       50,
     );
-    doc.text(`User: ${user?.email || "All Users"}`, 14, 60);
+    doc.text(`User: ${user?.email || "N/A"}`, 14, 60);
 
     // Summary section
     doc.setFontSize(14);
@@ -688,7 +668,7 @@ export const ExpensesDashboard = () => {
     );
 
     // Save PDF
-    doc.save(`hems-expenses-report-${today.toISOString().split("T")[0]}.pdf`);
+    doc.save(`hems-my-expenses-${today.toISOString().split("T")[0]}.pdf`);
     toast.success("PDF Report downloaded successfully!");
   }, [expenses, filteredExpenses, stats, user]);
 
@@ -714,7 +694,7 @@ export const ExpensesDashboard = () => {
     }
   }, []);
 
-  // Notification Panel Component (simplified)
+  // Notification Panel Component
   const NotificationPanel = memo(() => {
     if (!showNotifications) return null;
 
@@ -733,7 +713,7 @@ export const ExpensesDashboard = () => {
           <div className="flex space-x-2">
             {unreadCount > 0 && (
               <button
-                onClick={markAllNotificationsRead}
+                onClick={() => toast.info("Mark all as read coming soon")}
                 className="text-xs text-purple-600 hover:text-purple-800"
               >
                 Mark all read
@@ -773,36 +753,37 @@ export const ExpensesDashboard = () => {
         theme="colored"
       />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-800">
-              Expenses Management
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
+              <ReceiptIcon className="text-blue-500" />
+              My Expenses
             </h2>
-            <p className="text-gray-600 mt-1">
-              Manage and track all household transactions
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
+              Manage and track your personal transactions
             </p>
             {user?.email && (
-              <p className="text-sm text-gray-500 mt-1">
-                {user?.role === 'admin' ? (
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs font-medium">
-                    👑 Admin - Viewing all expenses
-                  </span>
-                ) : (
-                  `User: ${user.email}`
-                )}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs sm:text-sm text-gray-500">
+                  <PersonIcon className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" />
+                  {user.email}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                  User
+                </span>
+              </div>
             )}
           </div>
-          <div className="flex space-x-3 mt-4 md:mt-0 relative">
+          <div className="flex flex-wrap gap-2 mt-3 sm:mt-0">
             {/* Notification Button */}
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              className="relative flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm sm:text-base"
             >
-              <NotificationsIcon className="w-5 h-5" />
-              <span>Notifications</span>
+              <NotificationsIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden xs:inline">Notifications</span>
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
                   {unreadCount}
@@ -815,93 +796,91 @@ export const ExpensesDashboard = () => {
 
             <button
               onClick={generatePDFReport}
-              className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
+              className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
             >
-              <PictureAsPdfIcon className="w-5 h-5" />
-              <span>Export PDF</span>
+              <PictureAsPdfIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden xs:inline">Export PDF</span>
             </button>
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm sm:text-base"
             >
-              <AddIcon className="w-5 h-5" />
-              <span>Add Transaction</span>
+              <AddIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span>Add</span>
             </button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-green-500">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 border-l-4 border-green-500">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Total Income</p>
-                <p className="text-2xl font-bold text-green-600">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500 truncate">Total Income</p>
+                <p className="text-base sm:text-2xl font-bold text-green-600 truncate">
                   {formatCurrency(stats.totalIncome)}
                 </p>
               </div>
-              <TrendingUpIcon className="w-10 h-10 text-green-500 bg-green-100 p-2 rounded-full" />
+              <TrendingUpIcon className="w-8 h-8 sm:w-10 sm:h-10 text-green-500 bg-green-100 p-1.5 sm:p-2 rounded-full flex-shrink-0" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-red-500">
+          <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 border-l-4 border-red-500">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Total Expenses</p>
-                <p className="text-2xl font-bold text-red-600">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500 truncate">Total Expenses</p>
+                <p className="text-base sm:text-2xl font-bold text-red-600 truncate">
                   {formatCurrency(stats.totalExpenses)}
                 </p>
               </div>
-              <TrendingDownIcon className="w-10 h-10 text-red-500 bg-red-100 p-2 rounded-full" />
+              <TrendingDownIcon className="w-8 h-8 sm:w-10 sm:h-10 text-red-500 bg-red-100 p-1.5 sm:p-2 rounded-full flex-shrink-0" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
+          <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Net Balance</p>
-                <p
-                  className={`text-2xl font-bold ${stats.netBalance >= 0 ? "text-blue-600" : "text-red-600"}`}
-                >
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500 truncate">Net Balance</p>
+                <p className={`text-base sm:text-2xl font-bold truncate ${stats.netBalance >= 0 ? "text-blue-600" : "text-red-600"}`}>
                   {formatCurrency(stats.netBalance)}
                 </p>
               </div>
-              <AttachMoneyIcon className="w-10 h-10 text-blue-500 bg-blue-100 p-2 rounded-full" />
+              <AttachMoneyIcon className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 bg-blue-100 p-1.5 sm:p-2 rounded-full flex-shrink-0" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
+          <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 border-l-4 border-purple-500">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Transactions</p>
-                <p className="text-2xl font-bold text-purple-600">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500 truncate">Transactions</p>
+                <p className="text-base sm:text-2xl font-bold text-purple-600 truncate">
                   {displayExpenses.length}
                 </p>
               </div>
-              <ReceiptIcon className="w-10 h-10 text-purple-500 bg-purple-100 p-2 rounded-full" />
+              <ReceiptIcon className="w-8 h-8 sm:w-10 sm:h-10 text-purple-500 bg-purple-100 p-1.5 sm:p-2 rounded-full flex-shrink-0" />
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-4 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-3 md:space-y-0">
+        <div className="bg-white rounded-2xl shadow-lg p-3 sm:p-4 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-3 sm:space-y-0">
             <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
               <input
                 type="text"
-                placeholder="Search by description, category, or user..."
+                placeholder="Search by description or category..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
 
-            <div className="flex space-x-3">
+            <div className="flex flex-wrap gap-2">
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="all">All Categories</option>
                 {categories.map((cat) => (
@@ -914,7 +893,7 @@ export const ExpensesDashboard = () => {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="all">All Types</option>
                 <option value="income">Income</option>
@@ -927,7 +906,7 @@ export const ExpensesDashboard = () => {
                   setFilterCategory("all");
                   setFilterType("all");
                 }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 Clear
               </button>
@@ -939,11 +918,11 @@ export const ExpensesDashboard = () => {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           {isLoading ? (
             <div className="p-8 text-center">
-              <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
               <p className="mt-4 text-gray-600">Loading transactions...</p>
             </div>
           ) : displayExpenses.length === 0 ? (
-            <div className="p-12 text-center">
+            <div className="p-8 sm:p-12 text-center">
               <ReceiptIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 text-lg">No transactions found</p>
               <p className="text-gray-400 text-sm mt-1">
@@ -952,30 +931,15 @@ export const ExpensesDashboard = () => {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[600px]">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                    <th className="text-left py-3 px-4 text-sm font-semibold">
-                      Date
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold">
-                      Description
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold">
-                      Category
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold">
-                      Type
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold">
-                      User
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold">
-                      Amount
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold">
-                      Actions
-                    </th>
+                  <tr className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                    <th className="text-left py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold">Date</th>
+                    <th className="text-left py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold">Description</th>
+                    <th className="text-left py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold">Category</th>
+                    <th className="text-left py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold">Type</th>
+                    <th className="text-right py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold">Amount</th>
+                    <th className="text-center py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -987,20 +951,20 @@ export const ExpensesDashboard = () => {
                       transition={{ delay: index * 0.05 }}
                       className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                     >
-                      <td className="py-3 px-4 text-gray-600 text-sm">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
                         {formatDate(expense.date)}
                       </td>
-                      <td className="py-3 px-4 text-gray-800 font-medium">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-800 font-medium text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">
                         {expense.description || "N/A"}
                       </td>
-                      <td className="py-3 px-4">
-                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium whitespace-nowrap">
                           {expense.category || "Uncategorized"}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
                             expense.type === "income"
                               ? "bg-green-100 text-green-700"
                               : "bg-red-100 text-red-700"
@@ -1009,11 +973,8 @@ export const ExpensesDashboard = () => {
                           {expense.type ? expense.type.charAt(0).toUpperCase() + expense.type.slice(1) : "N/A"}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-gray-600 text-sm">
-                        {expense.user || "Unknown"}
-                      </td>
                       <td
-                        className={`py-3 px-4 text-right font-semibold ${
+                        className={`py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-xs sm:text-sm ${
                           expense.type === "income"
                             ? "text-green-600"
                             : "text-red-600"
@@ -1022,21 +983,21 @@ export const ExpensesDashboard = () => {
                         {expense.type === "income" ? "+" : "-"}
                         {formatCurrency(expense.amount)}
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        <div className="flex items-center justify-center space-x-2">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">
+                        <div className="flex items-center justify-center space-x-1 sm:space-x-2">
                           <button
                             onClick={() => openEditModal(expense)}
                             className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="Edit"
                           >
-                            <EditIcon className="w-5 h-5" />
+                            <EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                           </button>
                           <button
                             onClick={() => openDeleteModal(expense)}
                             className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             title="Delete"
                           >
-                            <DeleteIcon className="w-5 h-5" />
+                            <DeleteIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                           </button>
                         </div>
                       </td>

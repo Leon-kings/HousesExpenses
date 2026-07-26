@@ -387,7 +387,7 @@
 //       <Route
 //         path="/user/dashboard"
 //         element={
-//           <ProtectedRoute allowedRoles={["user", "admin"]}>
+//           <ProtectedRoute allowedRoles={["user"]}>
 //             <DashboardLayout>
 //               <UserDashboard />
 //             </DashboardLayout>
@@ -438,6 +438,16 @@ import { UserDashboard } from "./components/dashboard/user/UserDashboard";
 import { ExpensesDashboard } from "./components/dashboard/admin/components/expenses/ExpensesManagement";
 import { ReportDashboard } from "./components/dashboard/admin/components/report/ReportManagement";
 import { UserManagement } from "./components/dashboard/admin/components/user/UserManagement";
+import { IncomeManagement } from "./components/dashboard/admin/components/incame/IncomeManagement";
+import { SavingsManagement } from "./components/dashboard/admin/components/savings/SavingManagement";
+import { Money } from "@mui/icons-material";
+import { BudgetManagement } from "./components/dashboard/admin/components/budget/BudgetManagement";
+import { UserProfile } from "./components/dashboard/user/components/me/Myprofile";
+import { MyExpense } from "./components/dashboard/user/components/expenses/MyExpenses";
+import { MyIncome } from "./components/dashboard/user/components/incame/MyIncame";
+import { MyBudget } from "./components/dashboard/user/components/budget/MyBudget";
+import { MySaving } from "./components/dashboard/user/components/saving/MySaving";
+import { MyReport } from "./components/dashboard/user/components/report/MyReport";
 
 // Static user data for demo
 const DEMO_USERS = {
@@ -490,6 +500,25 @@ const Sidebar = ({ user, onLogout, isOpen, onToggle, location }) => {
       path: "/dashboard/expenses",
     },
     {
+      id: "income",
+      label: "Income",
+      icon: <TrendingUpIcon />,
+      path: "/dashboard/income",
+    },
+    {
+      id: "savings",
+      label: "Savings",
+      icon: <SavingsIcon />,
+      path: "/dashboard/savings",
+    },
+    {
+      id: "budget",
+      label: "Budget",
+      icon: <Money />,
+      path: "/dashboard/budget",
+    },
+
+    {
       id: "reports",
       label: "Reports",
       icon: <BarChartIcon />,
@@ -522,6 +551,19 @@ const Sidebar = ({ user, onLogout, isOpen, onToggle, location }) => {
       icon: <TrendingUpIcon />,
       path: "/user/income",
     },
+    {
+      id: "budget",
+      label: "My Budget",
+      icon: <Money />,
+      path: "/user/budget",
+    },
+    {
+      id: "savings",
+      label: "My Savings",
+      icon: <SavingsIcon />,
+      path: "/user/savings",
+    },
+
     {
       id: "reports",
       label: "Reports",
@@ -822,7 +864,40 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <DashboardLayout>
-              <UserManagement/>
+              <UserManagement />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/budget"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <BudgetManagement />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/savings"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <SavingsManagement />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/income"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <DashboardLayout>
+              <IncomeManagement />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -861,7 +936,7 @@ export default function App() {
       <Route
         path="/user/dashboard"
         element={
-          <ProtectedRoute allowedRoles={["user", "admin"]}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <DashboardLayout>
               <UserDashboard />
             </DashboardLayout>
@@ -872,16 +947,9 @@ export default function App() {
       <Route
         path="/user/expenses"
         element={
-          <ProtectedRoute allowedRoles={["user", "admin"]}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <DashboardLayout>
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  My Expenses
-                </h2>
-                <p className="text-gray-600">
-                  User expense management features coming soon...
-                </p>
-              </div>
+              <MyExpense />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -890,16 +958,9 @@ export default function App() {
       <Route
         path="/user/income"
         element={
-          <ProtectedRoute allowedRoles={["user", "admin"]}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <DashboardLayout>
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  My Income
-                </h2>
-                <p className="text-gray-600">
-                  User income management features coming soon...
-                </p>
-              </div>
+              <MyIncome />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -908,16 +969,31 @@ export default function App() {
       <Route
         path="/user/reports"
         element={
-          <ProtectedRoute allowedRoles={["user", "admin"]}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <DashboardLayout>
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Reports
-                </h2>
-                <p className="text-gray-600">
-                  User report features coming soon...
-                </p>
-              </div>
+              <MyReport />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/user/budget"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <DashboardLayout>
+              <MyBudget />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/user/savings"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <DashboardLayout>
+              <MySaving />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -926,16 +1002,9 @@ export default function App() {
       <Route
         path="/user/settings"
         element={
-          <ProtectedRoute allowedRoles={["user", "admin"]}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <DashboardLayout>
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Settings
-                </h2>
-                <p className="text-gray-600">
-                  User settings features coming soon...
-                </p>
-              </div>
+              <UserProfile />
             </DashboardLayout>
           </ProtectedRoute>
         }
