@@ -1,9 +1,9 @@
-
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/static-components */
 /* eslint-disable react-hooks/immutability */
 /* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable no-useless-assignment */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -26,6 +26,15 @@ import WarningIcon from "@mui/icons-material/Warning";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
+import BadgeIcon from "@mui/icons-material/Badge";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PhoneIcon from "@mui/icons-material/Phone";
+import HomeIcon from "@mui/icons-material/Home";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import ClearIcon from "@mui/icons-material/Clear";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 // API Base URL
 const API_URL = "https://household-expenses-management-system.onrender.com/api";
@@ -33,6 +42,7 @@ const API_URL = "https://household-expenses-management-system.onrender.com/api";
 // Axios instance with auth token
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
@@ -40,140 +50,180 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log(`📤 ${config.method.toUpperCase()} ${config.url}`);
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => {
+    console.log(`📥 Response from ${response.config.url}:`, response.status);
+    return response;
+  },
+  (error) => {
+    console.error(
+      "❌ API Error:",
+      error.response?.status,
+      error.response?.data || error.message,
+    );
+    return Promise.reject(error);
+  },
+);
+
 // Memoized Expense Form Component
-const ExpenseForm = memo(({ formData, setFormData, onSubmit, submitLabel, isLoading, categories, onCancel }) => {
-  return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Description *
-        </label>
-        <input
-          type="text"
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="Enter description"
-          required
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+const ExpenseForm = memo(
+  ({
+    formData,
+    setFormData,
+    onSubmit,
+    submitLabel,
+    isLoading,
+    categories,
+    onCancel,
+  }) => {
+    return (
+      <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category *
-          </label>
-          <select
-            value={formData.category}
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            required
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Type *
-          </label>
-          <select
-            value={formData.type}
-            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            required
-          >
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Amount ($) *
+            Description *
           </label>
           <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.amount}
+            type="text"
+            value={formData.description}
             onChange={(e) =>
-              setFormData({ ...formData, amount: e.target.value })
+              setFormData({ ...formData, description: e.target.value })
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            placeholder="0.00"
+            placeholder="Enter description"
             required
           />
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category *
+            </label>
+            <select
+              value={formData.category}
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              required
+            >
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Type *
+            </label>
+            <select
+              value={formData.type}
+              onChange={(e) =>
+                setFormData({ ...formData, type: e.target.value })
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              required
+            >
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Amount (RWF) *
+            </label>
+            <input
+              type="number"
+              step="1"
+              min="1"
+              value={formData.amount}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Only allow whole numbers (no decimals)
+                if (value === '' || /^\d+$/.test(value)) {
+                  setFormData({ ...formData, amount: value });
+                }
+              }}
+              onKeyDown={(e) => {
+                // Prevent decimal point from being entered
+                if (e.key === '.' || e.key === ',') {
+                  e.preventDefault();
+                }
+              }}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              placeholder="0"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Date *
+            </label>
+            <input
+              type="date"
+              value={formData.date}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              required
+            />
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Date *
+            User Name *
           </label>
           <input
-            type="date"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            type="text"
+            value={formData.user}
+            onChange={(e) => setFormData({ ...formData, user: e.target.value })}
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            placeholder="Enter user name"
             required
           />
         </div>
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          User Name *
-        </label>
-        <input
-          type="text"
-          value={formData.user}
-          onChange={(e) => setFormData({ ...formData, user: e.target.value })}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="Enter user name"
-          required
-        />
-      </div>
-
-      <div className="flex justify-end space-x-3 pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-        >
-          {isLoading ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              <span>Processing...</span>
-            </>
-          ) : (
-            <span>{submitLabel}</span>
-          )}
-        </button>
-      </div>
-    </form>
-  );
-});
+        <div className="flex justify-end space-x-3 pt-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          >
+            {isLoading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Processing...</span>
+              </>
+            ) : (
+              <span>{submitLabel}</span>
+            )}
+          </button>
+        </div>
+      </form>
+    );
+  },
+);
 
 // Memoized Modal Component
 const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
@@ -233,15 +283,26 @@ export const ExpensesDashboard = () => {
   const [expenses, setExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // State for incomes (from /incomes endpoint)
+  const [incomes, setIncomes] = useState([]);
+  const [totalIncomeFromApi, setTotalIncomeFromApi] = useState(0);
+  const [isLoadingIncomes, setIsLoadingIncomes] = useState(false);
+  const [incomeError, setIncomeError] = useState(null);
+
+  // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterType, setFilterType] = useState("all");
+  const [filterEmail, setFilterEmail] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
+  const [filterYear, setFilterYear] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Refs to track current filter values without causing re-renders
-  const searchTermRef = useRef(searchTerm);
-  const filterCategoryRef = useRef(filterCategory);
-  const filterTypeRef = useRef(filterType);
-  const isFirstLoadRef = useRef(true);
+  // Refs
+  const isMountedRef = useRef(true);
+  const dataLoadedRef = useRef(false);
 
   // Notification states
   const [notifications, setNotifications] = useState([]);
@@ -256,6 +317,12 @@ export const ExpensesDashboard = () => {
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // User Modal states
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [isUserLoading, setIsUserLoading] = useState(false);
+
   // Form data
   const [formData, setFormData] = useState({
     description: "",
@@ -265,6 +332,7 @@ export const ExpensesDashboard = () => {
     date: new Date().toISOString().split("T")[0],
     user: "",
     email: "",
+    userId: "",
   });
 
   // Categories for dropdown
@@ -284,6 +352,25 @@ export const ExpensesDashboard = () => {
     "Other",
   ];
 
+  // Generate months and years for filters
+  const months = [
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
   // Stats summary
   const [stats, setStats] = useState({
     totalExpenses: 0,
@@ -293,80 +380,23 @@ export const ExpensesDashboard = () => {
     incomeCount: 0,
   });
 
-  // Load expenses from API - NO EMAIL FILTER (Admin sees all)
-  const loadExpenses = useCallback(async () => {
-    // Don't reload if already loading
-    if (isLoading) return;
-    
-    setIsLoading(true);
-    try {
-      // Use refs to get current filter values
-      const searchValue = searchTermRef.current;
-      const categoryValue = filterCategoryRef.current;
-      const typeValue = filterTypeRef.current;
-
-      // Build query params WITHOUT email
-      const params = {};
-
-      if (searchValue) {
-        params.search = searchValue;
-      }
-
-      if (categoryValue && categoryValue !== "all") {
-        params.category = categoryValue;
-      }
-
-      if (typeValue && typeValue !== "all") {
-        params.type = typeValue;
-      }
-
-      // Use main /expenses endpoint - NO email filter
-      const response = await api.get("/expenses", { params });
-      
-      // Handle response
-      if (response.data.success) {
-        const expenseData = response.data.data || [];
-        setExpenses(expenseData);
-        setFilteredExpenses(expenseData);
-        calculateStats(expenseData);
-      } else {
-        // If response doesn't have success property, try to use data directly
-        if (Array.isArray(response.data)) {
-          setExpenses(response.data);
-          setFilteredExpenses(response.data);
-          calculateStats(response.data);
-        } else if (response.data.data && Array.isArray(response.data.data)) {
-          setExpenses(response.data.data);
-          setFilteredExpenses(response.data.data);
-          calculateStats(response.data.data);
-        } else {
-          toast.warning("Unexpected response format");
-        }
-      }
-    } catch (error) {
-      console.error("Load expenses error:", error);
-      toast.error(error.response?.data?.message || "Failed to load expenses");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isLoading]); // Only depend on isLoading
-
-  // Calculate stats from expenses
+  // Calculate stats from expenses and incomes
   const calculateStats = useCallback((expensesData) => {
-    let totalIncome = 0;
     let totalExpenses = 0;
     let expenseCount = 0;
     let incomeCount = 0;
 
-    expensesData.forEach(exp => {
-      if (exp.type === 'income') {
-        totalIncome += exp.amount;
+    expensesData.forEach((exp) => {
+      if (exp.type === "income") {
         incomeCount++;
       } else {
         totalExpenses += exp.amount;
         expenseCount++;
       }
     });
+
+    // Use total income from API
+    const totalIncome = totalIncomeFromApi;
 
     setStats({
       totalIncome,
@@ -375,42 +405,372 @@ export const ExpensesDashboard = () => {
       expenseCount,
       incomeCount,
     });
-  }, []);
+  }, [totalIncomeFromApi]);
 
-  // Redirect if no valid session
+  // Load incomes from /incomes endpoint
+  const loadIncomes = useCallback(async () => {
+    console.log("💰 Starting loadIncomes...");
+
+    if (!isMountedRef.current) {
+      console.log("⚠️ Component unmounted, skipping load");
+      return;
+    }
+
+    try {
+      setIsLoadingIncomes(true);
+      setIncomeError(null);
+
+      const token = localStorage.getItem("authToken");
+      console.log("🔑 Token present:", !!token);
+
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      console.log("📤 Making API request to /incomes");
+      const response = await api.get("/incomes");
+
+      console.log("📦 Income response status:", response.status);
+      console.log("📦 Full income response:", JSON.stringify(response.data, null, 2));
+
+      let incomeData = [];
+      let totalIncome = 0;
+
+      // Handle the response format properly
+      if (response.data) {
+        // Check if response has success and data wrapper
+        if (response.data.success === true && response.data.data && Array.isArray(response.data.data)) {
+          incomeData = response.data.data;
+          console.log(`✅ Found ${incomeData.length} incomes in response.data.data`);
+          
+          // Calculate total income from the data array
+          incomeData.forEach(inc => {
+            totalIncome += inc.amount || 0;
+          });
+          
+          // Also check if there's budgetSummary with totalMonthlyIncome
+          if (response.data.budgetSummary && response.data.budgetSummary.totalMonthlyIncome) {
+            totalIncome = response.data.budgetSummary.totalMonthlyIncome;
+            console.log(`💰 Total income from budgetSummary: ${totalIncome}`);
+          }
+        } 
+        // Check if response has data property with array
+        else if (response.data.data && Array.isArray(response.data.data)) {
+          incomeData = response.data.data;
+          console.log(`✅ Found ${incomeData.length} incomes in response.data.data (fallback)`);
+          
+          incomeData.forEach(inc => {
+            totalIncome += inc.amount || 0;
+          });
+        }
+        // Check if response is directly an array
+        else if (Array.isArray(response.data)) {
+          incomeData = response.data;
+          console.log(`✅ Found ${incomeData.length} incomes as direct array`);
+          
+          incomeData.forEach(inc => {
+            totalIncome += inc.amount || 0;
+          });
+        } 
+        else {
+          console.warn("⚠️ Unexpected income response format:", response.data);
+          incomeData = [];
+        }
+      }
+
+      console.log(`💰 Total income calculated: ${totalIncome}`);
+
+      setIncomes(incomeData);
+      setTotalIncomeFromApi(totalIncome);
+      
+      // Recalculate stats with new income data
+      calculateStats(expenses);
+
+      if (incomeData.length === 0) {
+        toast.info("No incomes found in database");
+      } else {
+        toast.success(`Loaded ${incomeData.length} incomes successfully (Total: ${totalIncome.toFixed(0)} RWF)`);
+      }
+    } catch (error) {
+      console.error("❌ Load incomes error:", error);
+
+      if (!isMountedRef.current) return;
+
+      let errorMessage = "Failed to load incomes";
+
+      if (error.response) {
+        console.error("Server response:", error.response.status, error.response.data);
+        if (error.response.status === 401) {
+          errorMessage = "Authentication failed. Please log in again.";
+        } else if (error.response.status === 404) {
+          errorMessage = "Incomes endpoint not found. Please check the URL.";
+        } else {
+          errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        errorMessage = error.message || "An unexpected error occurred";
+      }
+
+      setIncomeError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsLoadingIncomes(false);
+    }
+  }, [expenses, calculateStats]);
+
+  // Load expenses from API
+  const loadExpenses = useCallback(async () => {
+    console.log("🔍 Starting loadExpenses...");
+
+    if (!isMountedRef.current) {
+      console.log("⚠️ Component unmounted, skipping load");
+      return;
+    }
+
+    try {
+      setError(null);
+
+      const token = localStorage.getItem("authToken");
+      console.log("🔑 Token present:", !!token);
+
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      console.log("📤 Making API request to /expenses");
+      const response = await api.get("/expenses");
+
+      console.log("📦 Response status:", response.status);
+      console.log(
+        "📦 Full response data:",
+        JSON.stringify(response.data, null, 2),
+      );
+
+      let expenseData = [];
+
+      // Handle the response format properly
+      if (response.data) {
+        if (
+          response.data.success === true &&
+          response.data.data &&
+          Array.isArray(response.data.data)
+        ) {
+          expenseData = response.data.data;
+          console.log(
+            `✅ Found ${expenseData.length} expenses in response.data.data`,
+          );
+        } else if (Array.isArray(response.data)) {
+          expenseData = response.data;
+          console.log(
+            `✅ Found ${expenseData.length} expenses as direct array`,
+          );
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          expenseData = response.data.data;
+          console.log(
+            `✅ Found ${expenseData.length} expenses in response.data.data (fallback)`,
+          );
+        } else {
+          console.warn("⚠️ Unexpected response format:", response.data);
+          expenseData = [];
+        }
+      }
+
+      console.log(`📊 Setting ${expenseData.length} expenses to state`);
+
+      // Update expenses state
+      setExpenses(expenseData);
+      setFilteredExpenses(expenseData);
+      
+      // Calculate stats with current income data
+      calculateStats(expenseData);
+      
+      dataLoadedRef.current = true;
+
+      if (expenseData.length === 0) {
+        toast.info("No expenses found in database");
+      } else {
+        toast.success(`Loaded ${expenseData.length} expenses successfully`);
+      }
+    } catch (error) {
+      console.error("❌ Load expenses error:", error);
+
+      if (!isMountedRef.current) return;
+
+      let errorMessage = "Failed to load expenses";
+
+      if (error.response) {
+        console.error(
+          "Server response:",
+          error.response.status,
+          error.response.data,
+        );
+        if (error.response.status === 401) {
+          errorMessage = "Authentication failed. Please log in again.";
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("userData");
+          setTimeout(() => navigate("/"), 2000);
+        } else if (error.response.status === 403) {
+          errorMessage = "You don't have permission to view expenses.";
+        } else if (error.response.status === 404) {
+          errorMessage = "API endpoint not found. Please check the URL.";
+        } else {
+          errorMessage =
+            error.response.data?.message ||
+            `Server error: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        errorMessage = error.message || "An unexpected error occurred";
+      }
+
+      setError(errorMessage);
+      toast.error(errorMessage);
+
+      setExpenses([]);
+      setFilteredExpenses([]);
+      calculateStats([]);
+    }
+  }, [calculateStats, navigate]);
+
+  // Apply client-side filters
+  const applyFilters = useCallback(() => {
+    let filtered = [...expenses];
+
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (exp) =>
+          (exp.description && exp.description.toLowerCase().includes(term)) ||
+          (exp.category && exp.category.toLowerCase().includes(term)) ||
+          (exp.user && exp.user.toLowerCase().includes(term)) ||
+          (exp.email && exp.email.toLowerCase().includes(term)),
+      );
+    }
+
+    if (filterCategory && filterCategory !== "all") {
+      filtered = filtered.filter((exp) => exp.category === filterCategory);
+    }
+
+    if (filterType && filterType !== "all") {
+      filtered = filtered.filter((exp) => exp.type === filterType);
+    }
+
+    if (filterEmail) {
+      const email = filterEmail.toLowerCase();
+      filtered = filtered.filter(
+        (exp) => exp.email && exp.email.toLowerCase().includes(email),
+      );
+    }
+
+    if (filterMonth) {
+      filtered = filtered.filter((exp) => {
+        if (!exp.date) return false;
+        const expDate = new Date(exp.date);
+        const expMonth = String(expDate.getMonth() + 1).padStart(2, "0");
+        return expMonth === filterMonth;
+      });
+    }
+
+    if (filterYear) {
+      filtered = filtered.filter((exp) => {
+        if (!exp.date) return false;
+        const expDate = new Date(exp.date);
+        return String(expDate.getFullYear()) === filterYear;
+      });
+    }
+
+    setFilteredExpenses(filtered);
+    calculateStats(filtered);
+  }, [
+    expenses,
+    searchTerm,
+    filterCategory,
+    filterType,
+    filterEmail,
+    filterMonth,
+    filterYear,
+    calculateStats,
+  ]);
+
+  // Apply filters when expenses or filter values change
   useEffect(() => {
+    if (dataLoadedRef.current) {
+      applyFilters();
+    }
+  }, [
+    searchTerm,
+    filterCategory,
+    filterType,
+    filterEmail,
+    filterMonth,
+    filterYear,
+    expenses,
+    applyFilters,
+  ]);
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setFilterCategory("all");
+    setFilterType("all");
+    setFilterEmail("");
+    setFilterMonth("");
+    setFilterYear("");
+    toast.info("All filters cleared");
+  };
+
+  // INITIAL LOAD - Runs only once
+  useEffect(() => {
+    console.log("🚀 Component mounted, starting initial load...");
+
     const token = localStorage.getItem("authToken");
     const userData = JSON.parse(localStorage.getItem("userData") || "null");
 
+    console.log("🔐 Auth token:", token ? "Present" : "Missing");
+    console.log("👤 User data:", userData);
+
     if (!token || !userData) {
+      console.log("❌ No token or user data, redirecting to login");
       navigate("/");
       return;
     }
 
-    if (!user) setUser(userData);
-    
-    // Set user email in form data
+    setUser(userData);
+
     if (userData?.email) {
-      setFormData(prev => ({ ...prev, email: userData.email, user: userData.name || "" }));
+      setFormData((prev) => ({
+        ...prev,
+        email: userData.email,
+        user: userData.name || "",
+        userId: userData.id || userData._id || "",
+      }));
     }
+
+    // Load expenses and incomes
+    console.log("📊 Calling loadExpenses...");
+    loadExpenses();
     
-    // Load expenses only on initial mount
-    if (isFirstLoadRef.current) {
-      isFirstLoadRef.current = false;
-      loadExpenses();
-    }
-    
+    console.log("💰 Calling loadIncomes...");
+    loadIncomes();
+
     loadNotifications();
-  }, [navigate, user, loadExpenses]);
+
+    // Cleanup
+    return () => {
+      console.log("🧹 Component unmounting");
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Load notifications
   const loadNotifications = async () => {
     if (!user?.email) return;
-    
+
     setNotificationLoading(true);
     try {
-      // You'll need to implement notifications API separately
-      // For now, just set empty notifications
       setNotifications([]);
       setUnreadCount(0);
     } catch (error) {
@@ -420,38 +780,99 @@ export const ExpensesDashboard = () => {
     }
   };
 
-  // Mark notification as read (placeholder)
-  const markNotificationRead = async (notificationId) => {
-    toast.info("Notification feature coming soon");
-  };
+  // Fetch user by ID - FIXED to handle both response formats
+  const fetchUserById = async (userId) => {
+    if (!userId) {
+      toast.error("User ID is required");
+      return;
+    }
 
-  // Mark all notifications as read (placeholder)
-  const markAllNotificationsRead = async () => {
-    toast.info("Notification feature coming soon");
-  };
+    setIsUserLoading(true);
+    setSelectedUserId(userId);
+    setUserData(null);
 
-  // Delete notification (placeholder)
-  const deleteNotification = async (notificationId) => {
-    toast.info("Notification feature coming soon");
-  };
+    try {
+      console.log(`📤 Fetching user with ID: ${userId}`);
+      const response = await api.get(`/users/${userId}`);
 
-  // Handle search and filter - update refs and trigger load with debounce
-  useEffect(() => {
-    // Update refs with current values
-    searchTermRef.current = searchTerm;
-    filterCategoryRef.current = filterCategory;
-    filterTypeRef.current = filterType;
+      console.log("📦 User response:", response.data);
 
-    // Debounce the load - only after user stops typing
-    const timer = setTimeout(() => {
-      // Skip if this is the initial load
-      if (!isFirstLoadRef.current) {
-        loadExpenses();
+      let userInfo = null;
+
+      // Handle different response formats
+      if (response.data) {
+        // Check if response has success and data wrapper
+        if (response.data.success === true && response.data.data) {
+          userInfo = response.data.data;
+          console.log("✅ User found in response.data.data");
+        }
+        // Check if response is directly the user object
+        else if (response.data._id || response.data.id) {
+          userInfo = response.data;
+          console.log("✅ User found as direct object");
+        }
+        // Check if response has data property
+        else if (
+          response.data.data &&
+          (response.data.data._id || response.data.data.id)
+        ) {
+          userInfo = response.data.data;
+          console.log("✅ User found in response.data");
+        }
+        // Check if response has user property
+        else if (
+          response.data.user &&
+          (response.data.user._id || response.data.user.id)
+        ) {
+          userInfo = response.data.user;
+          console.log("✅ User found in response.user");
+        } else {
+          console.warn("⚠️ Unexpected user response format:", response.data);
+          // Try to see if the response itself is the user object
+          if (typeof response.data === "object" && response.data !== null) {
+            userInfo = response.data;
+          }
+        }
       }
-    }, 500);
 
-    return () => clearTimeout(timer);
-  }, [searchTerm, filterCategory, filterType, loadExpenses]);
+      if (userInfo && (userInfo._id || userInfo.id)) {
+        console.log("✅ User data loaded successfully:", userInfo);
+        setUserData(userInfo);
+        setIsUserModalOpen(true);
+        toast.success(`Loaded user: ${userInfo.name || userInfo.email}`);
+      } else {
+        console.error("❌ No valid user data found in response");
+        toast.error("User not found or invalid data format");
+      }
+    } catch (error) {
+      console.error("❌ Fetch user error:", error);
+
+      let errorMessage = "Failed to fetch user details";
+
+      if (error.response) {
+        console.error(
+          "Server response:",
+          error.response.status,
+          error.response.data,
+        );
+        if (error.response.status === 404) {
+          errorMessage = "User not found";
+        } else {
+          errorMessage =
+            error.response.data?.message ||
+            `Server error: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        errorMessage = error.message || "An unexpected error occurred";
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setIsUserLoading(false);
+    }
+  };
 
   // Handle add expense
   const handleAddExpense = async (e) => {
@@ -463,20 +884,20 @@ export const ExpensesDashboard = () => {
         description: formData.description,
         category: formData.category,
         type: formData.type,
-        amount: parseFloat(formData.amount),
+        amount: parseInt(formData.amount),
         date: formData.date,
         user: formData.user || user?.name || "Unknown",
         email: formData.email || user?.email,
+        userId: formData.userId || user?.id || user?._id || "",
       };
 
       const response = await api.post("/expenses", expenseData);
-      
+
       if (response.data.success) {
         toast.success("Expense added successfully!");
         setIsAddModalOpen(false);
         resetForm();
-        // Reload expenses after adding
-        setTimeout(() => loadExpenses(), 100);
+        await loadExpenses();
       } else {
         toast.error(response.data.message || "Failed to add expense");
       }
@@ -498,20 +919,23 @@ export const ExpensesDashboard = () => {
         description: formData.description,
         category: formData.category,
         type: formData.type,
-        amount: parseFloat(formData.amount),
+        amount: parseInt(formData.amount),
         date: formData.date,
         user: formData.user || user?.name || "Unknown",
         email: formData.email || user?.email,
+        userId: formData.userId || user?.id || user?._id || "",
       };
 
-      const response = await api.put(`/expenses/${selectedExpense._id}`, expenseData);
-      
+      const response = await api.put(
+        `/expenses/${selectedExpense._id}`,
+        expenseData,
+      );
+
       if (response.data.success) {
         toast.success("Expense updated successfully!");
         setIsEditModalOpen(false);
         resetForm();
-        // Reload expenses after updating
-        setTimeout(() => loadExpenses(), 100);
+        await loadExpenses();
       } else {
         toast.error(response.data.message || "Failed to update expense");
       }
@@ -529,13 +953,12 @@ export const ExpensesDashboard = () => {
 
     try {
       const response = await api.delete(`/expenses/${selectedExpense._id}`);
-      
+
       if (response.data.success) {
         toast.success("Expense deleted successfully!");
         setIsDeleteModalOpen(false);
         setSelectedExpense(null);
-        // Reload expenses after deleting
-        setTimeout(() => loadExpenses(), 100);
+        await loadExpenses();
       } else {
         toast.error(response.data.message || "Failed to delete expense");
       }
@@ -557,24 +980,31 @@ export const ExpensesDashboard = () => {
       date: new Date().toISOString().split("T")[0],
       user: user?.name || "",
       email: user?.email || "",
+      userId: user?.id || user?._id || "",
     });
     setSelectedExpense(null);
   }, [user]);
 
   // Open edit modal
-  const openEditModal = useCallback((expense) => {
-    setSelectedExpense(expense);
-    setFormData({
-      description: expense.description,
-      category: expense.category,
-      type: expense.type,
-      amount: expense.amount.toString(),
-      date: expense.date ? expense.date.split("T")[0] : new Date().toISOString().split("T")[0],
-      user: expense.user || user?.name || "",
-      email: expense.email || user?.email || "",
-    });
-    setIsEditModalOpen(true);
-  }, [user]);
+  const openEditModal = useCallback(
+    (expense) => {
+      setSelectedExpense(expense);
+      setFormData({
+        description: expense.description,
+        category: expense.category,
+        type: expense.type,
+        amount: expense.amount.toString(),
+        date: expense.date
+          ? expense.date.split("T")[0]
+          : new Date().toISOString().split("T")[0],
+        user: expense.user || user?.name || "",
+        email: expense.email || user?.email || "",
+        userId: expense.userId || user?.id || user?._id || "",
+      });
+      setIsEditModalOpen(true);
+    },
+    [user],
+  );
 
   // Open delete modal
   const openDeleteModal = useCallback((expense) => {
@@ -584,8 +1014,9 @@ export const ExpensesDashboard = () => {
 
   // Generate PDF Report
   const generatePDFReport = useCallback(() => {
-    const dataToExport = filteredExpenses.length > 0 ? filteredExpenses : expenses;
-    
+    const dataToExport =
+      filteredExpenses.length > 0 ? filteredExpenses : expenses;
+
     if (dataToExport.length === 0) {
       toast.warning("No transactions to export");
       return;
@@ -594,7 +1025,6 @@ export const ExpensesDashboard = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Header
     doc.setFillColor(59, 130, 246);
     doc.rect(0, 0, pageWidth, 40, "F");
 
@@ -607,7 +1037,6 @@ export const ExpensesDashboard = () => {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
 
-    // Report info
     const today = new Date();
     doc.text(
       `Generated: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`,
@@ -616,7 +1045,6 @@ export const ExpensesDashboard = () => {
     );
     doc.text(`User: ${user?.email || "All Users"}`, 14, 60);
 
-    // Summary section
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.text("Summary", 14, 75);
@@ -624,9 +1052,9 @@ export const ExpensesDashboard = () => {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
     const summaryData = [
-      ["Total Income", `$${stats.totalIncome.toFixed(2)}`],
-      ["Total Expenses", `$${stats.totalExpenses.toFixed(2)}`],
-      ["Net Balance", `$${stats.netBalance.toFixed(2)}`],
+      ["Total Income", `RWF ${stats.totalIncome.toFixed(0)}`],
+      ["Total Expenses", `RWF ${stats.totalExpenses.toFixed(0)}`],
+      ["Net Balance", `RWF ${stats.netBalance.toFixed(0)}`],
       ["Total Transactions", `${dataToExport.length}`],
     ];
 
@@ -637,7 +1065,6 @@ export const ExpensesDashboard = () => {
       yPos += 8;
     });
 
-    // Transactions table
     yPos += 10;
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
@@ -650,7 +1077,7 @@ export const ExpensesDashboard = () => {
       e.category || "N/A",
       e.type ? e.type.charAt(0).toUpperCase() + e.type.slice(1) : "N/A",
       e.user || "N/A",
-      `$${e.amount ? e.amount.toFixed(2) : "0.00"}`,
+      `RWF ${e.amount ? e.amount.toFixed(0) : "0"}`,
     ]);
 
     doc.autoTable({
@@ -672,7 +1099,6 @@ export const ExpensesDashboard = () => {
       },
     });
 
-    // Footer
     const finalY = doc.lastAutoTable.finalY + 10;
     doc.setFontSize(10);
     doc.setTextColor(128, 128, 128);
@@ -687,7 +1113,6 @@ export const ExpensesDashboard = () => {
       finalY,
     );
 
-    // Save PDF
     doc.save(`hems-expenses-report-${today.toISOString().split("T")[0]}.pdf`);
     toast.success("PDF Report downloaded successfully!");
   }, [expenses, filteredExpenses, stats, user]);
@@ -696,7 +1121,9 @@ export const ExpensesDashboard = () => {
   const formatCurrency = useCallback((amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "RWF",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount || 0);
   }, []);
 
@@ -714,7 +1141,7 @@ export const ExpensesDashboard = () => {
     }
   }, []);
 
-  // Notification Panel Component (simplified)
+  // Notification Panel Component
   const NotificationPanel = memo(() => {
     if (!showNotifications) return null;
 
@@ -733,7 +1160,7 @@ export const ExpensesDashboard = () => {
           <div className="flex space-x-2">
             {unreadCount > 0 && (
               <button
-                onClick={markAllNotificationsRead}
+                onClick={() => toast.info("Mark all as read coming soon")}
                 className="text-xs text-purple-600 hover:text-purple-800"
               >
                 Mark all read
@@ -756,7 +1183,19 @@ export const ExpensesDashboard = () => {
   });
 
   // Get display data
-  const displayExpenses = filteredExpenses.length > 0 ? filteredExpenses : expenses;
+  const displayExpenses =
+    filteredExpenses.length > 0 ? filteredExpenses : expenses;
+
+  console.log(
+    "🖥️ Rendering - isLoading:",
+    isLoading,
+    "expenses:",
+    expenses.length,
+    "display:",
+    displayExpenses.length,
+    "totalIncome:",
+    totalIncomeFromApi,
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -785,17 +1224,38 @@ export const ExpensesDashboard = () => {
             </p>
             {user?.email && (
               <p className="text-sm text-gray-500 mt-1">
-                {user?.role === 'admin' ? (
+                {user?.role === "admin" ? (
                   <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs font-medium">
-                    👑 Admin - Viewing all expenses
+                    👑 Admin - Viewing ALL expenses
                   </span>
                 ) : (
-                  `User: ${user.email}`
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium">
+                    👤 User: {user.email}
+                  </span>
                 )}
               </p>
             )}
+            <p className="text-xs text-gray-400 mt-1">
+              Total: {expenses.length} expenses | Showing:{" "}
+              {displayExpenses.length}
+            </p>
+            {error && <p className="text-sm text-red-500 mt-1">⚠️ {error}</p>}
+            {incomeError && <p className="text-sm text-yellow-500 mt-1">⚠️ {incomeError}</p>}
           </div>
-          <div className="flex space-x-3 mt-4 md:mt-0 relative">
+          <div className="flex space-x-3 mt-4 md:mt-0 relative flex-wrap gap-2">
+            {/* Refresh Button */}
+            <button
+              onClick={() => {
+                loadExpenses();
+                loadIncomes();
+              }}
+              disabled={isLoading || isLoadingIncomes}
+              className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50"
+            >
+              <RefreshIcon className="w-5 h-5" />
+              <span>Refresh</span>
+            </button>
+
             {/* Notification Button */}
             <button
               onClick={() => setShowNotifications(!showNotifications)}
@@ -810,7 +1270,6 @@ export const ExpensesDashboard = () => {
               )}
             </button>
 
-            {/* Notification Panel */}
             <NotificationPanel />
 
             <button
@@ -836,9 +1295,17 @@ export const ExpensesDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Total Income</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-xs font-bold text-green-600">
                   {formatCurrency(stats.totalIncome)}
                 </p>
+                {isLoadingIncomes && (
+                  <span className="text-xs text-gray-400">Loading...</span>
+                )}
+                {incomes.length > 0 && (
+                  <span className="text-xs text-gray-400 block">
+                    From {incomes.length} income source(s)
+                  </span>
+                )}
               </div>
               <TrendingUpIcon className="w-10 h-10 text-green-500 bg-green-100 p-2 rounded-full" />
             </div>
@@ -848,7 +1315,7 @@ export const ExpensesDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Total Expenses</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-xs font-bold text-red-600">
                   {formatCurrency(stats.totalExpenses)}
                 </p>
               </div>
@@ -861,7 +1328,7 @@ export const ExpensesDashboard = () => {
               <div>
                 <p className="text-sm text-gray-500">Net Balance</p>
                 <p
-                  className={`text-2xl font-bold ${stats.netBalance >= 0 ? "text-blue-600" : "text-red-600"}`}
+                  className={`text-xs font-bold ${stats.netBalance >= 0 ? "text-blue-600" : "text-red-600"}`}
                 >
                   {formatCurrency(stats.netBalance)}
                 </p>
@@ -874,7 +1341,7 @@ export const ExpensesDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Transactions</p>
-                <p className="text-2xl font-bold text-purple-600">
+                <p className="text-xs font-bold text-purple-600">
                   {displayExpenses.length}
                 </p>
               </div>
@@ -885,70 +1352,159 @@ export const ExpensesDashboard = () => {
 
         {/* Search and Filters */}
         <div className="bg-white rounded-2xl shadow-lg p-4 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-3 md:space-y-0">
-            <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by description, category, or user..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-              />
+          <div className="flex flex-col space-y-3">
+            <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-3 md:space-y-0">
+              <div className="flex-1 relative">
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search by description, category, user, or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div className="flex space-x-3">
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                >
+                  <option value="all">All Types</option>
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-1 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+                >
+                  <FilterListIcon className="w-5 h-5" />
+                  <span>Filters</span>
+                  {(filterEmail || filterMonth || filterYear) && (
+                    <span className="ml-1 bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {
+                        [filterEmail, filterMonth, filterYear].filter(Boolean)
+                          .length
+                      }
+                    </span>
+                  )}
+                </button>
+
+                {(filterEmail ||
+                  filterMonth ||
+                  filterYear ||
+                  searchTerm ||
+                  filterCategory !== "all" ||
+                  filterType !== "all") && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="flex items-center space-x-1 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ClearIcon className="w-5 h-5" />
+                    <span>Clear</span>
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="flex space-x-3">
-              <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            {/* Advanced Filters */}
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200"
               >
-                <option value="all">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Filter by Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="Enter email..."
+                    value={filterEmail}
+                    onChange={(e) => setFilterEmail(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  />
+                </div>
 
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-              >
-                <option value="all">All Types</option>
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-              </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Filter by Month
+                  </label>
+                  <select
+                    value={filterMonth}
+                    onChange={(e) => setFilterMonth(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">All Months</option>
+                    {months.map((month) => (
+                      <option key={month.value} value={month.value}>
+                        {month.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setFilterCategory("all");
-                  setFilterType("all");
-                }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Clear
-              </button>
-            </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Filter by Year
+                  </label>
+                  <select
+                    value={filterYear}
+                    onChange={(e) => setFilterYear(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">All Years</option>
+                    {years.map((year) => (
+                      <option key={year} value={String(year)}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
 
         {/* Expenses Table */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          {isLoading ? (
-            <div className="p-8 text-center">
-              <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading transactions...</p>
-            </div>
-          ) : displayExpenses.length === 0 ? (
+          {displayExpenses.length === 0 ? (
             <div className="p-12 text-center">
               <ReceiptIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 text-lg">No transactions found</p>
               <p className="text-gray-400 text-sm mt-1">
-                Try adjusting your filters or add a new transaction
+                {expenses.length > 0
+                  ? "Try adjusting your filters"
+                  : "Add a new transaction to get started"}
               </p>
+              {error && (
+                <div className="mt-4 p-4 bg-red-50 rounded-lg">
+                  <p className="text-red-600 text-sm">{error}</p>
+                  <button
+                    onClick={() => loadExpenses()}
+                    className="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -969,6 +1525,12 @@ export const ExpensesDashboard = () => {
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold">
                       User
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold">
+                      Email
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold">
+                      User ID
                     </th>
                     <th className="text-right py-3 px-4 text-sm font-semibold">
                       Amount
@@ -1006,11 +1568,28 @@ export const ExpensesDashboard = () => {
                               : "bg-red-100 text-red-700"
                           }`}
                         >
-                          {expense.type ? expense.type.charAt(0).toUpperCase() + expense.type.slice(1) : "N/A"}
+                          {expense.type
+                            ? expense.type.charAt(0).toUpperCase() +
+                              expense.type.slice(1)
+                            : "N/A"}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-gray-600 text-sm">
                         {expense.user || "Unknown"}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600 text-sm">
+                        {expense.email || "N/A"}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600 text-sm">
+                        <button
+                          onClick={() => fetchUserById(expense.userId)}
+                          className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer transition-colors"
+                          title="Click to view user details"
+                        >
+                          {expense.userId
+                            ? expense.userId.substring(0, 10) + "..."
+                            : "N/A"}
+                        </button>
                       </td>
                       <td
                         className={`py-3 px-4 text-right font-semibold ${
@@ -1153,6 +1732,130 @@ export const ExpensesDashboard = () => {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* User Details Modal */}
+      <Modal
+        isOpen={isUserModalOpen}
+        onClose={() => {
+          setIsUserModalOpen(false);
+          setUserData(null);
+          setSelectedUserId(null);
+        }}
+        title="User Details"
+        size="md"
+      >
+        {isUserLoading ? (
+          <div className="p-8 text-center">
+            <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading user details...</p>
+          </div>
+        ) : userData ? (
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <PersonIcon className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-800">
+                  {userData.name || "N/A"}
+                </h3>
+                <p className="text-gray-600">{userData.email || "No email"}</p>
+                {userData.role && (
+                  <span
+                    className={`inline-block mt-1 px-2 py-1 rounded-full text-xs font-medium ${
+                      userData.role === "admin"
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-blue-100 text-blue-700"
+                    }`}
+                  >
+                    {userData.role.charAt(0).toUpperCase() +
+                      userData.role.slice(1)}
+                  </span>
+                )}
+                {userData.isVerified !== undefined && (
+                  <span
+                    className={`inline-block ml-2 mt-1 px-2 py-1 rounded-full text-xs font-medium ${
+                      userData.isVerified
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {userData.isVerified
+                      ? "✅ Verified"
+                      : "⏳ Pending Verification"}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <BadgeIcon className="w-5 h-5" />
+                  <span className="text-sm font-medium">User ID</span>
+                </div>
+                <p className="mt-1 text-gray-800 font-mono text-sm break-all">
+                  {userData._id || userData.id || "N/A"}
+                </p>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <EmailIcon className="w-5 h-5" />
+                  <span className="text-sm font-medium">Email</span>
+                </div>
+                <p className="mt-1 text-gray-800">{userData.email || "N/A"}</p>
+              </div>
+
+              {userData.phone && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <PhoneIcon className="w-5 h-5" />
+                    <span className="text-sm font-medium">Phone</span>
+                  </div>
+                  <p className="mt-1 text-gray-800">{userData.phone}</p>
+                </div>
+              )}
+
+              {userData.address && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <HomeIcon className="w-5 h-5" />
+                    <span className="text-sm font-medium">Address</span>
+                  </div>
+                  <p className="mt-1 text-gray-800">{userData.address}</p>
+                </div>
+              )}
+
+              {userData.createdAt && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <CalendarTodayIcon className="w-5 h-5" />
+                    <span className="text-sm font-medium">Joined</span>
+                  </div>
+                  <p className="mt-1 text-gray-800">
+                    {new Date(userData.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {userData.bio && (
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-gray-700">{userData.bio}</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="p-8 text-center text-gray-500">
+            <p>No user data found</p>
+          </div>
+        )}
       </Modal>
     </div>
   );
