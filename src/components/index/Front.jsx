@@ -1,3 +1,4 @@
+
 // // Front.jsx
 // import { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
@@ -16,6 +17,8 @@
 // import SavingsIcon from "@mui/icons-material/Savings";
 // import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 // import PhoneIcon from "@mui/icons-material/Phone";
+// import ErrorIcon from "@mui/icons-material/Error";
+// import CheckIcon from "@mui/icons-material/Check";
 
 // // Simple email format check used for the "accepted" tick + validation
 // const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -59,16 +62,94 @@
 //   </div>
 // );
 
-// // Static user data for demo
-// const DEMO_USERS = {
-//   admin: {
-//     email: "admin@example.com",
-//     password: "admin",
-//     name: "Admin User",
-//     role: "admin",
-//     id: 1,
-//     phone: "+1234567890",
-//   },
+// // API base URL
+// const API_BASE =
+//   "https://household-expenses-management-system.onrender.com/api";
+
+// // Success Modal Component
+// const SuccessModal = ({ isOpen, onClose, title, message, icon }) => {
+//   if (!isOpen) return null;
+
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0 }}
+//       animate={{ opacity: 1 }}
+//       exit={{ opacity: 0 }}
+//       className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+//       onClick={onClose}
+//     >
+//       <motion.div
+//         initial={{ scale: 0.8, opacity: 0, y: 30 }}
+//         animate={{ scale: 1, opacity: 1, y: 0 }}
+//         exit={{ scale: 0.8, opacity: 0, y: 30 }}
+//         className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         <div className="flex justify-center mb-4">
+//           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+//             {icon || <CheckIcon className="w-10 h-10 text-green-600" />}
+//           </div>
+//         </div>
+//         <h3 className="text-2xl font-bold text-gray-800 mb-2">
+//           {title || "Success!"}
+//         </h3>
+//         <p className="text-gray-600 mb-6">
+//           {message || "Operation completed successfully."}
+//         </p>
+//         <motion.button
+//           whileHover={{ scale: 1.05 }}
+//           whileTap={{ scale: 0.95 }}
+//           onClick={onClose}
+//           className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300"
+//         >
+//           Continue
+//         </motion.button>
+//       </motion.div>
+//     </motion.div>
+//   );
+// };
+
+// // Error Modal Component
+// const ErrorModal = ({ isOpen, onClose, title, message, icon }) => {
+//   if (!isOpen) return null;
+
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0 }}
+//       animate={{ opacity: 1 }}
+//       exit={{ opacity: 0 }}
+//       className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+//       onClick={onClose}
+//     >
+//       <motion.div
+//         initial={{ scale: 0.8, opacity: 0, y: 30 }}
+//         animate={{ scale: 1, opacity: 1, y: 0 }}
+//         exit={{ scale: 0.8, opacity: 0, y: 30 }}
+//         className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         <div className="flex justify-center mb-4">
+//           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+//             {icon || <ErrorIcon className="w-10 h-10 text-red-600" />}
+//           </div>
+//         </div>
+//         <h3 className="text-2xl font-bold text-gray-800 mb-2">
+//           {title || "Error!"}
+//         </h3>
+//         <p className="text-gray-600 mb-6">
+//           {message || "Something went wrong. Please try again."}
+//         </p>
+//         <motion.button
+//           whileHover={{ scale: 1.05 }}
+//           whileTap={{ scale: 0.95 }}
+//           onClick={onClose}
+//           className="px-6 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300"
+//         >
+//           Try Again
+//         </motion.button>
+//       </motion.div>
+//     </motion.div>
+//   );
 // };
 
 // export const Front = () => {
@@ -82,6 +163,20 @@
 //     useState(false);
 //   const [isLoading, setIsLoading] = useState(false);
 //   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+
+//   // Modal states for success/error
+//   const [successModal, setSuccessModal] = useState({
+//     isOpen: false,
+//     title: "",
+//     message: "",
+//     icon: null,
+//   });
+//   const [errorModal, setErrorModal] = useState({
+//     isOpen: false,
+//     title: "",
+//     message: "",
+//     icon: null,
+//   });
 
 //   // Login form state
 //   const [loginData, setLoginData] = useState({
@@ -97,6 +192,7 @@
 //     email: "",
 //     phone: "",
 //     password: "",
+//     status: "user",
 //     confirmPassword: "",
 //   });
 //   const [registerErrors, setRegisterErrors] = useState({});
@@ -198,148 +294,210 @@
 //     }
 //   }, [navigate]);
 
-//   // Handle login with static credentials
+//   // Handle login with API
 //   const handleLogin = async (e) => {
 //     e.preventDefault();
 //     setLoginSubmitted(true);
 //     const errors = validateLogin();
 //     setLoginErrors(errors);
 //     if (Object.keys(errors).length > 0) {
-//       toast.error("Please fill in all required fields correctly");
+//       setErrorModal({
+//         isOpen: true,
+//         title: "Validation Error",
+//         message: "Please fill in all required fields correctly",
+//         icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+//       });
 //       return;
 //     }
 
 //     setIsLoading(true);
 
-//     // Simulate network delay
-//     await new Promise((resolve) => setTimeout(resolve, 800));
-
 //     try {
-//       // Check against demo users
-//       if (
-//         loginData.email === DEMO_USERS.admin.email &&
-//         loginData.password === DEMO_USERS.admin.password
-//       ) {
-//         const userData = {
-//           id: DEMO_USERS.admin.id,
-//           name: DEMO_USERS.admin.name,
-//           email: DEMO_USERS.admin.email,
-//           role: DEMO_USERS.admin.role,
-//           phone: DEMO_USERS.admin.phone,
-//         };
+//       const response = await fetch(`${API_BASE}/users/login`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           email: loginData.email,
+//           password: loginData.password,
+//         }),
+//       });
 
-//         localStorage.setItem("authToken", "demo-admin-token-12345");
-//         localStorage.setItem("userData", JSON.stringify(userData));
+//       const data = await response.json();
 
-//         toast.success("Welcome Admin!");
+//       if (!response.ok) {
+//         throw new Error(data.message || "Invalid credentials");
+//       }
 
-//         // Close modals
+//       // Store user data and token
+//       localStorage.setItem("authToken", data.token || "token-" + Date.now());
+//       localStorage.setItem("userData", JSON.stringify(data.user || data));
+
+//       // Show success modal
+//       setSuccessModal({
+//         isOpen: true,
+//         title: `Welcome${data.user?.name ? ` ${data.user.name}` : ""}!`,
+//         message: "You have successfully logged in.",
+//         icon: <CheckIcon className="w-10 h-10 text-green-600" />,
+//       });
+
+//       // Close modals after a brief delay
+//       setTimeout(() => {
 //         setIsLoginModalOpen(false);
 //         setIsRegisterModalOpen(false);
 //         setIsContactModalOpen(false);
+//         setSuccessModal({ isOpen: false, title: "", message: "", icon: null });
 
-//         navigate("/dashboard");
-//       } else {
-//         // For demo purposes, allow any email/password to login as regular user
-//         // if password length is at least 4 characters
-//         if (
-//           loginData.email &&
-//           loginData.password &&
-//           loginData.password.length >= 4
-//         ) {
-//           const userData = {
-//             id: 2,
-//             name: loginData.email.split("@")[0] || "User",
-//             email: loginData.email,
-//             role: "user",
-//             phone: "",
-//           };
-
-//           localStorage.setItem("authToken", "demo-user-token-67890");
-//           localStorage.setItem("userData", JSON.stringify(userData));
-
-//           toast.success("Welcome!");
-
-//           // Close modals
-//           setIsLoginModalOpen(false);
-//           setIsRegisterModalOpen(false);
-//           setIsContactModalOpen(false);
-
-//           navigate("/user/dashboard");
+//         // Redirect based on role
+//         if (data.user?.role === "admin") {
+//           navigate("/dashboard");
 //         } else {
-//           toast.error("Invalid credentials. Use admin@example.com / admin");
+//           navigate("/user/dashboard");
 //         }
-//       }
+//       }, 1500);
 //     } catch (error) {
-//       toast.error("Login failed. Please try again.");
+//       setErrorModal({
+//         isOpen: true,
+//         title: "Login Failed",
+//         message:
+//           error.message || "Invalid email or password. Please try again.",
+//         icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+//       });
 //     } finally {
 //       setIsLoading(false);
 //     }
 //   };
 
-//   // Handle registration
+//   // Handle registration with API
 //   const handleRegister = async (e) => {
 //     e.preventDefault();
 //     setRegisterSubmitted(true);
 //     const errors = validateRegister();
 //     setRegisterErrors(errors);
 //     if (Object.keys(errors).length > 0) {
-//       toast.error("Please fill in all required fields correctly");
+//       setErrorModal({
+//         isOpen: true,
+//         title: "Validation Error",
+//         message: "Please fill in all required fields correctly",
+//         icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+//       });
 //       return;
 //     }
 
 //     setIsRegisterLoading(true);
 
-//     // Simulate network delay
-//     await new Promise((resolve) => setTimeout(resolve, 800));
-
 //     try {
-//       // Create new user (demo)
-//       const userData = {
-//         id: Date.now(),
-//         name: registerData.name,
-//         email: registerData.email,
-//         phone: registerData.phone,
-//         role: "user",
-//       };
+//       const response = await fetch(`${API_BASE}/users/register`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           name: registerData.name,
+//           email: registerData.email,
+//           phone: registerData.phone,
+//           status:registerData.status,
+//           password: registerData.password,
+//         }),
+//       });
 
-//       localStorage.setItem("authToken", "demo-user-token-" + Date.now());
-//       localStorage.setItem("userData", JSON.stringify(userData));
+//       const data = await response.json();
 
-//       toast.success("Registration successful!");
+//       if (!response.ok) {
+//         throw new Error(data.message || "Registration failed");
+//       }
 
-//       // Close modals
-//       setIsLoginModalOpen(false);
-//       setIsRegisterModalOpen(false);
-//       setIsContactModalOpen(false);
+//       // Store user data and token
+//       localStorage.setItem("authToken", data.token || "token-" + Date.now());
+//       localStorage.setItem("userData", JSON.stringify(data.user || data));
 
-//       navigate("/user/dashboard");
+//       // Show success modal
+//       setSuccessModal({
+//         isOpen: true,
+//         title: "Registration Successful!",
+//         message: "Your account has been created successfully.",
+//         icon: <CheckIcon className="w-10 h-10 text-green-600" />,
+//       });
+
+//       // Close modals and navigate
+//       setTimeout(() => {
+//         setIsLoginModalOpen(false);
+//         setIsRegisterModalOpen(false);
+//         setIsContactModalOpen(false);
+//         setSuccessModal({ isOpen: false, title: "", message: "", icon: null });
+//         navigate("/user/dashboard");
+//       }, 1500);
 //     } catch (error) {
-//       toast.error("Registration failed. Please try again.");
+//       setErrorModal({
+//         isOpen: true,
+//         title: "Registration Failed",
+//         message: error.message || "Registration failed. Please try again.",
+//         icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+//       });
 //     } finally {
 //       setIsRegisterLoading(false);
 //     }
 //   };
 
-//   // Handle contact submission
+//   // Handle contact submission with API
 //   const handleContactSubmit = async (e) => {
 //     e.preventDefault();
 //     setContactSubmitted(true);
 //     const errors = validateContact();
 //     setContactErrors(errors);
 //     if (Object.keys(errors).length > 0) {
-//       toast.error("Please fill in all required fields");
+//       setErrorModal({
+//         isOpen: true,
+//         title: "Validation Error",
+//         message: "Please fill in all required fields",
+//         icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+//       });
 //       return;
 //     }
 
-//     // Simulate network delay
-//     await new Promise((resolve) => setTimeout(resolve, 500));
+//     try {
+//       const response = await fetch(`${API_BASE}/contact`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           name: contactData.name,
+//           email: contactData.email,
+//           subject: contactData.subject,
+//           message: contactData.message,
+//         }),
+//       });
 
-//     toast.success("Message sent successfully!");
-//     setIsContactModalOpen(false);
-//     setContactData({ name: "", email: "", subject: "", message: "" });
-//     setContactErrors({});
-//     setContactSubmitted(false);
+//       const data = await response.json();
+
+//       if (!response.ok) {
+//         throw new Error(data.message || "Failed to send message");
+//       }
+
+//       setSuccessModal({
+//         isOpen: true,
+//         title: "Message Sent!",
+//         message: "We'll get back to you as soon as possible.",
+//         icon: <CheckIcon className="w-10 h-10 text-green-600" />,
+//       });
+
+//       setTimeout(() => {
+//         setIsContactModalOpen(false);
+//         setContactData({ name: "", email: "", subject: "", message: "" });
+//         setContactErrors({});
+//         setContactSubmitted(false);
+//         setSuccessModal({ isOpen: false, title: "", message: "", icon: null });
+//       }, 1500);
+//     } catch (error) {
+//       setErrorModal({
+//         isOpen: true,
+//         title: "Failed to Send",
+//         message: error.message || "Failed to send message. Please try again.",
+//         icon: <ErrorIcon className="w-10 h-10 text-red-600" />,
+//       });
+//     }
 //   };
 
 //   // Switch between login and register modals
@@ -366,6 +524,28 @@
 //         draggable
 //         pauseOnHover
 //         theme="colored"
+//       />
+
+//       {/* Success Modal */}
+//       <SuccessModal
+//         isOpen={successModal.isOpen}
+//         onClose={() =>
+//           setSuccessModal({ isOpen: false, title: "", message: "", icon: null })
+//         }
+//         title={successModal.title}
+//         message={successModal.message}
+//         icon={successModal.icon}
+//       />
+
+//       {/* Error Modal */}
+//       <ErrorModal
+//         isOpen={errorModal.isOpen}
+//         onClose={() =>
+//           setErrorModal({ isOpen: false, title: "", message: "", icon: null })
+//         }
+//         title={errorModal.title}
+//         message={errorModal.message}
+//         icon={errorModal.icon}
 //       />
 
 //       {/* Header with Brand */}
@@ -1156,6 +1336,13 @@
 //   );
 // };
 
+
+
+
+
+
+
+
 // Front.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -1525,7 +1712,7 @@ export const Front = () => {
     }
   };
 
-  // Handle registration with API
+  // Handle registration with API - Updated to match controller
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegisterSubmitted(true);
@@ -1544,6 +1731,7 @@ export const Front = () => {
     setIsRegisterLoading(true);
 
     try {
+      // Match the controller's expected fields
       const response = await fetch(`${API_BASE}/users/register`, {
         method: "POST",
         headers: {
@@ -1554,6 +1742,7 @@ export const Front = () => {
           email: registerData.email,
           phone: registerData.phone,
           password: registerData.password,
+          confirmPassword: registerData.confirmPassword, // Added for controller validation
         }),
       });
 
@@ -1565,7 +1754,20 @@ export const Front = () => {
 
       // Store user data and token
       localStorage.setItem("authToken", data.token || "token-" + Date.now());
-      localStorage.setItem("userData", JSON.stringify(data.user || data));
+      
+      // Store user data if available
+      if (data.user) {
+        localStorage.setItem("userData", JSON.stringify(data.user));
+      } else {
+        // If user data not returned, store basic info
+        localStorage.setItem("userData", JSON.stringify({
+          name: registerData.name,
+          email: registerData.email,
+          phone: registerData.phone,
+          role: "user",
+          isVerified: false
+        }));
+      }
 
       // Show success modal
       setSuccessModal({

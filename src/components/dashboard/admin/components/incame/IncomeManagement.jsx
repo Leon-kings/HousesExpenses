@@ -1,6 +1,3 @@
-
-
-/* eslint-disable react-hooks/static-components */
 /* eslint-disable react-hooks/preserve-manual-memoization */
 /* eslint-disable react-hooks/immutability */
 /* eslint-disable react-hooks/set-state-in-effect */
@@ -204,18 +201,25 @@ const IncomeForm = memo(({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Amount ($) *
+          Amount (RWF) *
         </label>
         <input
           type="number"
-          step="0.01"
+          step="1"
           min="0"
           value={formData.amount}
-          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Only allow whole numbers (no decimals)
+            if (value === "" || /^\d+$/.test(value)) {
+              setFormData({ ...formData, amount: value });
+            }
+          }}
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="0.00"
+          placeholder="0"
           required
         />
+        <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
       </div>
 
       <div>
@@ -330,18 +334,25 @@ const BudgetForm = memo(({
 
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Allocated Amount ($) *
+        Allocated Amount (RWF) *
       </label>
       <input
         type="number"
-        step="0.01"
+        step="1"
         min="0"
         value={budgetFormData.allocatedAmount}
-        onChange={(e) => setBudgetFormData({ ...budgetFormData, allocatedAmount: e.target.value })}
+        onChange={(e) => {
+          const value = e.target.value;
+          // Only allow whole numbers (no decimals)
+          if (value === "" || /^\d+$/.test(value)) {
+            setBudgetFormData({ ...budgetFormData, allocatedAmount: value });
+          }
+        }}
         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-        placeholder="0.00"
+        placeholder="0"
         required
       />
+      <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -444,33 +455,47 @@ const SavingsForm = memo(({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Target Amount ($) *
+          Target Amount (RWF) *
         </label>
         <input
           type="number"
-          step="0.01"
+          step="1"
           min="0"
           value={savingsFormData.targetAmount}
-          onChange={(e) => setSavingsFormData({ ...savingsFormData, targetAmount: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Only allow whole numbers (no decimals)
+            if (value === "" || /^\d+$/.test(value)) {
+              setSavingsFormData({ ...savingsFormData, targetAmount: value });
+            }
+          }}
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="0.00"
+          placeholder="0"
           required
         />
+        <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Current Amount ($)
+          Current Amount (RWF)
         </label>
         <input
           type="number"
-          step="0.01"
+          step="1"
           min="0"
           value={savingsFormData.currentAmount}
-          onChange={(e) => setSavingsFormData({ ...savingsFormData, currentAmount: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Only allow whole numbers (no decimals)
+            if (value === "" || /^\d+$/.test(value)) {
+              setSavingsFormData({ ...savingsFormData, currentAmount: value });
+            }
+          }}
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="0.00"
+          placeholder="0"
         />
+        <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
       </div>
     </div>
 
@@ -754,7 +779,7 @@ export const IncomeManagement = () => {
         params.search = search;
       }
 
-      const response = await api.get("/incomes", { params });
+      const response = await api.get("/incomes");
       
       if (response.data.success) {
         const incomeData = response.data.data || [];
@@ -916,12 +941,20 @@ export const IncomeManagement = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Validate amount is a whole number
+    const amountValue = Number(formData.amount);
+    if (!Number.isInteger(amountValue) || amountValue <= 0) {
+      toast.error("Amount must be a positive whole number (no decimals)");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const incomeData = {
         description: formData.description,
         category: formData.category || formData.source,
         source: formData.source || formData.category,
-        amount: parseFloat(formData.amount),
+        amount: amountValue,
         date: formData.date,
         user: formData.user || user?.name || "Unknown",
         email: formData.email || user?.email,
@@ -956,12 +989,20 @@ export const IncomeManagement = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Validate amount is a whole number
+    const amountValue = Number(formData.amount);
+    if (!Number.isInteger(amountValue) || amountValue <= 0) {
+      toast.error("Amount must be a positive whole number (no decimals)");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const incomeData = {
         description: formData.description,
         category: formData.category || formData.source,
         source: formData.source || formData.category,
-        amount: parseFloat(formData.amount),
+        amount: amountValue,
         date: formData.date,
         user: formData.user || user?.name || "Unknown",
         email: formData.email || user?.email,
@@ -1020,10 +1061,18 @@ export const IncomeManagement = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Validate allocated amount is a whole number
+    const allocatedValue = Number(budgetFormData.allocatedAmount);
+    if (!Number.isInteger(allocatedValue) || allocatedValue < 0) {
+      toast.error("Allocated amount must be a whole number (no decimals)");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const budgetData = {
         ...budgetFormData,
-        allocatedAmount: parseFloat(budgetFormData.allocatedAmount),
+        allocatedAmount: allocatedValue,
         email: user?.email,
         month: parseInt(budgetFormData.month),
         year: parseInt(budgetFormData.year)
@@ -1053,11 +1102,27 @@ export const IncomeManagement = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Validate target amount is a whole number
+    const targetValue = Number(savingsFormData.targetAmount);
+    const currentValue = Number(savingsFormData.currentAmount) || 0;
+    
+    if (!Number.isInteger(targetValue) || targetValue <= 0) {
+      toast.error("Target amount must be a positive whole number (no decimals)");
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!Number.isInteger(currentValue) || currentValue < 0) {
+      toast.error("Current amount must be a whole number (no decimals)");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const savingsData = {
         ...savingsFormData,
-        targetAmount: parseFloat(savingsFormData.targetAmount),
-        currentAmount: parseFloat(savingsFormData.currentAmount) || 0,
+        targetAmount: targetValue,
+        currentAmount: currentValue,
         email: user?.email
       };
 
@@ -1139,11 +1204,13 @@ export const IncomeManagement = () => {
     setIsEditModalOpen(true);
   }, [user]);
 
-  // Format currency
+  // Format currency (RWF - Rwandan Franc)
   const formatCurrency = useCallback((amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "RWF",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount || 0);
   }, []);
 
@@ -1178,7 +1245,7 @@ export const IncomeManagement = () => {
     };
 
     // Create CSV
-    const headers = ["Date", "Description", "Category", "Source", "Amount", "User"];
+    const headers = ["Date", "Description", "Category", "Source", "Amount (RWF)", "User"];
     const rows = filteredIncomes.map(inc => [
       formatDate(inc.date),
       inc.description || "",
@@ -1195,7 +1262,7 @@ export const IncomeManagement = () => {
 
     // Add budget summary
     csv += "\nBudget Summary\n";
-    csv += "Category,Allocated Amount,Actual Amount,Status\n";
+    csv += "Category,Allocated Amount (RWF),Actual Amount (RWF),Status\n";
     budgets.forEach(budget => {
       const actual = filteredIncomes
         .filter(inc => inc.category === budget.category)
@@ -1206,7 +1273,7 @@ export const IncomeManagement = () => {
 
     // Add savings summary
     csv += "\nSavings Goals\n";
-    csv += "Category,Target Amount,Current Amount,Progress,Deadline\n";
+    csv += "Category,Target Amount (RWF),Current Amount (RWF),Progress,Deadline\n";
     savings.forEach(saving => {
       const progress = ((saving.currentAmount / saving.targetAmount) * 100).toFixed(1);
       csv += `${saving.category},${saving.targetAmount},${saving.currentAmount},${progress}%,${saving.deadline || "N/A"}\n`;
@@ -1332,7 +1399,7 @@ export const IncomeManagement = () => {
   ));
 
   // Memoized Savings Card
-  const SavingsCard = memo(({ saving, formatCurrency }) => {
+  const SavingsCard = memo(({ saving, formatCurrency, formatDate }) => {
     const progress = saving.targetAmount > 0 
       ? Math.min((saving.currentAmount / saving.targetAmount) * 100, 100) 
       : 0;
@@ -1462,7 +1529,7 @@ export const IncomeManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Total Income</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-xs font-bold text-green-600">
                   {formatCurrency(stats.totalIncome)}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
@@ -1477,7 +1544,7 @@ export const IncomeManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Monthly Income</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-xs font-bold text-blue-600">
                   {formatCurrency(stats.monthlyIncome)}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
@@ -1492,7 +1559,7 @@ export const IncomeManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Savings Rate</p>
-                <p className="text-2xl font-bold text-purple-600">
+                <p className="text-xs font-bold text-purple-600">
                   {stats.savingsRate.toFixed(1)}%
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
@@ -1649,7 +1716,7 @@ export const IncomeManagement = () => {
                         <th className="text-left py-3 px-4 text-sm font-semibold">Category</th>
                         <th className="text-left py-3 px-4 text-sm font-semibold">Source</th>
                         <th className="text-left py-3 px-4 text-sm font-semibold">User</th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold">Amount</th>
+                        <th className="text-right py-3 px-4 text-sm font-semibold">Amount (RWF)</th>
                         <th className="text-center py-3 px-4 text-sm font-semibold">Actions</th>
                       </tr>
                     </thead>
