@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/preserve-manual-memoization */
+// /* eslint-disable react-hooks/preserve-manual-memoization */
 
 // /* eslint-disable react-hooks/immutability */
 // /* eslint-disable react-hooks/set-state-in-effect */
@@ -10,6 +11,8 @@
 // import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
 // import { useNavigate } from "react-router-dom";
+// import jsPDF from "jspdf";
+// import "jspdf-autotable";
 
 // // Material Icons
 // import AddIcon from "@mui/icons-material/Add";
@@ -31,6 +34,10 @@
 // import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 // import FlagIcon from "@mui/icons-material/Flag";
 // import AddCircleIcon from "@mui/icons-material/AddCircle";
+// import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+// import TableChartIcon from "@mui/icons-material/TableChart";
+// import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+// import TimelineIcon from "@mui/icons-material/Timeline";
 
 // // API Base URL
 // const API_URL = "https://household-expenses-management-system.onrender.com/api";
@@ -123,11 +130,11 @@
 // });
 
 // // Memoized Savings Form Component
-// const SavingsForm = memo(({ 
-//   formData, 
-//   setFormData, 
-//   onSubmit, 
-//   submitLabel, 
+// const SavingsForm = memo(({
+//   formData,
+//   setFormData,
+//   onSubmit,
+//   submitLabel,
 //   isSubmitting,
 //   categories,
 //   priorityLevels,
@@ -158,36 +165,52 @@
 //     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //       <div>
 //         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Target Amount ($) *
+//           Target Amount (RWF) *
 //         </label>
 //         <input
 //           type="number"
-//           step="0.01"
+//           step="1"
 //           min="0"
 //           value={formData.targetAmount}
-//           onChange={(e) =>
-//             setFormData({ ...formData, targetAmount: e.target.value })
-//           }
+//           onChange={(e) => {
+//             const value = e.target.value;
+//             if (value === '' || /^\d+$/.test(value)) {
+//               setFormData({ ...formData, targetAmount: value });
+//             }
+//           }}
+//           onKeyDown={(e) => {
+//             if (e.key === '.' || e.key === ',') {
+//               e.preventDefault();
+//             }
+//           }}
 //           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//           placeholder="0.00"
+//           placeholder="0"
 //           required
 //         />
 //       </div>
 
 //       <div>
 //         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Current Amount ($)
+//           Current Amount (RWF)
 //         </label>
 //         <input
 //           type="number"
-//           step="0.01"
+//           step="1"
 //           min="0"
 //           value={formData.currentAmount}
-//           onChange={(e) =>
-//             setFormData({ ...formData, currentAmount: e.target.value })
-//           }
+//           onChange={(e) => {
+//             const value = e.target.value;
+//             if (value === '' || /^\d+$/.test(value)) {
+//               setFormData({ ...formData, currentAmount: value });
+//             }
+//           }}
+//           onKeyDown={(e) => {
+//             if (e.key === '.' || e.key === ',') {
+//               e.preventDefault();
+//             }
+//           }}
 //           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//           placeholder="0.00"
+//           placeholder="0"
 //         />
 //       </div>
 //     </div>
@@ -271,11 +294,11 @@
 // ));
 
 // // Memoized Contribution Form Component
-// const ContributionForm = memo(({ 
-//   selectedSavings, 
-//   contributionData, 
-//   setContributionData, 
-//   onSubmit, 
+// const ContributionForm = memo(({
+//   selectedSavings,
+//   contributionData,
+//   setContributionData,
+//   onSubmit,
 //   isSubmitting,
 //   formatCurrency,
 //   onCancel
@@ -302,18 +325,26 @@
 
 //     <div>
 //       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         Contribution Amount ($) *
+//         Contribution Amount (RWF) *
 //       </label>
 //       <input
 //         type="number"
-//         step="0.01"
-//         min="0.01"
+//         step="1"
+//         min="1"
 //         value={contributionData.amount}
-//         onChange={(e) =>
-//           setContributionData({ ...contributionData, amount: e.target.value })
-//         }
+//         onChange={(e) => {
+//           const value = e.target.value;
+//           if (value === '' || /^\d+$/.test(value)) {
+//             setContributionData({ ...contributionData, amount: value });
+//           }
+//         }}
+//         onKeyDown={(e) => {
+//           if (e.key === '.' || e.key === ',') {
+//             e.preventDefault();
+//           }
+//         }}
 //         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         placeholder="0.00"
+//         placeholder="0"
 //         required
 //         autoFocus
 //       />
@@ -364,12 +395,12 @@
 // ));
 
 // // Memoized Savings Card Component
-// const SavingsCard = memo(({ 
-//   saving, 
-//   formatCurrency, 
-//   formatDate, 
-//   getPriorityBadge, 
-//   getStatusBadge, 
+// const SavingsCard = memo(({
+//   saving,
+//   formatCurrency,
+//   formatDate,
+//   getPriorityBadge,
+//   getStatusBadge,
 //   getDaysRemaining,
 //   openEditModal,
 //   openContributeModal,
@@ -513,6 +544,10 @@
 //   const [filterPriority, setFilterPriority] = useState("all");
 //   const [filterStatus, setFilterStatus] = useState("all");
 
+//   // Income state
+//   const [totalIncome, setTotalIncome] = useState(0);
+//   const [incomeData, setIncomeData] = useState([]);
+
 //   // Refs to track current filter values without causing re-renders
 //   const searchTermRef = useRef(searchTerm);
 //   const filterCategoryRef = useRef(filterCategory);
@@ -583,14 +618,30 @@
 //     if (isFirstLoadRef.current) {
 //       isFirstLoadRef.current = false;
 //       loadSavings();
+//       loadIncomes();
 //     }
 //   }, [navigate]);
+
+//   // Load incomes from API
+//   const loadIncomes = useCallback(async () => {
+//     try {
+//       const response = await api.get("/incomes");
+//       if (response.data.success) {
+//         setIncomeData(response.data.data || []);
+//         // Calculate total income from all incomes
+//         const total = response.data.data.reduce((sum, income) => sum + (income.amount || 0), 0);
+//         setTotalIncome(total);
+//       }
+//     } catch (error) {
+//       console.error("Load incomes error:", error);
+//     }
+//   }, []);
 
 //   // Load savings from API
 //   const loadSavings = useCallback(async () => {
 //     // Prevent concurrent loads
 //     if (isLoadingRef.current) return;
-    
+
 //     if (!user?.email && !isAdmin) {
 //       toast.warning("User email not found");
 //       return;
@@ -598,13 +649,13 @@
 
 //     isLoadingRef.current = true;
 //     setIsLoading(true);
-    
+
 //     try {
 //       // Use refs to get current values
 //       const search = searchTermRef.current;
 //       const category = filterCategoryRef.current;
 //       const status = filterStatusRef.current;
-      
+
 //       const params = {};
 
 //       // If admin, fetch all savings, else fetch user's savings
@@ -843,7 +894,7 @@
 //       });
 
 //       if (response.data.success) {
-//         toast.success(`$${amount.toFixed(2)} contributed successfully!`);
+//         toast.success(`${amount.toFixed(0)} RWF contributed successfully!`);
 //         setIsContributeModalOpen(false);
 //         setContributionData({ amount: "", note: "" });
 //         setSelectedSavings(null);
@@ -896,11 +947,13 @@
 //     setIsContributeModalOpen(true);
 //   }, []);
 
-//   // Format currency
+//   // Format currency - RWF (Rwandan Franc)
 //   const formatCurrency = useCallback((amount) => {
-//     return new Intl.NumberFormat("en-US", {
+//     return new Intl.NumberFormat("rw-RW", {
 //       style: "currency",
-//       currency: "USD",
+//       currency: "RWF",
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
 //     }).format(amount || 0);
 //   }, []);
 
@@ -973,8 +1026,179 @@
 //     return `${diff} days left`;
 //   }, []);
 
-//   // Export savings report
-//   const exportReport = useCallback(() => {
+//   // Group savings by month
+//   const groupByMonth = useCallback((data) => {
+//     const grouped = {};
+//     data.forEach(item => {
+//       if (item.deadline) {
+//         const date = new Date(item.deadline);
+//         const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+//         if (!grouped[monthYear]) {
+//           grouped[monthYear] = [];
+//         }
+//         grouped[monthYear].push(item);
+//       } else {
+//         if (!grouped['No Deadline']) {
+//           grouped['No Deadline'] = [];
+//         }
+//         grouped['No Deadline'].push(item);
+//       }
+//     });
+//     return grouped;
+//   }, []);
+
+//   // Group savings by week
+//   const groupByWeek = useCallback((data) => {
+//     const grouped = {};
+//     data.forEach(item => {
+//       if (item.deadline) {
+//         const date = new Date(item.deadline);
+//         const startOfWeek = new Date(date);
+//         startOfWeek.setDate(date.getDate() - date.getDay());
+//         const endOfWeek = new Date(startOfWeek);
+//         endOfWeek.setDate(startOfWeek.getDate() + 6);
+//         const weekKey = `${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`;
+//         if (!grouped[weekKey]) {
+//           grouped[weekKey] = [];
+//         }
+//         grouped[weekKey].push(item);
+//       } else {
+//         if (!grouped['No Deadline']) {
+//           grouped['No Deadline'] = [];
+//         }
+//         grouped['No Deadline'].push(item);
+//       }
+//     });
+//     return grouped;
+//   }, []);
+
+//   // Export to PDF
+//   const exportToPDF = useCallback(() => {
+//     if (filteredSavings.length === 0) {
+//       toast.warning("No savings data to export");
+//       return;
+//     }
+
+//     const doc = new jsPDF('landscape', 'pt', 'a4');
+
+//     // Add title
+//     doc.setFontSize(18);
+//     doc.setTextColor(40, 40, 40);
+//     doc.text('Savings Report', 40, 50);
+
+//     // Add subtitle with date
+//     doc.setFontSize(10);
+//     doc.setTextColor(100, 100, 100);
+//     doc.text(`Generated: ${new Date().toLocaleDateString()}`, 40, 70);
+
+//     // Add summary section
+//     doc.setFontSize(12);
+//     doc.setTextColor(40, 40, 40);
+//     doc.text('Summary', 40, 95);
+
+//     const summaryData = [
+//       ['Total Goals', stats.totalGoals.toString()],
+//       ['Total Target Amount', formatCurrency(stats.totalTarget)],
+//       ['Total Current Amount', formatCurrency(stats.totalCurrent)],
+//       ['Overall Progress', `${stats.overallProgress.toFixed(1)}%`],
+//       ['Completed Goals', stats.completedCount.toString()],
+//       ['In Progress Goals', stats.inProgressCount.toString()],
+//       ['Total Income', formatCurrency(totalIncome)],
+//     ];
+
+//     doc.autoTable({
+//       startY: 100,
+//       head: [['Metric', 'Value']],
+//       body: summaryData,
+//       theme: 'striped',
+//       headStyles: { fillColor: [128, 90, 213] },
+//       styles: { fontSize: 10 },
+//       margin: { left: 40, right: 40 },
+//     });
+
+//     // Add savings table
+//     const tableY = doc.previousAutoTable.finalY + 20;
+//     doc.setFontSize(12);
+//     doc.setTextColor(40, 40, 40);
+//     doc.text('Savings Goals', 40, tableY);
+
+//     const tableData = filteredSavings.map(s => [
+//       s.category || '',
+//       formatCurrency(s.targetAmount || 0),
+//       formatCurrency(s.currentAmount || 0),
+//       `${(s.progress || 0).toFixed(1)}%`,
+//       s.priority || 'medium',
+//       s.deadline ? formatDate(s.deadline) : 'No deadline',
+//       s.isCompleted ? 'Completed' : 'In Progress'
+//     ]);
+
+//     doc.autoTable({
+//       startY: tableY + 10,
+//       head: [['Category', 'Target', 'Current', 'Progress', 'Priority', 'Deadline', 'Status']],
+//       body: tableData,
+//       theme: 'striped',
+//       headStyles: { fillColor: [128, 90, 213] },
+//       styles: { fontSize: 8 },
+//       margin: { left: 40, right: 40 },
+//     });
+
+//     // Add grouped by month section
+//     const groupedByMonth = groupByMonth(filteredSavings);
+//     const monthY = doc.previousAutoTable.finalY + 20;
+//     doc.setFontSize(12);
+//     doc.setTextColor(40, 40, 40);
+//     doc.text('Grouped by Month', 40, monthY);
+
+//     let currentY = monthY + 10;
+//     Object.keys(groupedByMonth).forEach(month => {
+//       if (currentY > 700) {
+//         doc.addPage();
+//         currentY = 40;
+//       }
+//       doc.setFontSize(10);
+//       doc.setTextColor(60, 60, 60);
+//       doc.text(month, 40, currentY);
+
+//       const monthTotal = groupedByMonth[month].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
+//       doc.setFontSize(8);
+//       doc.setTextColor(100, 100, 100);
+//       doc.text(`Total: ${formatCurrency(monthTotal)}`, 300, currentY);
+
+//       currentY += 15;
+//     });
+
+//     // Add grouped by week section
+//     const groupedByWeek = groupByWeek(filteredSavings);
+//     const weekY = currentY + 20;
+//     doc.setFontSize(12);
+//     doc.setTextColor(40, 40, 40);
+//     doc.text('Grouped by Week', 40, weekY);
+
+//     let weekCurrentY = weekY + 10;
+//     Object.keys(groupedByWeek).forEach(week => {
+//       if (weekCurrentY > 700) {
+//         doc.addPage();
+//         weekCurrentY = 40;
+//       }
+//       doc.setFontSize(10);
+//       doc.setTextColor(60, 60, 60);
+//       doc.text(week, 40, weekCurrentY);
+
+//       const weekTotal = groupedByWeek[week].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
+//       doc.setFontSize(8);
+//       doc.setTextColor(100, 100, 100);
+//       doc.text(`Total: ${formatCurrency(weekTotal)}`, 400, weekCurrentY);
+
+//       weekCurrentY += 15;
+//     });
+
+//     // Save the PDF
+//     doc.save(`savings-report-${new Date().toISOString().split('T')[0]}.pdf`);
+//     toast.success("PDF exported successfully!");
+//   }, [filteredSavings, stats, totalIncome, formatCurrency, formatDate, groupByMonth, groupByWeek]);
+
+//   // Export to CSV
+//   const exportToCSV = useCallback(() => {
 //     if (filteredSavings.length === 0) {
 //       toast.warning("No savings data to export");
 //       return;
@@ -983,8 +1207,8 @@
 //     // Create CSV
 //     const headers = [
 //       "Category",
-//       "Target Amount",
-//       "Current Amount",
+//       "Target Amount (RWF)",
+//       "Current Amount (RWF)",
 //       "Progress",
 //       "Priority",
 //       "Deadline",
@@ -1008,11 +1232,32 @@
 //     // Add summary
 //     csv += "\nSummary\n";
 //     csv += `Total Goals,${stats.totalGoals}\n`;
-//     csv += `Total Target Amount,${stats.totalTarget}\n`;
-//     csv += `Total Current Amount,${stats.totalCurrent}\n`;
+//     csv += `Total Target Amount (RWF),${stats.totalTarget}\n`;
+//     csv += `Total Current Amount (RWF),${stats.totalCurrent}\n`;
 //     csv += `Overall Progress,${stats.overallProgress.toFixed(1)}%\n`;
 //     csv += `Completed Goals,${stats.completedCount}\n`;
 //     csv += `In Progress Goals,${stats.inProgressCount}\n`;
+//     csv += `Total Income (RWF),${totalIncome}\n`;
+
+//     // Add grouped by month
+//     const groupedByMonth = groupByMonth(filteredSavings);
+//     csv += "\n\nGrouped by Month\n";
+//     csv += "Month,Total Amount (RWF),Number of Goals\n";
+//     Object.keys(groupedByMonth).forEach(month => {
+//       const total = groupedByMonth[month].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
+//       const count = groupedByMonth[month].length;
+//       csv += `${month},${total},${count}\n`;
+//     });
+
+//     // Add grouped by week
+//     const groupedByWeek = groupByWeek(filteredSavings);
+//     csv += "\n\nGrouped by Week\n";
+//     csv += "Week,Total Amount (RWF),Number of Goals\n";
+//     Object.keys(groupedByWeek).forEach(week => {
+//       const total = groupedByWeek[week].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
+//       const count = groupedByWeek[week].length;
+//       csv += `${week},${total},${count}\n`;
+//     });
 
 //     // Download
 //     const blob = new Blob([csv], { type: "text/csv" });
@@ -1023,8 +1268,8 @@
 //     a.click();
 //     window.URL.revokeObjectURL(url);
 
-//     toast.success("Report exported successfully!");
-//   }, [filteredSavings, stats, formatDate]);
+//     toast.success("CSV exported successfully!");
+//   }, [filteredSavings, stats, totalIncome, formatDate, groupByMonth, groupByWeek]);
 
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -1064,16 +1309,24 @@
 //           </div>
 //           <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
 //             <button
-//               onClick={exportReport}
-//               className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
+//               onClick={exportToPDF}
+//               className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
 //             >
-//               <DownloadIcon className="w-5 h-5" />
-//               <span>Export</span>
+//               <PictureAsPdfIcon className="w-5 h-5" />
+//               <span>Export PDF</span>
+//             </button>
+//             <button
+//               onClick={exportToCSV}
+//               className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 shadow-md hover:shadow-lg"
+//             >
+//               <TableChartIcon className="w-5 h-5" />
+//               <span>Export CSV</span>
 //             </button>
 //             <button
 //               onClick={() => {
 //                 isFirstLoadRef.current = false;
 //                 loadSavings();
+//                 loadIncomes();
 //               }}
 //               className="flex items-center space-x-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200"
 //             >
@@ -1121,6 +1374,18 @@
 //             <p className="text-2xl font-bold text-emerald-600">
 //               {formatCurrency(stats.totalCurrent)}
 //             </p>
+//           </div>
+//         </div>
+
+//         {/* Total Income Card */}
+//         <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl shadow-lg p-6 mb-6 text-white">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <p className="text-sm opacity-80">Total Income</p>
+//               <p className="text-3xl font-bold">{formatCurrency(totalIncome)}</p>
+//               <p className="text-xs opacity-70 mt-1">All time income from all sources</p>
+//             </div>
+//             <MonetizationOnIcon className="w-16 h-16 opacity-30" />
 //           </div>
 //         </div>
 
@@ -1376,14 +1641,9 @@
 //   );
 // };
 
-
-
-
-
-
-
-
-
+// ============================================================
+// COMPLETE FIXED SAVINGS MANAGEMENT - WITH PROPER USER ID HANDLING
+// ============================================================
 
 /* eslint-disable react-hooks/immutability */
 /* eslint-disable react-hooks/set-state-in-effect */
@@ -1408,20 +1668,16 @@ import SavingsIcon from "@mui/icons-material/Savings";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningIcon from "@mui/icons-material/Warning";
-import CancelIcon from "@mui/icons-material/Cancel";
+import ErrorIcon from "@mui/icons-material/Error";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import DownloadIcon from "@mui/icons-material/Download";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import FlagIcon from "@mui/icons-material/Flag";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import TableChartIcon from "@mui/icons-material/TableChart";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import TimelineIcon from "@mui/icons-material/Timeline";
 
 // API Base URL
 const API_URL = "https://household-expenses-management-system.onrender.com/api";
@@ -1467,7 +1723,211 @@ const PRIORITY_LEVELS = [
   { value: "critical", label: "Critical", color: "bg-red-100 text-red-800" },
 ];
 
-// Memoized Modal Component
+// ============================================================
+// SUCCESS MODAL COMPONENT
+// ============================================================
+const SuccessModal = memo(({ isOpen, onClose, title, message, details }) => {
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="bg-white rounded-3xl shadow-2xl max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircleIcon className="w-12 h-12 text-green-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">{title}</h3>
+              <p className="text-gray-600">{message}</p>
+              {details && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-xl text-left">
+                  <p className="text-sm text-gray-700 whitespace-pre-line">
+                    {details}
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={onClose}
+                className="mt-6 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+});
+
+// ============================================================
+// ERROR/FAIL MODAL COMPONENT
+// ============================================================
+const ErrorModal = memo(({ isOpen, onClose, title, message, details }) => {
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="bg-white rounded-3xl shadow-2xl max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 text-center">
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ErrorIcon className="w-12 h-12 text-red-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">{title}</h3>
+              <p className="text-gray-600">{message}</p>
+              {details && (
+                <div className="mt-4 p-4 bg-red-50 rounded-xl text-left">
+                  <p className="text-sm text-red-700 whitespace-pre-line">
+                    {details}
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={onClose}
+                className="mt-6 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+});
+
+// ============================================================
+// CONFIRM MODAL COMPONENT
+// ============================================================
+const ConfirmModal = memo(
+  ({
+    isOpen,
+    onClose,
+    onConfirm,
+    title,
+    message,
+    confirmLabel = "Confirm",
+    cancelLabel = "Cancel",
+    isSubmitting = false,
+    type = "danger",
+  }) => {
+    if (!isOpen) return null;
+
+    const colors = {
+      danger: {
+        icon: WarningIcon,
+        iconColor: "text-red-500",
+        bgColor: "bg-red-100",
+        buttonColor: "bg-red-500 hover:bg-red-600",
+      },
+      warning: {
+        icon: WarningIcon,
+        iconColor: "text-yellow-500",
+        bgColor: "bg-yellow-100",
+        buttonColor: "bg-yellow-500 hover:bg-yellow-600",
+      },
+      info: {
+        icon: CheckCircleIcon,
+        iconColor: "text-blue-500",
+        bgColor: "bg-blue-100",
+        buttonColor: "bg-blue-500 hover:bg-blue-600",
+      },
+    };
+
+    const colorConfig = colors[type] || colors.danger;
+    const IconComponent = colorConfig.icon;
+
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={onClose}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 text-center">
+                <div
+                  className={`w-20 h-20 ${colorConfig.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}
+                >
+                  <IconComponent
+                    className={`w-12 h-12 ${colorConfig.iconColor}`}
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  {title}
+                </h3>
+                <p className="text-gray-600 whitespace-pre-line">{message}</p>
+
+                <div className="flex justify-center space-x-3 mt-6">
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    {cancelLabel}
+                  </button>
+                  <button
+                    onClick={onConfirm}
+                    disabled={isSubmitting}
+                    className={`px-6 py-2 text-white rounded-lg shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 ${colorConfig.buttonColor}`}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <span>{confirmLabel}</span>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  },
+);
+
+// ============================================================
+// MEMOIZED MODAL COMPONENT
+// ============================================================
 const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
   if (!isOpen) return null;
 
@@ -1513,402 +1973,424 @@ const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
   );
 });
 
-// Memoized Savings Form Component
-const SavingsForm = memo(({ 
-  formData, 
-  setFormData, 
-  onSubmit, 
-  submitLabel, 
-  isSubmitting,
-  categories,
-  priorityLevels,
-  onCancel
-}) => (
-  <form onSubmit={onSubmit} className="space-y-4">
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Savings Category *
-      </label>
-      <select
-        value={formData.category}
-        onChange={(e) =>
-          setFormData({ ...formData, category: e.target.value })
-        }
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-        required
-      >
-        <option value="">Select Category</option>
-        {categories.map((cat) => (
-          <option key={cat} value={cat}>
-            {cat}
-          </option>
-        ))}
-      </select>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+// ============================================================
+// MEMOIZED SAVINGS FORM COMPONENT
+// ============================================================
+const SavingsForm = memo(
+  ({
+    formData,
+    setFormData,
+    onSubmit,
+    submitLabel,
+    isSubmitting,
+    categories,
+    priorityLevels,
+    onCancel,
+  }) => (
+    <form onSubmit={onSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Target Amount (RWF) *
+          Savings Category *
+        </label>
+        <select
+          value={formData.category}
+          onChange={(e) =>
+            setFormData({ ...formData, category: e.target.value })
+          }
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          required
+        >
+          <option value="">Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Target Amount (RWF) *
+          </label>
+          <input
+            type="number"
+            step="1"
+            min="1"
+            value={formData.targetAmount}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || /^\d+$/.test(value)) {
+                setFormData({ ...formData, targetAmount: value });
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "." || e.key === ",") {
+                e.preventDefault();
+              }
+            }}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            placeholder="0"
+            required
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Whole numbers only (no decimals)
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Current Amount (RWF)
+          </label>
+          <input
+            type="number"
+            step="1"
+            min="0"
+            value={formData.currentAmount}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || /^\d+$/.test(value)) {
+                setFormData({ ...formData, currentAmount: value });
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "." || e.key === ",") {
+                e.preventDefault();
+              }
+            }}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            placeholder="0"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Whole numbers only (no decimals)
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Deadline
+          </label>
+          <input
+            type="date"
+            value={formData.deadline}
+            onChange={(e) =>
+              setFormData({ ...formData, deadline: e.target.value })
+            }
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Priority
+          </label>
+          <select
+            value={formData.priority}
+            onChange={(e) =>
+              setFormData({ ...formData, priority: e.target.value })
+            }
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          >
+            {priorityLevels.map((p) => (
+              <option key={p.value} value={p.value}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Description (Optional)
+        </label>
+        <textarea
+          value={formData.description}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          rows="3"
+          placeholder="Additional notes about this savings goal"
+        />
+      </div>
+
+      <div className="flex justify-end space-x-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+        >
+          {isSubmitting ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <span>Processing...</span>
+            </>
+          ) : (
+            <span>{submitLabel}</span>
+          )}
+        </button>
+      </div>
+    </form>
+  ),
+);
+
+// ============================================================
+// MEMOIZED CONTRIBUTION FORM COMPONENT
+// ============================================================
+const ContributionForm = memo(
+  ({
+    selectedSavings,
+    contributionData,
+    setContributionData,
+    onSubmit,
+    isSubmitting,
+    formatCurrency,
+    onCancel,
+  }) => (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div className="text-center mb-4">
+        <h4 className="font-semibold text-gray-800">
+          {selectedSavings?.category}
+        </h4>
+        <p className="text-sm text-gray-500">
+          Current: {formatCurrency(selectedSavings?.currentAmount || 0)} /{" "}
+          {formatCurrency(selectedSavings?.targetAmount || 0)}
+        </p>
+        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+          <div
+            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+            style={{
+              width: `${Math.min(selectedSavings?.progress || 0, 100)}%`,
+            }}
+          />
+        </div>
+        <p className="text-xs text-gray-400 mt-1">
+          Progress: {selectedSavings?.progress?.toFixed(1) || 0}%
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Contribution Amount (RWF) *
         </label>
         <input
           type="number"
           step="1"
-          min="0"
-          value={formData.targetAmount}
+          min="1"
+          value={contributionData.amount}
           onChange={(e) => {
             const value = e.target.value;
-            if (value === '' || /^\d+$/.test(value)) {
-              setFormData({ ...formData, targetAmount: value });
+            if (value === "" || /^\d+$/.test(value)) {
+              setContributionData({ ...contributionData, amount: value });
             }
           }}
           onKeyDown={(e) => {
-            if (e.key === '.' || e.key === ',') {
+            if (e.key === "." || e.key === ",") {
               e.preventDefault();
             }
           }}
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           placeholder="0"
           required
+          autoFocus
         />
+        <p className="text-xs text-gray-500 mt-1">
+          Whole numbers only (no decimals)
+        </p>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Current Amount (RWF)
+          Note (Optional)
         </label>
         <input
-          type="number"
-          step="1"
-          min="0"
-          value={formData.currentAmount}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === '' || /^\d+$/.test(value)) {
-              setFormData({ ...formData, currentAmount: value });
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === '.' || e.key === ',') {
-              e.preventDefault();
-            }
-          }}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          placeholder="0"
-        />
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Deadline
-        </label>
-        <input
-          type="date"
-          value={formData.deadline}
+          type="text"
+          value={contributionData.note}
           onChange={(e) =>
-            setFormData({ ...formData, deadline: e.target.value })
+            setContributionData({ ...contributionData, note: e.target.value })
           }
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          placeholder="Add a note about this contribution"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Priority
-        </label>
-        <select
-          value={formData.priority}
-          onChange={(e) =>
-            setFormData({ ...formData, priority: e.target.value })
-          }
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+      <div className="flex justify-end space-x-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
         >
-          {priorityLevels.map((p) => (
-            <option key={p.value} value={p.value}>
-              {p.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Description (Optional)
-      </label>
-      <textarea
-        value={formData.description}
-        onChange={(e) =>
-          setFormData({ ...formData, description: e.target.value })
-        }
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-        rows="3"
-        placeholder="Additional notes about this savings goal"
-      />
-    </div>
-
-    <input type="hidden" value={formData.email} />
-
-    <div className="flex justify-end space-x-3 pt-4">
-      <button
-        type="button"
-        onClick={onCancel}
-        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-      >
-        Cancel
-      </button>
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-      >
-        {isSubmitting ? (
-          <>
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            <span>Processing...</span>
-          </>
-        ) : (
-          <span>{submitLabel}</span>
-        )}
-      </button>
-    </div>
-  </form>
-));
-
-// Memoized Contribution Form Component
-const ContributionForm = memo(({ 
-  selectedSavings, 
-  contributionData, 
-  setContributionData, 
-  onSubmit, 
-  isSubmitting,
-  formatCurrency,
-  onCancel
-}) => (
-  <form onSubmit={onSubmit} className="space-y-4">
-    <div className="text-center mb-4">
-      <h4 className="font-semibold text-gray-800">
-        {selectedSavings?.category}
-      </h4>
-      <p className="text-sm text-gray-500">
-        Current: {formatCurrency(selectedSavings?.currentAmount || 0)} /{" "}
-        {formatCurrency(selectedSavings?.targetAmount || 0)}
-      </p>
-      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-        <div
-          className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-          style={{ width: `${selectedSavings?.progress || 0}%` }}
-        />
-      </div>
-      <p className="text-xs text-gray-400 mt-1">
-        Progress: {selectedSavings?.progress?.toFixed(1) || 0}%
-      </p>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Contribution Amount (RWF) *
-      </label>
-      <input
-        type="number"
-        step="1"
-        min="1"
-        value={contributionData.amount}
-        onChange={(e) => {
-          const value = e.target.value;
-          if (value === '' || /^\d+$/.test(value)) {
-            setContributionData({ ...contributionData, amount: value });
-          }
-        }}
-        onKeyDown={(e) => {
-          if (e.key === '.' || e.key === ',') {
-            e.preventDefault();
-          }
-        }}
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-        placeholder="0"
-        required
-        autoFocus
-      />
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Note (Optional)
-      </label>
-      <input
-        type="text"
-        value={contributionData.note}
-        onChange={(e) =>
-          setContributionData({ ...contributionData, note: e.target.value })
-        }
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-        placeholder="Add a note about this contribution"
-      />
-    </div>
-
-    <div className="flex justify-end space-x-3 pt-4">
-      <button
-        type="button"
-        onClick={onCancel}
-        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-      >
-        Cancel
-      </button>
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-      >
-        {isSubmitting ? (
-          <>
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            <span>Processing...</span>
-          </>
-        ) : (
-          <>
-            <AttachMoneyIcon className="w-5 h-5" />
-            <span>Contribute</span>
-          </>
-        )}
-      </button>
-    </div>
-  </form>
-));
-
-// Memoized Savings Card Component
-const SavingsCard = memo(({ 
-  saving, 
-  formatCurrency, 
-  formatDate, 
-  getPriorityBadge, 
-  getStatusBadge, 
-  getDaysRemaining,
-  openEditModal,
-  openContributeModal,
-  setSelectedSavings,
-  setIsDeleteModalOpen
-}) => {
-  const progress = saving.progress || 0;
-  const isCompleted = saving.isCompleted || false;
-  const daysLeft = getDaysRemaining(saving.deadline);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`bg-white rounded-2xl shadow-lg p-6 border-l-4 transition-all hover:shadow-xl ${
-        isCompleted
-          ? "border-l-green-500"
-          : progress >= 75
-            ? "border-l-blue-500"
-            : progress >= 50
-              ? "border-l-yellow-500"
-              : "border-l-purple-500"
-      }`}
-    >
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            {saving.category}
-            {isCompleted && (
-              <CheckCircleIcon className="w-5 h-5 text-green-500" />
-            )}
-          </h3>
-          <p className="text-sm text-gray-500">
-            {saving.description || "No description"}
-          </p>
-        </div>
-        {getPriorityBadge(saving.priority)}
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">
-            Target: {formatCurrency(saving.targetAmount)}
-          </span>
-          <span className="text-gray-600">
-            Saved: {formatCurrency(saving.currentAmount || 0)}
-          </span>
-        </div>
-
-        <div className="w-full bg-gray-200 rounded-full h-3">
-          <div
-            className={`h-3 rounded-full transition-all duration-500 ${
-              isCompleted
-                ? "bg-green-500"
-                : progress >= 75
-                  ? "bg-blue-500"
-                  : progress >= 50
-                    ? "bg-yellow-500"
-                    : "bg-purple-500"
-            }`}
-            style={{ width: `${Math.min(progress, 100)}%` }}
-          />
-        </div>
-
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>{progress.toFixed(1)}% complete</span>
-          {daysLeft && (
-            <span
-              className={
-                daysLeft === "Overdue"
-                  ? "text-red-500 font-medium"
-                  : ""
-              }
-            >
-              {daysLeft}
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
-        <div className="flex items-center gap-2">
-          {getStatusBadge(isCompleted, progress)}
-          {saving.deadline && (
-            <span className="text-xs text-gray-400 flex items-center gap-1">
-              <CalendarTodayIcon className="w-3 h-3" />
-              {formatDate(saving.deadline)}
-            </span>
-          )}
-        </div>
-        <div className="flex space-x-1">
-          {!isCompleted && (
-            <button
-              onClick={() => openContributeModal(saving)}
-              className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-              title="Contribute"
-            >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+        >
+          {isSubmitting ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
               <AttachMoneyIcon className="w-5 h-5" />
-            </button>
+              <span>Contribute</span>
+            </>
           )}
-          <button
-            onClick={() => openEditModal(saving)}
-            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="Edit"
-          >
-            <EditIcon className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => {
-              setSelectedSavings(saving);
-              setIsDeleteModalOpen(true);
-            }}
-            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="Delete"
-          >
-            <DeleteIcon className="w-5 h-5" />
-          </button>
-        </div>
+        </button>
       </div>
-    </motion.div>
-  );
-});
+    </form>
+  ),
+);
 
+// ============================================================
+// MEMOIZED SAVINGS CARD COMPONENT
+// ============================================================
+const SavingsCard = memo(
+  ({
+    saving,
+    formatCurrency,
+    formatDate,
+    getPriorityBadge,
+    getStatusBadge,
+    getDaysRemaining,
+    openEditModal,
+    openContributeModal,
+    setSelectedSavings,
+    setIsDeleteModalOpen,
+  }) => {
+    const progress = saving.progress || 0;
+    const isCompleted = saving.isCompleted || false;
+    const daysLeft = getDaysRemaining(saving.deadline);
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={`bg-white rounded-2xl shadow-lg p-6 border-l-4 transition-all hover:shadow-xl ${
+          isCompleted
+            ? "border-l-green-500"
+            : progress >= 75
+              ? "border-l-blue-500"
+              : progress >= 50
+                ? "border-l-yellow-500"
+                : "border-l-purple-500"
+        }`}
+      >
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              {saving.category}
+              {isCompleted && (
+                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              )}
+            </h3>
+            <p className="text-sm text-gray-500">
+              {saving.description || "No description"}
+            </p>
+          </div>
+          {getPriorityBadge(saving.priority)}
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">
+              Target: {formatCurrency(saving.targetAmount)}
+            </span>
+            <span className="text-gray-600">
+              Saved: {formatCurrency(saving.currentAmount || 0)}
+            </span>
+          </div>
+
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div
+              className={`h-3 rounded-full transition-all duration-500 ${
+                isCompleted
+                  ? "bg-green-500"
+                  : progress >= 75
+                    ? "bg-blue-500"
+                    : progress >= 50
+                      ? "bg-yellow-500"
+                      : "bg-purple-500"
+              }`}
+              style={{ width: `${Math.min(progress, 100)}%` }}
+            />
+          </div>
+
+          <div className="flex justify-between text-xs text-gray-500">
+            <span>{progress.toFixed(1)}% complete</span>
+            {daysLeft && (
+              <span
+                className={
+                  daysLeft === "Overdue" ? "text-red-500 font-medium" : ""
+                }
+              >
+                {daysLeft}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-2">
+            {getStatusBadge(isCompleted, progress)}
+            {saving.deadline && (
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <CalendarTodayIcon className="w-3 h-3" />
+                {formatDate(saving.deadline)}
+              </span>
+            )}
+          </div>
+          <div className="flex space-x-1">
+            {!isCompleted && (
+              <button
+                onClick={() => openContributeModal(saving)}
+                className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                title="Contribute"
+              >
+                <AttachMoneyIcon className="w-5 h-5" />
+              </button>
+            )}
+            <button
+              onClick={() => openEditModal(saving)}
+              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Edit"
+            >
+              <EditIcon className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => {
+                setSelectedSavings(saving);
+                setIsDeleteModalOpen(true);
+              }}
+              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              title="Delete"
+            >
+              <DeleteIcon className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  },
+);
+
+// ============================================================
+// MAIN COMPONENT
+// ============================================================
 export const SavingsManagement = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(() => {
@@ -1932,7 +2414,7 @@ export const SavingsManagement = () => {
   const [totalIncome, setTotalIncome] = useState(0);
   const [incomeData, setIncomeData] = useState([]);
 
-  // Refs to track current filter values without causing re-renders
+  // Refs
   const searchTermRef = useRef(searchTerm);
   const filterCategoryRef = useRef(filterCategory);
   const filterPriorityRef = useRef(filterPriority);
@@ -1958,6 +2440,32 @@ export const SavingsManagement = () => {
   const [selectedSavings, setSelectedSavings] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ============================================================
+  // SUCCESS/ERROR/CONFIRM MODAL STATES
+  // ============================================================
+  const [successModal, setSuccessModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    details: "",
+  });
+
+  const [errorModal, setErrorModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    details: "",
+  });
+
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+    type: "danger",
+    confirmLabel: "Confirm",
+  });
+
   // Form data
   const [formData, setFormData] = useState({
     category: "",
@@ -1967,6 +2475,7 @@ export const SavingsManagement = () => {
     description: "",
     priority: "medium",
     email: "",
+    userId: "",
   });
 
   // Contribution form data
@@ -1977,6 +2486,69 @@ export const SavingsManagement = () => {
 
   // Check if user is admin
   const isAdmin = user?.role === "admin" || user?.role === "Admin";
+
+  // ============================================================
+  // SHOW MODAL HELPERS
+  // ============================================================
+  const showSuccess = useCallback((title, message, details = "") => {
+    setSuccessModal({ isOpen: true, title, message, details });
+  }, []);
+
+  const showError = useCallback((title, message, details = "") => {
+    setErrorModal({ isOpen: true, title, message, details });
+  }, []);
+
+  const showConfirm = useCallback(
+    (title, message, onConfirm, type = "danger", confirmLabel = "Confirm") => {
+      setConfirmModal({
+        isOpen: true,
+        title,
+        message,
+        onConfirm,
+        type,
+        confirmLabel,
+      });
+    },
+    [],
+  );
+
+  // ============================================================
+  // GET USER ID - FIXED: Properly gets the database ID
+  // ============================================================
+  const getUserId = useCallback(() => {
+    // Try multiple sources to get the user ID
+    const userId = user?.id || user?._id || user?.userId || "";
+
+    // Log for debugging
+    console.log("🔑 Getting userId:", userId);
+    console.log("👤 User object:", user);
+
+    return userId;
+  }, [user]);
+
+  // ============================================================
+  // GET VALID USER ID OR THROW ERROR
+  // ============================================================
+  const getValidUserIdOrThrow = useCallback(() => {
+    const userId = getUserId();
+
+    if (!userId) {
+      console.error("❌ No userId found in user object:", user);
+      throw new Error("User ID not found. Please log out and log in again.");
+    }
+
+    // Check if it looks like a MongoDB ObjectId (24 hex characters)
+    const isMongoId = /^[0-9a-fA-F]{24}$/.test(userId);
+    if (!isMongoId) {
+      console.warn(
+        "⚠️ userId doesn't look like a valid MongoDB ObjectId:",
+        userId,
+      );
+      // Still proceed, but log a warning
+    }
+
+    return userId;
+  }, [getUserId, user]);
 
   // Redirect if no valid session
   useEffect(() => {
@@ -1990,12 +2562,16 @@ export const SavingsManagement = () => {
 
     if (!user) setUser(userData);
 
-    // Set user email in form data
+    // Set user email and userId in form data
     if (userData?.email) {
+      const userId = userData.id || userData._id || userData.userId || "";
       setFormData((prev) => ({
         ...prev,
         email: userData.email,
+        userId: userId,
       }));
+      console.log("🔑 User ID set in form:", userId);
+      console.log("📋 User data:", userData);
     }
 
     // Load savings only on initial mount
@@ -2006,14 +2582,18 @@ export const SavingsManagement = () => {
     }
   }, [navigate]);
 
-  // Load incomes from API
+  // ============================================================
+  // LOAD INCOMES
+  // ============================================================
   const loadIncomes = useCallback(async () => {
     try {
       const response = await api.get("/incomes");
       if (response.data.success) {
         setIncomeData(response.data.data || []);
-        // Calculate total income from all incomes
-        const total = response.data.data.reduce((sum, income) => sum + (income.amount || 0), 0);
+        const total = response.data.data.reduce(
+          (sum, income) => sum + (income.amount || 0),
+          0,
+        );
         setTotalIncome(total);
       }
     } catch (error) {
@@ -2021,11 +2601,12 @@ export const SavingsManagement = () => {
     }
   }, []);
 
-  // Load savings from API
+  // ============================================================
+  // LOAD SAVINGS
+  // ============================================================
   const loadSavings = useCallback(async () => {
-    // Prevent concurrent loads
     if (isLoadingRef.current) return;
-    
+
     if (!user?.email && !isAdmin) {
       toast.warning("User email not found");
       return;
@@ -2033,18 +2614,20 @@ export const SavingsManagement = () => {
 
     isLoadingRef.current = true;
     setIsLoading(true);
-    
+
     try {
-      // Use refs to get current values
       const search = searchTermRef.current;
       const category = filterCategoryRef.current;
       const status = filterStatusRef.current;
-      
+
       const params = {};
 
-      // If admin, fetch all savings, else fetch user's savings
       if (!isAdmin) {
         params.email = user.email;
+        const userId = getUserId();
+        if (userId) {
+          params.userId = userId;
+        }
       }
 
       if (category && category !== "all") {
@@ -2057,33 +2640,35 @@ export const SavingsManagement = () => {
 
       const response = await api.get("/savings", { params });
 
-      // Handle response based on your API structure
       if (response.data.success) {
         const savingsData = response.data.data || [];
         setSavings(savingsData);
         setFilteredSavings(savingsData);
 
-        // Update stats from response
         if (response.data.summary) {
           setStats(response.data.summary);
         } else {
           calculateStats(savingsData);
         }
       } else {
-        toast.warning("Unexpected response format");
+        throw new Error("Unexpected response format");
       }
     } catch (error) {
       console.error("Load savings error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to load savings goals",
+      showError(
+        "Failed to Load Savings Goals",
+        error.response?.data?.message || "Could not fetch savings goals",
+        error.message,
       );
     } finally {
       setIsLoading(false);
       isLoadingRef.current = false;
     }
-  }, [user?.email, isAdmin]);
+  }, [user?.email, isAdmin, getUserId, showError]);
 
-  // Calculate stats
+  // ============================================================
+  // CALCULATE STATS
+  // ============================================================
   const calculateStats = useCallback((savingsData) => {
     const totalTarget = savingsData.reduce(
       (sum, s) => sum + (s.targetAmount || 0),
@@ -2106,17 +2691,16 @@ export const SavingsManagement = () => {
     });
   }, []);
 
-  // Handle search and filter - update refs and trigger load with debounce
+  // ============================================================
+  // FILTER EFFECTS
+  // ============================================================
   useEffect(() => {
-    // Update refs with current values
     searchTermRef.current = searchTerm;
     filterCategoryRef.current = filterCategory;
     filterPriorityRef.current = filterPriority;
     filterStatusRef.current = filterStatus;
 
-    // Debounce the load - only after user stops interacting
     const timer = setTimeout(() => {
-      // Skip if this is the initial load
       if (!isFirstLoadRef.current) {
         loadSavings();
       }
@@ -2125,11 +2709,9 @@ export const SavingsManagement = () => {
     return () => clearTimeout(timer);
   }, [searchTerm, filterCategory, filterPriority, filterStatus, loadSavings]);
 
-  // Filter savings based on search term and priority (client-side filtering)
   useEffect(() => {
     let filtered = [...savings];
 
-    // Search filter
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
@@ -2139,12 +2721,10 @@ export const SavingsManagement = () => {
       );
     }
 
-    // Priority filter
     if (filterPriority && filterPriority !== "all") {
       filtered = filtered.filter((s) => s.priority === filterPriority);
     }
 
-    // Status filter
     if (filterStatus && filterStatus !== "all") {
       filtered = filtered.filter((s) => {
         if (filterStatus === "completed") return s.isCompleted;
@@ -2156,57 +2736,140 @@ export const SavingsManagement = () => {
     setFilteredSavings(filtered);
   }, [savings, searchTerm, filterPriority, filterStatus]);
 
-  // Handle add savings
+  // ============================================================
+  // CRUD OPERATIONS - CREATE
+  // ============================================================
   const handleAddSavings = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      const targetAmountValue = Number(formData.targetAmount);
+      const currentAmountValue = Number(formData.currentAmount) || 0;
+
+      if (!Number.isInteger(targetAmountValue) || targetAmountValue <= 0) {
+        showError(
+          "Invalid Target Amount",
+          "Target amount must be a positive whole number (no decimals)",
+          "Please enter a valid whole number",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!Number.isInteger(currentAmountValue) || currentAmountValue < 0) {
+        showError(
+          "Invalid Current Amount",
+          "Current amount must be a whole number (no decimals)",
+          "Please enter a valid whole number",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Get the userId - THIS IS CRITICAL
+      const userId = getValidUserIdOrThrow();
+
       const savingsData = {
         category: formData.category,
-        targetAmount: parseFloat(formData.targetAmount),
-        currentAmount: parseFloat(formData.currentAmount) || 0,
+        targetAmount: targetAmountValue,
+        currentAmount: currentAmountValue,
         deadline: formData.deadline || null,
         description: formData.description || "",
         priority: formData.priority || "medium",
         email: formData.email || user?.email,
+        userId: userId, // ← This must be a valid MongoDB ObjectId
       };
+
+      console.log(
+        "📦 Creating savings with data:",
+        JSON.stringify(savingsData, null, 2),
+      );
 
       const response = await api.post("/savings", savingsData);
 
       if (response.data.success) {
-        toast.success("Savings goal created successfully!");
+        const newSavings = response.data.data || response.data;
         setIsAddModalOpen(false);
         resetForm();
-        // Reload after adding
-        setTimeout(() => loadSavings(), 100);
+
+        showSuccess(
+          "Savings Goal Created! 🎯",
+          `Goal of ${formatCurrency(newSavings.targetAmount)} set for ${newSavings.category}`,
+          `Current progress: ${formatCurrency(newSavings.currentAmount || 0)}\nPriority: ${newSavings.priority || "medium"}`,
+        );
+
+        setTimeout(() => {
+          loadSavings();
+          loadIncomes();
+        }, 300);
       } else {
-        toast.error(response.data.message || "Failed to create savings goal");
+        throw new Error(
+          response.data.message || "Failed to create savings goal",
+        );
       }
     } catch (error) {
       console.error("Add savings error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to create savings goal",
+      const errorDetails =
+        error.response?.data?.errors?.join("\n") ||
+        error.message ||
+        "An error occurred";
+      showError(
+        "Failed to Create Savings Goal",
+        error.response?.data?.message || "Could not create savings goal",
+        errorDetails,
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handle edit savings
+  // ============================================================
+  // CRUD OPERATIONS - UPDATE
+  // ============================================================
   const handleEditSavings = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      const targetAmountValue = Number(formData.targetAmount);
+      const currentAmountValue = Number(formData.currentAmount) || 0;
+
+      if (!Number.isInteger(targetAmountValue) || targetAmountValue <= 0) {
+        showError(
+          "Invalid Target Amount",
+          "Target amount must be a positive whole number (no decimals)",
+          "Please enter a valid whole number",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!Number.isInteger(currentAmountValue) || currentAmountValue < 0) {
+        showError(
+          "Invalid Current Amount",
+          "Current amount must be a whole number (no decimals)",
+          "Please enter a valid whole number",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      // For updates, we don't need to send userId, but we need to send all other fields
       const savingsData = {
         category: formData.category,
-        targetAmount: parseFloat(formData.targetAmount),
-        currentAmount: parseFloat(formData.currentAmount) || 0,
+        targetAmount: targetAmountValue,
+        currentAmount: currentAmountValue,
         deadline: formData.deadline || null,
         description: formData.description || "",
         priority: formData.priority || "medium",
+        // userId is not needed for update as it's already set in the database
       };
+
+      console.log(
+        "📦 Updating savings with data:",
+        JSON.stringify(savingsData, null, 2),
+      );
 
       const response = await api.put(
         `/savings/${selectedSavings._id}`,
@@ -2214,25 +2877,41 @@ export const SavingsManagement = () => {
       );
 
       if (response.data.success) {
-        toast.success("Savings goal updated successfully!");
+        const updatedSavings = response.data.data || response.data;
         setIsEditModalOpen(false);
         resetForm();
-        // Reload after updating
-        setTimeout(() => loadSavings(), 100);
+
+        showSuccess(
+          "Savings Goal Updated! ✏️",
+          `Goal for ${updatedSavings.category} has been updated.`,
+          `Target: ${formatCurrency(updatedSavings.targetAmount)}\nCurrent: ${formatCurrency(updatedSavings.currentAmount || 0)}`,
+        );
+
+        setTimeout(() => loadSavings(), 300);
       } else {
-        toast.error(response.data.message || "Failed to update savings goal");
+        throw new Error(
+          response.data.message || "Failed to update savings goal",
+        );
       }
     } catch (error) {
       console.error("Update savings error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to update savings goal",
+      const errorDetails =
+        error.response?.data?.errors?.join("\n") ||
+        error.message ||
+        "An error occurred";
+      showError(
+        "Failed to Update Savings Goal",
+        error.response?.data?.message || "Could not update savings goal",
+        errorDetails,
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handle delete savings
+  // ============================================================
+  // CRUD OPERATIONS - DELETE
+  // ============================================================
   const handleDeleteSavings = async () => {
     setIsSubmitting(true);
 
@@ -2240,63 +2919,146 @@ export const SavingsManagement = () => {
       const response = await api.delete(`/savings/${selectedSavings._id}`);
 
       if (response.data.success) {
-        toast.success("Savings goal deleted successfully!");
         setIsDeleteModalOpen(false);
-        setSelectedSavings(null);
-        // Reload after deleting
-        setTimeout(() => loadSavings(), 100);
+
+        showSuccess(
+          "Savings Goal Deleted! 🗑️",
+          `The savings goal has been permanently deleted.`,
+          `Category: ${selectedSavings.category}\nTarget: ${formatCurrency(selectedSavings.targetAmount)}`,
+        );
+
+        setTimeout(() => {
+          loadSavings();
+          loadIncomes();
+        }, 300);
       } else {
-        toast.error(response.data.message || "Failed to delete savings goal");
+        throw new Error(
+          response.data.message || "Failed to delete savings goal",
+        );
       }
     } catch (error) {
       console.error("Delete savings error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to delete savings goal",
+      const errorDetails =
+        error.response?.data?.errors?.join("\n") ||
+        error.message ||
+        "An error occurred";
+      showError(
+        "Failed to Delete Savings Goal",
+        error.response?.data?.message || "Could not delete savings goal",
+        errorDetails,
       );
     } finally {
       setIsSubmitting(false);
+      setSelectedSavings(null);
     }
   };
 
-  // Handle contribute to savings
+  // ============================================================
+  // FIXED: CONTRIBUTE OPERATION - Send ALL required fields with proper userId
+  // ============================================================
   const handleContribute = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const amount = parseFloat(contributionData.amount);
-      if (!amount || amount <= 0) {
-        toast.error("Please enter a valid contribution amount");
+      const amount = Number(contributionData.amount);
+      if (!Number.isInteger(amount) || amount <= 0) {
+        showError(
+          "Invalid Contribution",
+          "Contribution amount must be a positive whole number (no decimals)",
+          "Please enter a valid whole number",
+        );
         setIsSubmitting(false);
         return;
       }
 
-      const newCurrentAmount = (selectedSavings.currentAmount || 0) + amount;
+      // Calculate new amount
+      const currentAmount = selectedSavings.currentAmount || 0;
+      const newCurrentAmount = currentAmount + amount;
 
-      const response = await api.put(`/savings/${selectedSavings._id}`, {
+      // Get the userId - THIS IS CRITICAL for the contribution to work
+      // Use the userId from the selected savings, or from the user object
+      const userId = selectedSavings.userId || getValidUserIdOrThrow();
+
+      console.log("🔑 Contribution using userId:", userId);
+      console.log("📋 Selected savings:", selectedSavings);
+
+      // Send ALL required fields to pass validation
+      const savingsData = {
+        category: selectedSavings.category,
+        targetAmount: selectedSavings.targetAmount,
         currentAmount: newCurrentAmount,
-      });
+        deadline: selectedSavings.deadline || null,
+        description: selectedSavings.description || "",
+        priority: selectedSavings.priority || "medium",
+        email: selectedSavings.email || user?.email,
+        userId: userId, // ← This MUST be included and be a valid MongoDB ObjectId
+      };
+
+      console.log(
+        "📤 Contribution data:",
+        JSON.stringify(savingsData, null, 2),
+      );
+
+      const response = await api.put(
+        `/savings/${selectedSavings._id}`,
+        savingsData,
+      );
 
       if (response.data.success) {
-        toast.success(`${amount.toFixed(0)} RWF contributed successfully!`);
+        const updatedSavings = response.data.data || response.data;
         setIsContributeModalOpen(false);
         setContributionData({ amount: "", note: "" });
-        setSelectedSavings(null);
-        // Reload after contributing
-        setTimeout(() => loadSavings(), 100);
+
+        const progress = updatedSavings.progress || 0;
+        const isComplete = progress >= 100;
+
+        showSuccess(
+          isComplete ? "🎉 Goal Achieved!" : "Contribution Successful! 💰",
+          `${amount.toFixed(0)} RWF contributed to ${selectedSavings.category}`,
+          `Progress: ${progress.toFixed(1)}%\nCurrent: ${formatCurrency(updatedSavings.currentAmount)}\nTarget: ${formatCurrency(updatedSavings.targetAmount)}`,
+        );
+
+        setTimeout(() => loadSavings(), 300);
       } else {
-        toast.error(response.data.message || "Failed to contribute");
+        throw new Error(response.data.message || "Failed to contribute");
       }
     } catch (error) {
       console.error("Contribute error:", error);
-      toast.error(error.response?.data?.message || "Failed to contribute");
+      console.error("Error response:", error.response?.data);
+
+      const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred";
+      const errorDetails = error.response?.data?.errors?.join("\n") || "";
+
+      // Check for userId-specific error
+      if (
+        errorMessage.includes("User ID") ||
+        errorDetails.includes("User ID")
+      ) {
+        showError(
+          "User ID Error",
+          "The system could not identify your user account.",
+          "Please log out and log in again to refresh your session.",
+        );
+      } else {
+        showError(
+          "Failed to Contribute",
+          errorMessage,
+          errorDetails || "Please try again",
+        );
+      }
     } finally {
       setIsSubmitting(false);
+      setSelectedSavings(null);
     }
   };
 
-  // Reset form
+  // ============================================================
+  // RESET FORM
+  // ============================================================
   const resetForm = useCallback(() => {
+    const userId = getUserId();
     setFormData({
       category: "",
       targetAmount: "",
@@ -2305,33 +3067,42 @@ export const SavingsManagement = () => {
       description: "",
       priority: "medium",
       email: user?.email || "",
+      userId: userId,
     });
     setSelectedSavings(null);
-  }, [user]);
+  }, [user, getUserId]);
 
-  // Open edit modal
-  const openEditModal = useCallback((saving) => {
-    setSelectedSavings(saving);
-    setFormData({
-      category: saving.category || "",
-      targetAmount: saving.targetAmount?.toString() || "",
-      currentAmount: saving.currentAmount?.toString() || "",
-      deadline: saving.deadline ? saving.deadline.split("T")[0] : "",
-      description: saving.description || "",
-      priority: saving.priority || "medium",
-      email: saving.email || user?.email || "",
-    });
-    setIsEditModalOpen(true);
-  }, [user]);
+  // ============================================================
+  // OPEN MODALS
+  // ============================================================
+  const openEditModal = useCallback(
+    (saving) => {
+      setSelectedSavings(saving);
+      const userId = saving.userId || getUserId();
+      setFormData({
+        category: saving.category || "",
+        targetAmount: saving.targetAmount?.toString() || "",
+        currentAmount: saving.currentAmount?.toString() || "",
+        deadline: saving.deadline ? saving.deadline.split("T")[0] : "",
+        description: saving.description || "",
+        priority: saving.priority || "medium",
+        email: saving.email || user?.email || "",
+        userId: userId,
+      });
+      setIsEditModalOpen(true);
+    },
+    [user, getUserId],
+  );
 
-  // Open contribute modal
   const openContributeModal = useCallback((saving) => {
     setSelectedSavings(saving);
     setContributionData({ amount: "", note: "" });
     setIsContributeModalOpen(true);
   }, []);
 
-  // Format currency - RWF (Rwandan Franc)
+  // ============================================================
+  // HELPERS
+  // ============================================================
   const formatCurrency = useCallback((amount) => {
     return new Intl.NumberFormat("rw-RW", {
       style: "currency",
@@ -2341,7 +3112,6 @@ export const SavingsManagement = () => {
     }).format(amount || 0);
   }, []);
 
-  // Format date
   const formatDate = useCallback((dateString) => {
     if (!dateString) return "No deadline";
     try {
@@ -2355,7 +3125,6 @@ export const SavingsManagement = () => {
     }
   }, []);
 
-  // Get priority badge
   const getPriorityBadge = useCallback((priority) => {
     const level =
       PRIORITY_LEVELS.find((p) => p.value === priority) || PRIORITY_LEVELS[1];
@@ -2368,7 +3137,6 @@ export const SavingsManagement = () => {
     );
   }, []);
 
-  // Get status badge
   const getStatusBadge = useCallback((isCompleted, progress) => {
     if (isCompleted) {
       return (
@@ -2399,7 +3167,6 @@ export const SavingsManagement = () => {
     );
   }, []);
 
-  // Get days remaining
   const getDaysRemaining = useCallback((deadline) => {
     if (!deadline) return null;
     const now = new Date();
@@ -2410,31 +3177,35 @@ export const SavingsManagement = () => {
     return `${diff} days left`;
   }, []);
 
-  // Group savings by month
+  // ============================================================
+  // EXPORT FUNCTIONS
+  // ============================================================
   const groupByMonth = useCallback((data) => {
     const grouped = {};
-    data.forEach(item => {
+    data.forEach((item) => {
       if (item.deadline) {
         const date = new Date(item.deadline);
-        const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const monthYear = date.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        });
         if (!grouped[monthYear]) {
           grouped[monthYear] = [];
         }
         grouped[monthYear].push(item);
       } else {
-        if (!grouped['No Deadline']) {
-          grouped['No Deadline'] = [];
+        if (!grouped["No Deadline"]) {
+          grouped["No Deadline"] = [];
         }
-        grouped['No Deadline'].push(item);
+        grouped["No Deadline"].push(item);
       }
     });
     return grouped;
   }, []);
 
-  // Group savings by week
   const groupByWeek = useCallback((data) => {
     const grouped = {};
-    data.forEach(item => {
+    data.forEach((item) => {
       if (item.deadline) {
         const date = new Date(item.deadline);
         const startOfWeek = new Date(date);
@@ -2447,148 +3218,100 @@ export const SavingsManagement = () => {
         }
         grouped[weekKey].push(item);
       } else {
-        if (!grouped['No Deadline']) {
-          grouped['No Deadline'] = [];
+        if (!grouped["No Deadline"]) {
+          grouped["No Deadline"] = [];
         }
-        grouped['No Deadline'].push(item);
+        grouped["No Deadline"].push(item);
       }
     });
     return grouped;
   }, []);
 
-  // Export to PDF
   const exportToPDF = useCallback(() => {
     if (filteredSavings.length === 0) {
       toast.warning("No savings data to export");
       return;
     }
 
-    const doc = new jsPDF('landscape', 'pt', 'a4');
-    
-    // Add title
+    const doc = new jsPDF("landscape", "pt", "a4");
+
     doc.setFontSize(18);
     doc.setTextColor(40, 40, 40);
-    doc.text('Savings Report', 40, 50);
-    
-    // Add subtitle with date
+    doc.text("Savings Report", 40, 50);
+
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
     doc.text(`Generated: ${new Date().toLocaleDateString()}`, 40, 70);
 
-    // Add summary section
     doc.setFontSize(12);
     doc.setTextColor(40, 40, 40);
-    doc.text('Summary', 40, 95);
-    
+    doc.text("Summary", 40, 95);
+
     const summaryData = [
-      ['Total Goals', stats.totalGoals.toString()],
-      ['Total Target Amount', formatCurrency(stats.totalTarget)],
-      ['Total Current Amount', formatCurrency(stats.totalCurrent)],
-      ['Overall Progress', `${stats.overallProgress.toFixed(1)}%`],
-      ['Completed Goals', stats.completedCount.toString()],
-      ['In Progress Goals', stats.inProgressCount.toString()],
-      ['Total Income', formatCurrency(totalIncome)],
+      ["Total Goals", stats.totalGoals.toString()],
+      ["Total Target Amount", formatCurrency(stats.totalTarget)],
+      ["Total Current Amount", formatCurrency(stats.totalCurrent)],
+      ["Overall Progress", `${stats.overallProgress.toFixed(1)}%`],
+      ["Completed Goals", stats.completedCount.toString()],
+      ["In Progress Goals", stats.inProgressCount.toString()],
+      ["Total Income", formatCurrency(totalIncome)],
     ];
 
     doc.autoTable({
       startY: 100,
-      head: [['Metric', 'Value']],
+      head: [["Metric", "Value"]],
       body: summaryData,
-      theme: 'striped',
+      theme: "striped",
       headStyles: { fillColor: [128, 90, 213] },
       styles: { fontSize: 10 },
       margin: { left: 40, right: 40 },
     });
 
-    // Add savings table
     const tableY = doc.previousAutoTable.finalY + 20;
     doc.setFontSize(12);
     doc.setTextColor(40, 40, 40);
-    doc.text('Savings Goals', 40, tableY);
+    doc.text("Savings Goals", 40, tableY);
 
-    const tableData = filteredSavings.map(s => [
-      s.category || '',
+    const tableData = filteredSavings.map((s) => [
+      s.category || "",
       formatCurrency(s.targetAmount || 0),
       formatCurrency(s.currentAmount || 0),
       `${(s.progress || 0).toFixed(1)}%`,
-      s.priority || 'medium',
-      s.deadline ? formatDate(s.deadline) : 'No deadline',
-      s.isCompleted ? 'Completed' : 'In Progress'
+      s.priority || "medium",
+      s.deadline ? formatDate(s.deadline) : "No deadline",
+      s.isCompleted ? "Completed" : "In Progress",
     ]);
 
     doc.autoTable({
       startY: tableY + 10,
-      head: [['Category', 'Target', 'Current', 'Progress', 'Priority', 'Deadline', 'Status']],
+      head: [
+        [
+          "Category",
+          "Target",
+          "Current",
+          "Progress",
+          "Priority",
+          "Deadline",
+          "Status",
+        ],
+      ],
       body: tableData,
-      theme: 'striped',
+      theme: "striped",
       headStyles: { fillColor: [128, 90, 213] },
       styles: { fontSize: 8 },
       margin: { left: 40, right: 40 },
     });
 
-    // Add grouped by month section
-    const groupedByMonth = groupByMonth(filteredSavings);
-    const monthY = doc.previousAutoTable.finalY + 20;
-    doc.setFontSize(12);
-    doc.setTextColor(40, 40, 40);
-    doc.text('Grouped by Month', 40, monthY);
-
-    let currentY = monthY + 10;
-    Object.keys(groupedByMonth).forEach(month => {
-      if (currentY > 700) {
-        doc.addPage();
-        currentY = 40;
-      }
-      doc.setFontSize(10);
-      doc.setTextColor(60, 60, 60);
-      doc.text(month, 40, currentY);
-      
-      const monthTotal = groupedByMonth[month].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
-      doc.setFontSize(8);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`Total: ${formatCurrency(monthTotal)}`, 300, currentY);
-      
-      currentY += 15;
-    });
-
-    // Add grouped by week section
-    const groupedByWeek = groupByWeek(filteredSavings);
-    const weekY = currentY + 20;
-    doc.setFontSize(12);
-    doc.setTextColor(40, 40, 40);
-    doc.text('Grouped by Week', 40, weekY);
-
-    let weekCurrentY = weekY + 10;
-    Object.keys(groupedByWeek).forEach(week => {
-      if (weekCurrentY > 700) {
-        doc.addPage();
-        weekCurrentY = 40;
-      }
-      doc.setFontSize(10);
-      doc.setTextColor(60, 60, 60);
-      doc.text(week, 40, weekCurrentY);
-      
-      const weekTotal = groupedByWeek[week].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
-      doc.setFontSize(8);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`Total: ${formatCurrency(weekTotal)}`, 400, weekCurrentY);
-      
-      weekCurrentY += 15;
-    });
-
-    // Save the PDF
-    doc.save(`savings-report-${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`savings-report-${new Date().toISOString().split("T")[0]}.pdf`);
     toast.success("PDF exported successfully!");
-  }, [filteredSavings, stats, totalIncome, formatCurrency, formatDate, groupByMonth, groupByWeek]);
+  }, [filteredSavings, stats, totalIncome, formatCurrency, formatDate]);
 
-  // Export to CSV
   const exportToCSV = useCallback(() => {
     if (filteredSavings.length === 0) {
       toast.warning("No savings data to export");
       return;
     }
 
-    // Create CSV
     const headers = [
       "Category",
       "Target Amount (RWF)",
@@ -2613,7 +3336,6 @@ export const SavingsManagement = () => {
       csv += row.join(",") + "\n";
     });
 
-    // Add summary
     csv += "\nSummary\n";
     csv += `Total Goals,${stats.totalGoals}\n`;
     csv += `Total Target Amount (RWF),${stats.totalTarget}\n`;
@@ -2623,27 +3345,6 @@ export const SavingsManagement = () => {
     csv += `In Progress Goals,${stats.inProgressCount}\n`;
     csv += `Total Income (RWF),${totalIncome}\n`;
 
-    // Add grouped by month
-    const groupedByMonth = groupByMonth(filteredSavings);
-    csv += "\n\nGrouped by Month\n";
-    csv += "Month,Total Amount (RWF),Number of Goals\n";
-    Object.keys(groupedByMonth).forEach(month => {
-      const total = groupedByMonth[month].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
-      const count = groupedByMonth[month].length;
-      csv += `${month},${total},${count}\n`;
-    });
-
-    // Add grouped by week
-    const groupedByWeek = groupByWeek(filteredSavings);
-    csv += "\n\nGrouped by Week\n";
-    csv += "Week,Total Amount (RWF),Number of Goals\n";
-    Object.keys(groupedByWeek).forEach(week => {
-      const total = groupedByWeek[week].reduce((sum, s) => sum + (s.currentAmount || 0), 0);
-      const count = groupedByWeek[week].length;
-      csv += `${week},${total},${count}\n`;
-    });
-
-    // Download
     const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -2653,8 +3354,11 @@ export const SavingsManagement = () => {
     window.URL.revokeObjectURL(url);
 
     toast.success("CSV exported successfully!");
-  }, [filteredSavings, stats, totalIncome, formatDate, groupByMonth, groupByWeek]);
+  }, [filteredSavings, stats, totalIncome, formatDate]);
 
+  // ============================================================
+  // RENDER
+  // ============================================================
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <ToastContainer
@@ -2669,6 +3373,8 @@ export const SavingsManagement = () => {
         pauseOnHover
         theme="colored"
       />
+
+     
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -2731,31 +3437,31 @@ export const SavingsManagement = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-purple-500">
             <p className="text-sm text-gray-500">Total Goals</p>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-xs font-bold text-purple-600">
               {stats.totalGoals}
             </p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-green-500">
             <p className="text-sm text-gray-500">Completed</p>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-xs font-bold text-green-600">
               {stats.completedCount}
             </p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-blue-500">
             <p className="text-sm text-gray-500">In Progress</p>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-xs font-bold text-blue-600">
               {stats.inProgressCount}
             </p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-orange-500">
             <p className="text-sm text-gray-500">Progress</p>
-            <p className="text-2xl font-bold text-orange-600">
+            <p className="text-xs font-bold text-orange-600">
               {stats.overallProgress.toFixed(1)}%
             </p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-emerald-500">
             <p className="text-sm text-gray-500">Saved</p>
-            <p className="text-2xl font-bold text-emerald-600">
+            <p className="text-xs font-bold text-emerald-600">
               {formatCurrency(stats.totalCurrent)}
             </p>
           </div>
@@ -2766,8 +3472,10 @@ export const SavingsManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-80">Total Income</p>
-              <p className="text-3xl font-bold">{formatCurrency(totalIncome)}</p>
-              <p className="text-xs opacity-70 mt-1">All time income from all sources</p>
+              <p className="text-xl font-bold">{formatCurrency(totalIncome)}</p>
+              <p className="text-xs opacity-70 mt-1">
+                All time income from all sources
+              </p>
             </div>
             <MonetizationOnIcon className="w-16 h-16 opacity-30" />
           </div>
@@ -2868,7 +3576,7 @@ export const SavingsManagement = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
             {filteredSavings.map((saving) => (
               <SavingsCard
                 key={saving._id}
@@ -2963,64 +3671,52 @@ export const SavingsManagement = () => {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal
+      <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);
           setSelectedSavings(null);
         }}
-        title="Confirm Delete"
-        size="sm"
-      >
-        <div className="text-center py-4">
-          <WarningIcon className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">
-            Are you sure?
-          </h3>
-          <p className="text-gray-600">
-            This action cannot be undone. This will permanently delete the
-            savings goal:
-          </p>
-          <div className="mt-4 p-4 bg-gray-50 rounded-xl">
-            <p className="font-semibold text-gray-800">
-              {selectedSavings?.category || "N/A"}
-            </p>
-            <p className="text-sm text-gray-600">
-              Target: {formatCurrency(selectedSavings?.targetAmount || 0)} -
-              Current: {formatCurrency(selectedSavings?.currentAmount || 0)}
-            </p>
-          </div>
+        onConfirm={handleDeleteSavings}
+        title="Delete Savings Goal"
+        message={`Are you sure you want to delete this savings goal?\n\n"${selectedSavings?.category || "N/A"}"\nTarget: ${formatCurrency(selectedSavings?.targetAmount || 0)}`}
+        type="danger"
+        confirmLabel="Delete"
+        isSubmitting={isSubmitting}
+      />
 
-          <div className="flex justify-center space-x-3 mt-6">
-            <button
-              onClick={() => {
-                setIsDeleteModalOpen(false);
-                setSelectedSavings(null);
-              }}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleDeleteSavings}
-              disabled={isSubmitting}
-              className="px-6 py-2 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Deleting...</span>
-                </>
-              ) : (
-                <>
-                  <DeleteIcon className="w-5 h-5" />
-                  <span>Delete</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </Modal>
+       {/* SUCCESS, ERROR, CONFIRM MODALS */}
+      <SuccessModal
+        isOpen={successModal.isOpen}
+        onClose={() => setSuccessModal((prev) => ({ ...prev, isOpen: false }))}
+        title={successModal.title}
+        message={successModal.message}
+        details={successModal.details}
+      />
+
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        onClose={() => setErrorModal((prev) => ({ ...prev, isOpen: false }))}
+        title={errorModal.title}
+        message={errorModal.message}
+        details={errorModal.details}
+      />
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={() => {
+          if (confirmModal.onConfirm) {
+            confirmModal.onConfirm();
+          }
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        }}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type={confirmModal.type}
+        confirmLabel={confirmModal.confirmLabel}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };
