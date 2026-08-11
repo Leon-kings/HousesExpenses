@@ -1,3 +1,4 @@
+
 // /* eslint-disable react-hooks/preserve-manual-memoization */
 // /* eslint-disable react-hooks/immutability */
 // /* eslint-disable react-hooks/set-state-in-effect */
@@ -59,7 +60,7 @@
 //   "Commission",
 //   "Pension",
 //   "Social Security",
-//   "Other"
+//   "Other",
 // ];
 
 // // Savings Categories
@@ -73,7 +74,7 @@
 //   "Investment",
 //   "General Savings",
 //   "Children's Education",
-//   "Business Fund"
+//   "Business Fund",
 // ];
 
 // // Budget Categories (expense categories for budget planning)
@@ -92,7 +93,7 @@
 //   "Subscriptions",
 //   "Clothing",
 //   "Home Maintenance",
-//   "Other"
+//   "Other",
 // ];
 
 // // Memoized Modal Component
@@ -102,7 +103,7 @@
 //   const sizes = {
 //     sm: "max-w-md",
 //     md: "max-w-2xl",
-//     lg: "max-w-4xl"
+//     lg: "max-w-4xl",
 //   };
 
 //   return (
@@ -142,431 +143,500 @@
 // });
 
 // // Memoized Income Form Component
-// const IncomeForm = memo(({
-//   formData,
-//   setFormData,
-//   onSubmit,
-//   submitLabel,
-//   isSubmitting,
-//   categories,
-//   onCancel
-// }) => (
-//   <form onSubmit={onSubmit} className="space-y-4">
-//     <div>
-//       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         Description *
-//       </label>
-//       <input
-//         type="text"
-//         value={formData.description}
-//         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-//         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         placeholder="Enter description"
-//         required
-//       />
-//     </div>
+// const IncomeForm = memo(
+//   ({
+//     formData,
+//     setFormData,
+//     onSubmit,
+//     submitLabel,
+//     isSubmitting,
+//     categories,
+//     onCancel,
+//   }) => (
+//     <form onSubmit={onSubmit} className="space-y-4">
+//       <div>
+//         <label className="block text-sm font-medium text-gray-700 mb-2">
+//           Description *
+//         </label>
+//         <input
+//           type="text"
+//           value={formData.description}
+//           onChange={(e) =>
+//             setFormData({ ...formData, description: e.target.value })
+//           }
+//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//           placeholder="Enter description"
+//           required
+//         />
+//       </div>
 
-//     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Category *
+//           </label>
+//           <select
+//             value={formData.category}
+//             onChange={(e) =>
+//               setFormData({ ...formData, category: e.target.value })
+//             }
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//             required
+//           >
+//             <option value="">Select Category</option>
+//             {categories.map((cat) => (
+//               <option key={cat} value={cat}>
+//                 {cat}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Source
+//           </label>
+//           <input
+//             type="text"
+//             value={formData.source}
+//             onChange={(e) =>
+//               setFormData({ ...formData, source: e.target.value })
+//             }
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//             placeholder="Income source"
+//           />
+//         </div>
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Amount (RWF) *
+//           </label>
+//           <input
+//             type="number"
+//             step="1"
+//             min="0"
+//             value={formData.amount}
+//             onChange={(e) => {
+//               const value = e.target.value;
+//               // Only allow whole numbers (no decimals)
+//               if (value === "" || /^\d+$/.test(value)) {
+//                 setFormData({ ...formData, amount: value });
+//               }
+//             }}
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//             placeholder="0"
+//             required
+//           />
+//           <p className="text-xs text-gray-500 mt-1">
+//             Whole numbers only (no decimals)
+//           </p>
+//         </div>
+
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Date *
+//           </label>
+//           <input
+//             type="date"
+//             value={formData.date}
+//             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//             required
+//           />
+//         </div>
+//       </div>
+
+//       <div>
+//         <label className="block text-sm font-medium text-gray-700 mb-2">
+//           User Name *
+//         </label>
+//         <input
+//           type="text"
+//           value={formData.user}
+//           onChange={(e) => setFormData({ ...formData, user: e.target.value })}
+//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//           placeholder="Enter user name"
+//           required
+//         />
+//       </div>
+
+//       <div className="flex items-center space-x-4">
+//         <label className="flex items-center space-x-2">
+//           <input
+//             type="checkbox"
+//             checked={formData.isRecurring}
+//             onChange={(e) =>
+//               setFormData({ ...formData, isRecurring: e.target.checked })
+//             }
+//             className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+//           />
+//           <span className="text-sm text-gray-700">Recurring Income</span>
+//         </label>
+
+//         {formData.isRecurring && (
+//           <select
+//             value={formData.frequency}
+//             onChange={(e) =>
+//               setFormData({ ...formData, frequency: e.target.value })
+//             }
+//             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+//           >
+//             <option value="weekly">Weekly</option>
+//             <option value="biweekly">Bi-weekly</option>
+//             <option value="monthly">Monthly</option>
+//             <option value="quarterly">Quarterly</option>
+//             <option value="annually">Annually</option>
+//           </select>
+//         )}
+//       </div>
+
+//       <input type="hidden" value={formData.email} />
+
+//       <div className="flex justify-end space-x-3 pt-4">
+//         <button
+//           type="button"
+//           onClick={onCancel}
+//           className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+//         >
+//           Cancel
+//         </button>
+//         <button
+//           type="submit"
+//           disabled={isSubmitting}
+//           className="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+//         >
+//           {isSubmitting ? (
+//             <>
+//               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+//               <span>Processing...</span>
+//             </>
+//           ) : (
+//             <span>{submitLabel}</span>
+//           )}
+//         </button>
+//       </div>
+//     </form>
+//   ),
+// );
+
+// // Memoized Budget Form Component
+// const BudgetForm = memo(
+//   ({
+//     budgetFormData,
+//     setBudgetFormData,
+//     onSubmit,
+//     isSubmitting,
+//     categories,
+//     onCancel,
+//     getMonthName,
+//   }) => (
+//     <form onSubmit={onSubmit} className="space-y-4">
 //       <div>
 //         <label className="block text-sm font-medium text-gray-700 mb-2">
 //           Category *
 //         </label>
 //         <select
-//           value={formData.category}
-//           onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+//           value={budgetFormData.category}
+//           onChange={(e) =>
+//             setBudgetFormData({ ...budgetFormData, category: e.target.value })
+//           }
 //           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
 //           required
 //         >
 //           <option value="">Select Category</option>
 //           {categories.map((cat) => (
-//             <option key={cat} value={cat}>{cat}</option>
+//             <option key={cat} value={cat}>
+//               {cat}
+//             </option>
 //           ))}
 //         </select>
 //       </div>
 
 //       <div>
 //         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Source
-//         </label>
-//         <input
-//           type="text"
-//           value={formData.source}
-//           onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//           placeholder="Income source"
-//         />
-//       </div>
-//     </div>
-
-//     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//       <div>
-//         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Amount (RWF) *
+//           Allocated Amount (RWF) *
 //         </label>
 //         <input
 //           type="number"
 //           step="1"
 //           min="0"
-//           value={formData.amount}
+//           value={budgetFormData.allocatedAmount}
 //           onChange={(e) => {
 //             const value = e.target.value;
 //             // Only allow whole numbers (no decimals)
 //             if (value === "" || /^\d+$/.test(value)) {
-//               setFormData({ ...formData, amount: value });
+//               setBudgetFormData({ ...budgetFormData, allocatedAmount: value });
 //             }
 //           }}
 //           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
 //           placeholder="0"
 //           required
 //         />
-//         <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
+//         <p className="text-xs text-gray-500 mt-1">
+//           Whole numbers only (no decimals)
+//         </p>
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Month
+//           </label>
+//           <select
+//             value={budgetFormData.month}
+//             onChange={(e) =>
+//               setBudgetFormData({
+//                 ...budgetFormData,
+//                 month: parseInt(e.target.value),
+//               })
+//             }
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//           >
+//             {Array.from({ length: 12 }, (_, i) => (
+//               <option key={i} value={i}>
+//                 {getMonthName(i)}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Year
+//           </label>
+//           <input
+//             type="number"
+//             value={budgetFormData.year}
+//             onChange={(e) =>
+//               setBudgetFormData({
+//                 ...budgetFormData,
+//                 year: parseInt(e.target.value),
+//               })
+//             }
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//             min={2020}
+//             max={2030}
+//           />
+//         </div>
 //       </div>
 
 //       <div>
 //         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Date *
+//           Description (Optional)
 //         </label>
-//         <input
-//           type="date"
-//           value={formData.date}
-//           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//           required
-//         />
-//       </div>
-//     </div>
-
-//     <div>
-//       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         User Name *
-//       </label>
-//       <input
-//         type="text"
-//         value={formData.user}
-//         onChange={(e) => setFormData({ ...formData, user: e.target.value })}
-//         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         placeholder="Enter user name"
-//         required
-//       />
-//     </div>
-
-//     <div className="flex items-center space-x-4">
-//       <label className="flex items-center space-x-2">
-//         <input
-//           type="checkbox"
-//           checked={formData.isRecurring}
-//           onChange={(e) => setFormData({ ...formData, isRecurring: e.target.checked })}
-//           className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
-//         />
-//         <span className="text-sm text-gray-700">Recurring Income</span>
-//       </label>
-
-//       {formData.isRecurring && (
-//         <select
-//           value={formData.frequency}
-//           onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-//           className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-//         >
-//           <option value="weekly">Weekly</option>
-//           <option value="biweekly">Bi-weekly</option>
-//           <option value="monthly">Monthly</option>
-//           <option value="quarterly">Quarterly</option>
-//           <option value="annually">Annually</option>
-//         </select>
-//       )}
-//     </div>
-
-//     <input type="hidden" value={formData.email} />
-
-//     <div className="flex justify-end space-x-3 pt-4">
-//       <button
-//         type="button"
-//         onClick={onCancel}
-//         className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-//       >
-//         Cancel
-//       </button>
-//       <button
-//         type="submit"
-//         disabled={isSubmitting}
-//         className="px-6 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-//       >
-//         {isSubmitting ? (
-//           <>
-//             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-//             <span>Processing...</span>
-//           </>
-//         ) : (
-//           <span>{submitLabel}</span>
-//         )}
-//       </button>
-//     </div>
-//   </form>
-// ));
-
-// // Memoized Budget Form Component
-// const BudgetForm = memo(({
-//   budgetFormData,
-//   setBudgetFormData,
-//   onSubmit,
-//   isSubmitting,
-//   categories,
-//   onCancel,
-//   getMonthName
-// }) => (
-//   <form onSubmit={onSubmit} className="space-y-4">
-//     <div>
-//       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         Category *
-//       </label>
-//       <select
-//         value={budgetFormData.category}
-//         onChange={(e) => setBudgetFormData({ ...budgetFormData, category: e.target.value })}
-//         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         required
-//       >
-//         <option value="">Select Category</option>
-//         {categories.map((cat) => (
-//           <option key={cat} value={cat}>{cat}</option>
-//         ))}
-//       </select>
-//     </div>
-
-//     <div>
-//       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         Allocated Amount (RWF) *
-//       </label>
-//       <input
-//         type="number"
-//         step="1"
-//         min="0"
-//         value={budgetFormData.allocatedAmount}
-//         onChange={(e) => {
-//           const value = e.target.value;
-//           // Only allow whole numbers (no decimals)
-//           if (value === "" || /^\d+$/.test(value)) {
-//             setBudgetFormData({ ...budgetFormData, allocatedAmount: value });
+//         <textarea
+//           value={budgetFormData.description}
+//           onChange={(e) =>
+//             setBudgetFormData({
+//               ...budgetFormData,
+//               description: e.target.value,
+//             })
 //           }
-//         }}
-//         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         placeholder="0"
-//         required
-//       />
-//       <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
-//     </div>
-
-//     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//       <div>
-//         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Month
-//         </label>
-//         <select
-//           value={budgetFormData.month}
-//           onChange={(e) => setBudgetFormData({ ...budgetFormData, month: parseInt(e.target.value) })}
 //           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         >
-//           {Array.from({ length: 12 }, (_, i) => (
-//             <option key={i} value={i}>{getMonthName(i)}</option>
-//           ))}
-//         </select>
-//       </div>
-
-//       <div>
-//         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Year
-//         </label>
-//         <input
-//           type="number"
-//           value={budgetFormData.year}
-//           onChange={(e) => setBudgetFormData({ ...budgetFormData, year: parseInt(e.target.value) })}
-//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//           min={2020}
-//           max={2030}
+//           rows="2"
+//           placeholder="Additional notes"
 //         />
 //       </div>
-//     </div>
 
-//     <div>
-//       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         Description (Optional)
-//       </label>
-//       <textarea
-//         value={budgetFormData.description}
-//         onChange={(e) => setBudgetFormData({ ...budgetFormData, description: e.target.value })}
-//         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         rows="2"
-//         placeholder="Additional notes"
-//       />
-//     </div>
-
-//     <div className="flex justify-end space-x-3 pt-4">
-//       <button
-//         type="button"
-//         onClick={onCancel}
-//         className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-//       >
-//         Cancel
-//       </button>
-//       <button
-//         type="submit"
-//         disabled={isSubmitting}
-//         className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-//       >
-//         {isSubmitting ? (
-//           <>
-//             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-//             <span>Saving...</span>
-//           </>
-//         ) : (
-//           <span>Set Budget</span>
-//         )}
-//       </button>
-//     </div>
-//   </form>
-// ));
+//       <div className="flex justify-end space-x-3 pt-4">
+//         <button
+//           type="button"
+//           onClick={onCancel}
+//           className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+//         >
+//           Cancel
+//         </button>
+//         <button
+//           type="submit"
+//           disabled={isSubmitting}
+//           className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+//         >
+//           {isSubmitting ? (
+//             <>
+//               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+//               <span>Saving...</span>
+//             </>
+//           ) : (
+//             <span>Set Budget</span>
+//           )}
+//         </button>
+//       </div>
+//     </form>
+//   ),
+// );
 
 // // Memoized Savings Form Component
-// const SavingsForm = memo(({
-//   savingsFormData,
-//   setSavingsFormData,
-//   onSubmit,
-//   isSubmitting,
-//   categories,
-//   onCancel
-// }) => (
-//   <form onSubmit={onSubmit} className="space-y-4">
-//     <div>
-//       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         Savings Category *
-//       </label>
-//       <select
-//         value={savingsFormData.category}
-//         onChange={(e) => setSavingsFormData({ ...savingsFormData, category: e.target.value })}
-//         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         required
-//       >
-//         <option value="">Select Category</option>
-//         {categories.map((cat) => (
-//           <option key={cat} value={cat}>{cat}</option>
-//         ))}
-//       </select>
-//     </div>
-
-//     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+// const SavingsForm = memo(
+//   ({
+//     savingsFormData,
+//     setSavingsFormData,
+//     onSubmit,
+//     isSubmitting,
+//     categories,
+//     onCancel,
+//   }) => (
+//     <form onSubmit={onSubmit} className="space-y-4">
 //       <div>
 //         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Target Amount (RWF) *
-//         </label>
-//         <input
-//           type="number"
-//           step="1"
-//           min="0"
-//           value={savingsFormData.targetAmount}
-//           onChange={(e) => {
-//             const value = e.target.value;
-//             // Only allow whole numbers (no decimals)
-//             if (value === "" || /^\d+$/.test(value)) {
-//               setSavingsFormData({ ...savingsFormData, targetAmount: value });
-//             }
-//           }}
-//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//           placeholder="0"
-//           required
-//         />
-//         <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
-//       </div>
-
-//       <div>
-//         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Current Amount (RWF)
-//         </label>
-//         <input
-//           type="number"
-//           step="1"
-//           min="0"
-//           value={savingsFormData.currentAmount}
-//           onChange={(e) => {
-//             const value = e.target.value;
-//             // Only allow whole numbers (no decimals)
-//             if (value === "" || /^\d+$/.test(value)) {
-//               setSavingsFormData({ ...savingsFormData, currentAmount: value });
-//             }
-//           }}
-//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//           placeholder="0"
-//         />
-//         <p className="text-xs text-gray-500 mt-1">Whole numbers only (no decimals)</p>
-//       </div>
-//     </div>
-
-//     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//       <div>
-//         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Deadline
-//         </label>
-//         <input
-//           type="date"
-//           value={savingsFormData.deadline}
-//           onChange={(e) => setSavingsFormData({ ...savingsFormData, deadline: e.target.value })}
-//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         />
-//       </div>
-
-//       <div>
-//         <label className="block text-sm font-medium text-gray-700 mb-2">
-//           Priority
+//           Savings Category *
 //         </label>
 //         <select
-//           value={savingsFormData.priority}
-//           onChange={(e) => setSavingsFormData({ ...savingsFormData, priority: e.target.value })}
+//           value={savingsFormData.category}
+//           onChange={(e) =>
+//             setSavingsFormData({ ...savingsFormData, category: e.target.value })
+//           }
 //           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//           required
 //         >
-//           <option value="low">Low</option>
-//           <option value="medium">Medium</option>
-//           <option value="high">High</option>
-//           <option value="critical">Critical</option>
+//           <option value="">Select Category</option>
+//           {categories.map((cat) => (
+//             <option key={cat} value={cat}>
+//               {cat}
+//             </option>
+//           ))}
 //         </select>
 //       </div>
-//     </div>
 
-//     <div>
-//       <label className="block text-sm font-medium text-gray-700 mb-2">
-//         Description (Optional)
-//       </label>
-//       <textarea
-//         value={savingsFormData.description}
-//         onChange={(e) => setSavingsFormData({ ...savingsFormData, description: e.target.value })}
-//         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-//         rows="2"
-//         placeholder="Additional notes about this savings goal"
-//       />
-//     </div>
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Target Amount (RWF) *
+//           </label>
+//           <input
+//             type="number"
+//             step="1"
+//             min="0"
+//             value={savingsFormData.targetAmount}
+//             onChange={(e) => {
+//               const value = e.target.value;
+//               // Only allow whole numbers (no decimals)
+//               if (value === "" || /^\d+$/.test(value)) {
+//                 setSavingsFormData({ ...savingsFormData, targetAmount: value });
+//               }
+//             }}
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//             placeholder="0"
+//             required
+//           />
+//           <p className="text-xs text-gray-500 mt-1">
+//             Whole numbers only (no decimals)
+//           </p>
+//         </div>
 
-//     <div className="flex justify-end space-x-3 pt-4">
-//       <button
-//         type="button"
-//         onClick={onCancel}
-//         className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-//       >
-//         Cancel
-//       </button>
-//       <button
-//         type="submit"
-//         disabled={isSubmitting}
-//         className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-//       >
-//         {isSubmitting ? (
-//           <>
-//             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-//             <span>Saving...</span>
-//           </>
-//         ) : (
-//           <span>Set Savings Goal</span>
-//         )}
-//       </button>
-//     </div>
-//   </form>
-// ));
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Current Amount (RWF)
+//           </label>
+//           <input
+//             type="number"
+//             step="1"
+//             min="0"
+//             value={savingsFormData.currentAmount}
+//             onChange={(e) => {
+//               const value = e.target.value;
+//               // Only allow whole numbers (no decimals)
+//               if (value === "" || /^\d+$/.test(value)) {
+//                 setSavingsFormData({
+//                   ...savingsFormData,
+//                   currentAmount: value,
+//                 });
+//               }
+//             }}
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//             placeholder="0"
+//           />
+//           <p className="text-xs text-gray-500 mt-1">
+//             Whole numbers only (no decimals)
+//           </p>
+//         </div>
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Deadline
+//           </label>
+//           <input
+//             type="date"
+//             value={savingsFormData.deadline}
+//             onChange={(e) =>
+//               setSavingsFormData({
+//                 ...savingsFormData,
+//                 deadline: e.target.value,
+//               })
+//             }
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//           />
+//         </div>
+
+//         <div>
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Priority
+//           </label>
+//           <select
+//             value={savingsFormData.priority}
+//             onChange={(e) =>
+//               setSavingsFormData({
+//                 ...savingsFormData,
+//                 priority: e.target.value,
+//               })
+//             }
+//             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//           >
+//             <option value="low">Low</option>
+//             <option value="medium">Medium</option>
+//             <option value="high">High</option>
+//             <option value="critical">Critical</option>
+//           </select>
+//         </div>
+//       </div>
+
+//       <div>
+//         <label className="block text-sm font-medium text-gray-700 mb-2">
+//           Description (Optional)
+//         </label>
+//         <textarea
+//           value={savingsFormData.description}
+//           onChange={(e) =>
+//             setSavingsFormData({
+//               ...savingsFormData,
+//               description: e.target.value,
+//             })
+//           }
+//           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+//           rows="2"
+//           placeholder="Additional notes about this savings goal"
+//         />
+//       </div>
+
+//       <div className="flex justify-end space-x-3 pt-4">
+//         <button
+//           type="button"
+//           onClick={onCancel}
+//           className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+//         >
+//           Cancel
+//         </button>
+//         <button
+//           type="submit"
+//           disabled={isSubmitting}
+//           className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+//         >
+//           {isSubmitting ? (
+//             <>
+//               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+//               <span>Saving...</span>
+//             </>
+//           ) : (
+//             <span>Set Savings Goal</span>
+//           )}
+//         </button>
+//       </div>
+//     </form>
+//   ),
+// );
 
 // // Memoized Budget Status Badge
 // const BudgetStatusBadge = memo(({ allocated, actual }) => {
@@ -599,14 +669,18 @@
 //     <div className="w-full">
 //       <div className="flex justify-between text-xs text-gray-600 mb-1">
 //         <span>Progress: {percentage.toFixed(1)}%</span>
-//         <span>{formatCurrency(current)} / {formatCurrency(target)}</span>
+//         <span>
+//           {formatCurrency(current)} / {formatCurrency(target)}
+//         </span>
 //       </div>
 //       <div className="w-full bg-gray-200 rounded-full h-2">
 //         <div
 //           className={`h-2 rounded-full transition-all duration-500 ${
-//             percentage >= 100 ? "bg-green-500" :
-//             percentage >= 50 ? "bg-blue-500" :
-//             "bg-purple-500"
+//             percentage >= 100
+//               ? "bg-green-500"
+//               : percentage >= 50
+//                 ? "bg-blue-500"
+//                 : "bg-purple-500"
 //           }`}
 //           style={{ width: `${percentage}%` }}
 //         />
@@ -661,7 +735,7 @@
 //     budgetUtilization: 0,
 //     incomeCount: 0,
 //     topIncomeSource: "",
-//     budgetStatus: "on-track"
+//     budgetStatus: "on-track",
 //   });
 
 //   // Modal states
@@ -687,7 +761,7 @@
 //     user: "",
 //     email: "",
 //     isRecurring: false,
-//     frequency: "monthly"
+//     frequency: "monthly",
 //   });
 
 //   // Budget form data
@@ -696,7 +770,7 @@
 //     allocatedAmount: "",
 //     month: new Date().getMonth(),
 //     year: new Date().getFullYear(),
-//     description: ""
+//     description: "",
 //   });
 
 //   // Savings form data
@@ -706,15 +780,33 @@
 //     currentAmount: "",
 //     deadline: "",
 //     description: "",
-//     priority: "medium"
+//     priority: "medium",
 //   });
 
 //   // Check if user is admin
 //   const isAdmin = user?.role === "admin" || user?.role === "Admin";
 
+//   // Get user email
+//   const getUserEmail = useCallback(() => {
+//     return user?.email || "";
+//   }, [user]);
+
 //   // Get month name
 //   const getMonthName = useCallback((month) => {
-//     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+//     const months = [
+//       "January",
+//       "February",
+//       "March",
+//       "April",
+//       "May",
+//       "June",
+//       "July",
+//       "August",
+//       "September",
+//       "October",
+//       "November",
+//       "December",
+//     ];
 //     return months[month] || "";
 //   }, []);
 
@@ -730,15 +822,15 @@
 
 //     if (!user) setUser(userData);
 
-//     // Set user name in form data
+//     // Set user name and email in form data
 //     const targetUserName = userName || userData.name || "";
 //     setFilterUserName(targetUserName);
 
 //     if (userData?.email) {
-//       setFormData(prev => ({
+//       setFormData((prev) => ({
 //         ...prev,
 //         email: userData.email,
-//         user: targetUserName || userData.name || ""
+//         user: targetUserName || userData.name || "",
 //       }));
 //     }
 
@@ -793,33 +885,40 @@
 //       let filteredData = allIncomes;
 
 //       if (!isAdmin && targetUserName) {
-//         filteredData = allIncomes.filter(inc => {
+//         filteredData = allIncomes.filter((inc) => {
 //           const incomeUserName = inc.user || "";
 //           return incomeUserName.toLowerCase() === targetUserName.toLowerCase();
 //         });
-//         console.log(`✅ Filtered to ${filteredData.length} incomes for user: "${targetUserName}"`);
+//         console.log(
+//           `✅ Filtered to ${filteredData.length} incomes for user: "${targetUserName}"`,
+//         );
 //       } else if (isAdmin) {
 //         // Admin sees all incomes
 //         console.log(`👑 Admin viewing all ${filteredData.length} incomes`);
 //       }
 
 //       // Log unique users found for debugging
-//       const uniqueUsers = [...new Set(allIncomes.map(inc => inc.user).filter(Boolean))];
+//       const uniqueUsers = [
+//         ...new Set(allIncomes.map((inc) => inc.user).filter(Boolean)),
+//       ];
 //       console.log("👥 All users found in incomes:", uniqueUsers);
 //       console.log("🎯 Target user:", targetUserName);
 
 //       // Apply additional filters (category, search)
 //       if (category && category !== "all") {
-//         filteredData = filteredData.filter(inc => inc.category === category);
+//         filteredData = filteredData.filter((inc) => inc.category === category);
 //       }
 
 //       if (search) {
 //         const searchLower = search.toLowerCase();
-//         filteredData = filteredData.filter(inc =>
-//           (inc.description && inc.description.toLowerCase().includes(searchLower)) ||
-//           (inc.category && inc.category.toLowerCase().includes(searchLower)) ||
-//           (inc.source && inc.source.toLowerCase().includes(searchLower)) ||
-//           (inc.user && inc.user.toLowerCase().includes(searchLower))
+//         filteredData = filteredData.filter(
+//           (inc) =>
+//             (inc.description &&
+//               inc.description.toLowerCase().includes(searchLower)) ||
+//             (inc.category &&
+//               inc.category.toLowerCase().includes(searchLower)) ||
+//             (inc.source && inc.source.toLowerCase().includes(searchLower)) ||
+//             (inc.user && inc.user.toLowerCase().includes(searchLower)),
 //         );
 //       }
 
@@ -832,7 +931,9 @@
 //       } else if (filteredData.length === 0 && isAdmin) {
 //         toast.info("No incomes found");
 //       } else {
-//         toast.success(`Loaded ${filteredData.length} incomes${!isAdmin ? ` for "${targetUserName}"` : ''}`);
+//         toast.success(
+//           `Loaded ${filteredData.length} incomes${!isAdmin ? ` for "${targetUserName}"` : ""}`,
+//         );
 //       }
 //     } catch (error) {
 //       console.error("Load incomes error:", error);
@@ -843,124 +944,152 @@
 //     }
 //   }, [user?.name, isAdmin, userName]);
 
-//   // Load budgets
+//   // Load budgets by email
 //   const loadBudgets = useCallback(async () => {
 //     try {
+//       const userEmail = getUserEmail();
+
+//       // If not admin and no email, show warning
+//       if (!isAdmin && !userEmail) {
+//         console.warn("No user email found for loading budgets");
+//         return;
+//       }
+
+//       // Build params
 //       const params = {
 //         month: selectedMonthRef.current,
-//         year: selectedYearRef.current
+//         year: selectedYearRef.current,
 //       };
 
-//       if (!isAdmin) {
-//         params.userName = userName || user?.name;
+//       // If not admin, add email to params
+//       if (!isAdmin && userEmail) {
+//         params.email = userEmail;
 //       }
 
 //       const response = await api.get("/budgets", { params });
 
 //       if (response.data.success) {
 //         let budgetData = response.data.data || [];
-
-//         // Filter budgets by user name if not admin
-//         if (!isAdmin && (userName || user?.name)) {
-//           const targetUserName = (userName || user?.name || "").toLowerCase();
-//           budgetData = budgetData.filter(b =>
-//             b.user && b.user.toLowerCase() === targetUserName
-//           );
-//         }
-
 //         setBudgets(budgetData);
+//         console.log(
+//           `✅ Loaded ${budgetData.length} budgets for email: ${userEmail || "all"}`,
+//         );
 //       }
 //     } catch (error) {
 //       console.error("Load budgets error:", error);
 //       // Don't show error for budgets as it's a secondary feature
 //     }
-//   }, [user?.name, isAdmin, userName]);
+//   }, [isAdmin, getUserEmail]);
 
-//   // Load savings
+//   // Load savings by email
 //   const loadSavings = useCallback(async () => {
 //     try {
+//       const userEmail = getUserEmail();
+
+//       // If not admin and no email, show warning
+//       if (!isAdmin && !userEmail) {
+//         console.warn("No user email found for loading savings");
+//         return;
+//       }
+
+//       // Build params
 //       const params = {};
 
-//       if (!isAdmin) {
-//         params.userName = userName || user?.name;
+//       // If not admin, add email to params
+//       if (!isAdmin && userEmail) {
+//         params.email = userEmail;
 //       }
 
 //       const response = await api.get("/savings", { params });
 
 //       if (response.data.success) {
 //         let savingsData = response.data.data || [];
-
-//         // Filter savings by user name if not admin
-//         if (!isAdmin && (userName || user?.name)) {
-//           const targetUserName = (userName || user?.name || "").toLowerCase();
-//           savingsData = savingsData.filter(s =>
-//             s.user && s.user.toLowerCase() === targetUserName
-//           );
-//         }
-
 //         setSavings(savingsData);
+//         console.log(
+//           `✅ Loaded ${savingsData.length} savings for email: ${userEmail || "all"}`,
+//         );
 //       }
 //     } catch (error) {
 //       console.error("Load savings error:", error);
 //     }
-//   }, [user?.name, isAdmin, userName]);
+//   }, [isAdmin, getUserEmail]);
 
 //   // Calculate stats
-//   const calculateStats = useCallback((incomeData) => {
-//     const currentMonth = new Date().getMonth();
-//     const currentYear = new Date().getFullYear();
+//   const calculateStats = useCallback(
+//     (incomeData) => {
+//       const currentMonth = new Date().getMonth();
+//       const currentYear = new Date().getFullYear();
 
-//     const monthlyIncomes = incomeData.filter(inc => {
-//       const date = new Date(inc.date);
-//       return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-//     });
+//       const monthlyIncomes = incomeData.filter((inc) => {
+//         const date = new Date(inc.date);
+//         return (
+//           date.getMonth() === currentMonth && date.getFullYear() === currentYear
+//         );
+//       });
 
-//     const totalIncome = incomeData.reduce((sum, inc) => sum + (inc.amount || 0), 0);
-//     const monthlyIncome = monthlyIncomes.reduce((sum, inc) => sum + (inc.amount || 0), 0);
-//     const averageIncome = incomeData.length > 0 ? totalIncome / incomeData.length : 0;
+//       const totalIncome = incomeData.reduce(
+//         (sum, inc) => sum + (inc.amount || 0),
+//         0,
+//       );
+//       const monthlyIncome = monthlyIncomes.reduce(
+//         (sum, inc) => sum + (inc.amount || 0),
+//         0,
+//       );
+//       const averageIncome =
+//         incomeData.length > 0 ? totalIncome / incomeData.length : 0;
 
-//     // Find top income source
-//     const sourceMap = {};
-//     incomeData.forEach(inc => {
-//       const source = inc.category || inc.source || "Other";
-//       sourceMap[source] = (sourceMap[source] || 0) + (inc.amount || 0);
-//     });
-//     let topSource = "N/A";
-//     let maxAmount = 0;
-//     Object.entries(sourceMap).forEach(([source, amount]) => {
-//       if (amount > maxAmount) {
-//         maxAmount = amount;
-//         topSource = source;
-//       }
-//     });
+//       // Find top income source
+//       const sourceMap = {};
+//       incomeData.forEach((inc) => {
+//         const source = inc.category || inc.source || "Other";
+//         sourceMap[source] = (sourceMap[source] || 0) + (inc.amount || 0);
+//       });
+//       let topSource = "N/A";
+//       let maxAmount = 0;
+//       Object.entries(sourceMap).forEach(([source, amount]) => {
+//         if (amount > maxAmount) {
+//           maxAmount = amount;
+//           topSource = source;
+//         }
+//       });
 
-//     // Calculate savings rate (assuming 20% target savings rate)
-//     const totalSavings = savings.reduce((sum, sav) => sum + (sav.currentAmount || 0), 0);
-//     const savingsRate = totalIncome > 0 ? (totalSavings / totalIncome) * 100 : 0;
+//       // Calculate savings rate (assuming 20% target savings rate)
+//       const totalSavings = savings.reduce(
+//         (sum, sav) => sum + (sav.currentAmount || 0),
+//         0,
+//       );
+//       const savingsRate =
+//         totalIncome > 0 ? (totalSavings / totalIncome) * 100 : 0;
 
-//     // Budget utilization
-//     const totalBudgeted = budgets.reduce((sum, b) => sum + (b.allocatedAmount || 0), 0);
-//     const budgetUtilization = totalBudgeted > 0 ? (totalIncome / totalBudgeted) * 100 : 0;
+//       // Budget utilization
+//       const totalBudgeted = budgets.reduce(
+//         (sum, b) => sum + (b.allocatedAmount || 0),
+//         0,
+//       );
+//       const budgetUtilization =
+//         totalBudgeted > 0 ? (totalIncome / totalBudgeted) * 100 : 0;
 
-//     // Budget status
-//     let budgetStatus = "on-track";
-//     if (budgetUtilization > 100) budgetStatus = "over-budget";
-//     else if (budgetUtilization > 80) budgetStatus = "approaching-limit";
-//     else if (budgetUtilization < 50) budgetStatus = "under-budget";
+//       // Budget status
+//       let budgetStatus = "on-track";
+//       if (budgetUtilization > 100) budgetStatus = "over-budget";
+//       else if (budgetUtilization > 80) budgetStatus = "approaching-limit";
+//       else if (budgetUtilization < 50) budgetStatus = "under-budget";
 
-//     setStats({
-//       totalIncome,
-//       monthlyIncome,
-//       averageIncome,
-//       totalSavings,
-//       monthlySavings: totalSavings / 12,
-//       savingsRate,
-//       budgetUtilization,
-//       incomeCount: incomeData.length,
-//       topIncomeSource: topSource,
-//       budgetStatus
-//     });
-//   }, [savings, budgets]);
+//       setStats({
+//         totalIncome,
+//         monthlyIncome,
+//         averageIncome,
+//         totalSavings,
+//         monthlySavings: totalSavings / 12,
+//         savingsRate,
+//         budgetUtilization,
+//         incomeCount: incomeData.length,
+//         topIncomeSource: topSource,
+//         budgetStatus,
+//       });
+//     },
+//     [savings, budgets],
+//   );
 
 //   // Handle search and filter - update refs and trigger load with debounce
 //   useEffect(() => {
@@ -980,7 +1109,14 @@
 //     }, 500);
 
 //     return () => clearTimeout(timer);
-//   }, [searchTerm, filterCategory, selectedMonth, selectedYear, loadIncomes, loadBudgets]);
+//   }, [
+//     searchTerm,
+//     filterCategory,
+//     selectedMonth,
+//     selectedYear,
+//     loadIncomes,
+//     loadBudgets,
+//   ]);
 
 //   // Filter incomes based on month/year (client-side filtering)
 //   useEffect(() => {
@@ -988,9 +1124,12 @@
 
 //     // Month filter
 //     if (selectedMonth !== undefined && selectedYear !== undefined) {
-//       filtered = filtered.filter(inc => {
+//       filtered = filtered.filter((inc) => {
 //         const date = new Date(inc.date);
-//         return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
+//         return (
+//           date.getMonth() === selectedMonth &&
+//           date.getFullYear() === selectedYear
+//         );
 //       });
 //     }
 
@@ -1020,7 +1159,7 @@
 //         user: formData.user || user?.name || userName || "Unknown",
 //         email: formData.email || user?.email,
 //         isRecurring: formData.isRecurring,
-//         frequency: formData.frequency
+//         frequency: formData.frequency,
 //       };
 
 //       const response = await api.post("/incomes", incomeData);
@@ -1068,10 +1207,13 @@
 //         user: formData.user || user?.name || userName || "Unknown",
 //         email: formData.email || user?.email,
 //         isRecurring: formData.isRecurring,
-//         frequency: formData.frequency
+//         frequency: formData.frequency,
 //       };
 
-//       const response = await api.put(`/incomes/${selectedIncome._id}`, incomeData);
+//       const response = await api.put(
+//         `/incomes/${selectedIncome._id}`,
+//         incomeData,
+//       );
 
 //       if (response.data.success) {
 //         toast.success("Income updated successfully!");
@@ -1137,7 +1279,7 @@
 //         email: user?.email,
 //         user: user?.name || userName || "Unknown",
 //         month: parseInt(budgetFormData.month),
-//         year: parseInt(budgetFormData.year)
+//         year: parseInt(budgetFormData.year),
 //       };
 
 //       const response = await api.post("/budgets", budgetData);
@@ -1169,7 +1311,9 @@
 //     const currentValue = Number(savingsFormData.currentAmount) || 0;
 
 //     if (!Number.isInteger(targetValue) || targetValue <= 0) {
-//       toast.error("Target amount must be a positive whole number (no decimals)");
+//       toast.error(
+//         "Target amount must be a positive whole number (no decimals)",
+//       );
 //       setIsSubmitting(false);
 //       return;
 //     }
@@ -1186,7 +1330,7 @@
 //         targetAmount: targetValue,
 //         currentAmount: currentValue,
 //         email: user?.email,
-//         user: user?.name || userName || "Unknown"
+//         user: user?.name || userName || "Unknown",
 //       };
 
 //       const response = await api.post("/savings", savingsData);
@@ -1205,7 +1349,9 @@
 //       }
 //     } catch (error) {
 //       console.error("Add savings error:", error);
-//       toast.error(error.response?.data?.message || "Failed to set savings goal");
+//       toast.error(
+//         error.response?.data?.message || "Failed to set savings goal",
+//       );
 //     } finally {
 //       setIsSubmitting(false);
 //     }
@@ -1222,7 +1368,7 @@
 //       user: user?.name || userName || "",
 //       email: user?.email || "",
 //       isRecurring: false,
-//       frequency: "monthly"
+//       frequency: "monthly",
 //     });
 //     setSelectedIncome(null);
 //   }, [user, userName]);
@@ -1233,7 +1379,7 @@
 //       allocatedAmount: "",
 //       month: new Date().getMonth(),
 //       year: new Date().getFullYear(),
-//       description: ""
+//       description: "",
 //     });
 //     setSelectedBudget(null);
 //   }, []);
@@ -1245,27 +1391,32 @@
 //       currentAmount: "",
 //       deadline: "",
 //       description: "",
-//       priority: "medium"
+//       priority: "medium",
 //     });
 //     setSelectedSavings(null);
 //   }, []);
 
 //   // Open edit modal
-//   const openEditModal = useCallback((income) => {
-//     setSelectedIncome(income);
-//     setFormData({
-//       description: income.description || "",
-//       category: income.category || income.source || "",
-//       source: income.source || income.category || "",
-//       amount: income.amount?.toString() || "",
-//       date: income.date ? income.date.split("T")[0] : new Date().toISOString().split("T")[0],
-//       user: income.user || user?.name || userName || "",
-//       email: income.email || user?.email || "",
-//       isRecurring: income.isRecurring || false,
-//       frequency: income.frequency || "monthly"
-//     });
-//     setIsEditModalOpen(true);
-//   }, [user, userName]);
+//   const openEditModal = useCallback(
+//     (income) => {
+//       setSelectedIncome(income);
+//       setFormData({
+//         description: income.description || "",
+//         category: income.category || income.source || "",
+//         source: income.source || income.category || "",
+//         amount: income.amount?.toString() || "",
+//         date: income.date
+//           ? income.date.split("T")[0]
+//           : new Date().toISOString().split("T")[0],
+//         user: income.user || user?.name || userName || "",
+//         email: income.email || user?.email || "",
+//         isRecurring: income.isRecurring || false,
+//         frequency: income.frequency || "monthly",
+//       });
+//       setIsEditModalOpen(true);
+//     },
+//     [user, userName],
+//   );
 
 //   // Format currency (RWF - Rwandan Franc)
 //   const formatCurrency = useCallback((amount) => {
@@ -1304,41 +1455,53 @@
 //       stats,
 //       incomes: filteredIncomes,
 //       budgets,
-//       savings
+//       savings,
 //     };
 
 //     // Create CSV
-//     const headers = ["Date", "Description", "Category", "Source", "Amount (RWF)", "User"];
-//     const rows = filteredIncomes.map(inc => [
+//     const headers = [
+//       "Date",
+//       "Description",
+//       "Category",
+//       "Source",
+//       "Amount (RWF)",
+//       "User",
+//     ];
+//     const rows = filteredIncomes.map((inc) => [
 //       formatDate(inc.date),
 //       inc.description || "",
 //       inc.category || "",
 //       inc.source || "",
 //       inc.amount || 0,
-//       inc.user || ""
+//       inc.user || "",
 //     ]);
 
 //     let csv = headers.join(",") + "\n";
-//     rows.forEach(row => {
+//     rows.forEach((row) => {
 //       csv += row.join(",") + "\n";
 //     });
 
 //     // Add budget summary
 //     csv += "\nBudget Summary\n";
 //     csv += "Category,Allocated Amount (RWF),Actual Amount (RWF),Status\n";
-//     budgets.forEach(budget => {
+//     budgets.forEach((budget) => {
 //       const actual = filteredIncomes
-//         .filter(inc => inc.category === budget.category)
+//         .filter((inc) => inc.category === budget.category)
 //         .reduce((sum, inc) => sum + (inc.amount || 0), 0);
-//       const status = actual <= budget.allocatedAmount ? "On Track" : "Over Budget";
+//       const status =
+//         actual <= budget.allocatedAmount ? "On Track" : "Over Budget";
 //       csv += `${budget.category},${budget.allocatedAmount},${actual},${status}\n`;
 //     });
 
 //     // Add savings summary
 //     csv += "\nSavings Goals\n";
-//     csv += "Category,Target Amount (RWF),Current Amount (RWF),Progress,Deadline\n";
-//     savings.forEach(saving => {
-//       const progress = ((saving.currentAmount / saving.targetAmount) * 100).toFixed(1);
+//     csv +=
+//       "Category,Target Amount (RWF),Current Amount (RWF),Progress,Deadline\n";
+//     savings.forEach((saving) => {
+//       const progress = (
+//         (saving.currentAmount / saving.targetAmount) *
+//         100
+//       ).toFixed(1);
 //       csv += `${saving.category},${saving.targetAmount},${saving.currentAmount},${progress}%,${saving.deadline || "N/A"}\n`;
 //     });
 
@@ -1363,70 +1526,83 @@
 //   const currentYear = new Date().getFullYear();
 
 //   // Filter incomes by month/year for budget comparison
-//   const monthlyIncomes = displayIncomes.filter(inc => {
+//   const monthlyIncomes = displayIncomes.filter((inc) => {
 //     const date = new Date(inc.date);
-//     return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
+//     return (
+//       date.getMonth() === selectedMonth && date.getFullYear() === selectedYear
+//     );
 //   });
 
 //   // Calculate actual spending per category for budget comparison
 //   const categoryActuals = {};
-//   monthlyIncomes.forEach(inc => {
+//   monthlyIncomes.forEach((inc) => {
 //     const category = inc.category || "Other";
-//     categoryActuals[category] = (categoryActuals[category] || 0) + (inc.amount || 0);
+//     categoryActuals[category] =
+//       (categoryActuals[category] || 0) + (inc.amount || 0);
 //   });
 
 //   // Memoized Income Table Row
-//   const IncomeRow = memo(({ income, index, formatDate, formatCurrency, openEditModal, setSelectedIncome, setIsDeleteModalOpen }) => (
-//     <motion.tr
-//       key={income._id || index}
-//       initial={{ opacity: 0, y: 10 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       transition={{ delay: index * 0.05 }}
-//       className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-//     >
-//       <td className="py-3 px-4 text-gray-600 text-sm">
-//         {formatDate(income.date)}
-//       </td>
-//       <td className="py-3 px-4 text-gray-800 font-medium">
-//         {income.description || "N/A"}
-//       </td>
-//       <td className="py-3 px-4">
-//         <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-//           {income.category || income.source || "Uncategorized"}
-//         </span>
-//       </td>
-//       <td className="py-3 px-4 text-gray-600 text-sm">
-//         {income.source || "N/A"}
-//       </td>
-//       <td className="py-3 px-4 text-gray-600 text-sm">
-//         {income.user || "Unknown"}
-//       </td>
-//       <td className="py-3 px-4 text-right font-semibold text-green-600">
-//         +{formatCurrency(income.amount)}
-//       </td>
-//       <td className="py-3 px-4 text-center">
-//         <div className="flex items-center justify-center space-x-2">
-//           <button
-//             onClick={() => openEditModal(income)}
-//             className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-//             title="Edit"
-//           >
-//             <EditIcon className="w-5 h-5" />
-//           </button>
-//           <button
-//             onClick={() => {
-//               setSelectedIncome(income);
-//               setIsDeleteModalOpen(true);
-//             }}
-//             className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-//             title="Delete"
-//           >
-//             <DeleteIcon className="w-5 h-5" />
-//           </button>
-//         </div>
-//       </td>
-//     </motion.tr>
-//   ));
+//   const IncomeRow = memo(
+//     ({
+//       income,
+//       index,
+//       formatDate,
+//       formatCurrency,
+//       openEditModal,
+//       setSelectedIncome,
+//       setIsDeleteModalOpen,
+//     }) => (
+//       <motion.tr
+//         key={income._id || index}
+//         initial={{ opacity: 0, y: 10 }}
+//         animate={{ opacity: 1, y: 0 }}
+//         transition={{ delay: index * 0.05 }}
+//         className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+//       >
+//         <td className="py-3 px-4 text-gray-600 text-sm">
+//           {formatDate(income.date)}
+//         </td>
+//         <td className="py-3 px-4 text-gray-800 font-medium">
+//           {income.description || "N/A"}
+//         </td>
+//         <td className="py-3 px-4">
+//           <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+//             {income.category || income.source || "Uncategorized"}
+//           </span>
+//         </td>
+//         <td className="py-3 px-4 text-gray-600 text-sm">
+//           {income.source || "N/A"}
+//         </td>
+//         <td className="py-3 px-4 text-gray-600 text-sm">
+//           {income.user || "Unknown"}
+//         </td>
+//         <td className="py-3 px-4 text-right font-semibold text-green-600">
+//           +{formatCurrency(income.amount)}
+//         </td>
+//         <td className="py-3 px-4 text-center">
+//           <div className="flex items-center justify-center space-x-2">
+//             <button
+//               onClick={() => openEditModal(income)}
+//               className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+//               title="Edit"
+//             >
+//               <EditIcon className="w-5 h-5" />
+//             </button>
+//             <button
+//               onClick={() => {
+//                 setSelectedIncome(income);
+//                 setIsDeleteModalOpen(true);
+//               }}
+//               className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+//               title="Delete"
+//             >
+//               <DeleteIcon className="w-5 h-5" />
+//             </button>
+//           </div>
+//         </td>
+//       </motion.tr>
+//     ),
+//   );
 
 //   // Memoized Budget Card
 //   const BudgetCard = memo(({ budget, actual, formatCurrency }) => (
@@ -1451,11 +1627,15 @@
 //       <div className="w-full bg-gray-200 rounded-full h-2">
 //         <div
 //           className={`h-2 rounded-full transition-all duration-500 ${
-//             actual > budget.allocatedAmount ? "bg-red-500" :
-//             actual > budget.allocatedAmount * 0.8 ? "bg-yellow-500" :
-//             "bg-green-500"
+//             actual > budget.allocatedAmount
+//               ? "bg-red-500"
+//               : actual > budget.allocatedAmount * 0.8
+//                 ? "bg-yellow-500"
+//                 : "bg-green-500"
 //           }`}
-//           style={{ width: `${Math.min((actual / budget.allocatedAmount) * 100, 100)}%` }}
+//           style={{
+//             width: `${Math.min((actual / budget.allocatedAmount) * 100, 100)}%`,
+//           }}
 //         />
 //       </div>
 //     </motion.div>
@@ -1463,9 +1643,10 @@
 
 //   // Memoized Savings Card
 //   const SavingsCard = memo(({ saving, formatCurrency, formatDate }) => {
-//     const progress = saving.targetAmount > 0
-//       ? Math.min((saving.currentAmount / saving.targetAmount) * 100, 100)
-//       : 0;
+//     const progress =
+//       saving.targetAmount > 0
+//         ? Math.min((saving.currentAmount / saving.targetAmount) * 100, 100)
+//         : 0;
 //     const isComplete = progress >= 100;
 
 //     return (
@@ -1490,12 +1671,17 @@
 //               {saving.description || "No description"}
 //             </p>
 //           </div>
-//           <span className={`text-xs px-2 py-1 rounded-full ${
-//             saving.priority === "critical" ? "bg-red-100 text-red-700" :
-//             saving.priority === "high" ? "bg-orange-100 text-orange-700" :
-//             saving.priority === "medium" ? "bg-yellow-100 text-yellow-700" :
-//             "bg-blue-100 text-blue-700"
-//           }`}>
+//           <span
+//             className={`text-xs px-2 py-1 rounded-full ${
+//               saving.priority === "critical"
+//                 ? "bg-red-100 text-red-700"
+//                 : saving.priority === "high"
+//                   ? "bg-orange-100 text-orange-700"
+//                   : saving.priority === "medium"
+//                     ? "bg-yellow-100 text-yellow-700"
+//                     : "bg-blue-100 text-blue-700"
+//             }`}
+//           >
 //             {saving.priority || "Medium"}
 //           </span>
 //         </div>
@@ -1556,9 +1742,7 @@
 //               </p>
 //             )}
 //             {user?.email && !isAdmin && !userName && (
-//               <p className="text-sm text-gray-500 mt-1">
-//                 User: {user.email}
-//               </p>
+//               <p className="text-sm text-gray-500 mt-1">User: {user.email}</p>
 //             )}
 //           </div>
 //           <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
@@ -1647,7 +1831,8 @@
 //                 <p className="text-2xl font-bold text-orange-600">
 //                   {stats.budgetStatus === "on-track" && "✓ On Track"}
 //                   {stats.budgetStatus === "over-budget" && "⚠ Over Budget"}
-//                   {stats.budgetStatus === "approaching-limit" && "⚡ Approaching"}
+//                   {stats.budgetStatus === "approaching-limit" &&
+//                     "⚡ Approaching"}
 //                   {stats.budgetStatus === "under-budget" && "📉 Under Budget"}
 //                 </p>
 //                 <p className="text-xs text-gray-400 mt-1">
@@ -1725,27 +1910,37 @@
 //                     >
 //                       <option value="all">All Categories</option>
 //                       {INCOME_CATEGORIES.map((cat) => (
-//                         <option key={cat} value={cat}>{cat}</option>
+//                         <option key={cat} value={cat}>
+//                           {cat}
+//                         </option>
 //                       ))}
 //                     </select>
 
 //                     <select
 //                       value={selectedMonth}
-//                       onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+//                       onChange={(e) =>
+//                         setSelectedMonth(parseInt(e.target.value))
+//                       }
 //                       className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
 //                     >
 //                       {Array.from({ length: 12 }, (_, i) => (
-//                         <option key={i} value={i}>{getMonthName(i)}</option>
+//                         <option key={i} value={i}>
+//                           {getMonthName(i)}
+//                         </option>
 //                       ))}
 //                     </select>
 
 //                     <select
 //                       value={selectedYear}
-//                       onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+//                       onChange={(e) =>
+//                         setSelectedYear(parseInt(e.target.value))
+//                       }
 //                       className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
 //                     >
-//                       {[2023, 2024, 2025, 2026, 2027].map(year => (
-//                         <option key={year} value={year}>{year}</option>
+//                       {[2023, 2024, 2025, 2026, 2027].map((year) => (
+//                         <option key={year} value={year}>
+//                           {year}
+//                         </option>
 //                       ))}
 //                     </select>
 
@@ -1771,9 +1966,13 @@
 //               ) : displayIncomes.length === 0 ? (
 //                 <div className="p-12 text-center">
 //                   <AttachMoneyIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-//                   <p className="text-gray-500 text-lg">No income records found</p>
+//                   <p className="text-gray-500 text-lg">
+//                     No income records found
+//                   </p>
 //                   <p className="text-gray-400 text-sm mt-1">
-//                     {userName ? `No incomes found for "${userName}"` : "Click 'Add Income' to start tracking your earnings"}
+//                     {userName
+//                       ? `No incomes found for "${userName}"`
+//                       : "Click 'Add Income' to start tracking your earnings"}
 //                   </p>
 //                 </div>
 //               ) : (
@@ -1781,13 +1980,27 @@
 //                   <table className="w-full">
 //                     <thead>
 //                       <tr className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-//                         <th className="text-left py-3 px-4 text-sm font-semibold">Date</th>
-//                         <th className="text-left py-3 px-4 text-sm font-semibold">Description</th>
-//                         <th className="text-left py-3 px-4 text-sm font-semibold">Category</th>
-//                         <th className="text-left py-3 px-4 text-sm font-semibold">Source</th>
-//                         <th className="text-left py-3 px-4 text-sm font-semibold">User</th>
-//                         <th className="text-right py-3 px-4 text-sm font-semibold">Amount (RWF)</th>
-//                         <th className="text-center py-3 px-4 text-sm font-semibold">Actions</th>
+//                         <th className="text-left py-3 px-4 text-sm font-semibold">
+//                           Date
+//                         </th>
+//                         <th className="text-left py-3 px-4 text-sm font-semibold">
+//                           Description
+//                         </th>
+//                         <th className="text-left py-3 px-4 text-sm font-semibold">
+//                           Category
+//                         </th>
+//                         <th className="text-left py-3 px-4 text-sm font-semibold">
+//                           Source
+//                         </th>
+//                         <th className="text-left py-3 px-4 text-sm font-semibold">
+//                           User
+//                         </th>
+//                         <th className="text-right py-3 px-4 text-sm font-semibold">
+//                           Amount (RWF)
+//                         </th>
+//                         <th className="text-center py-3 px-4 text-sm font-semibold">
+//                           Actions
+//                         </th>
 //                       </tr>
 //                     </thead>
 //                     <tbody>
@@ -1815,10 +2028,18 @@
 //             <div className="p-6">
 //               <div className="flex justify-between items-center mb-6">
 //                 <div>
-//                   <h3 className="text-xl font-bold text-gray-800">Budget Planning</h3>
+//                   <h3 className="text-xl font-bold text-gray-800">
+//                     Budget Planning
+//                   </h3>
 //                   <p className="text-sm text-gray-500">
-//                     {getMonthName(selectedMonth)} {selectedYear} - Track your spending against budget
+//                     {getMonthName(selectedMonth)} {selectedYear} - Track your
+//                     spending against budget
 //                   </p>
+//                   {user?.email && (
+//                     <p className="text-xs text-gray-400 mt-1">
+//                       Budgets for: {user.email}
+//                     </p>
+//                   )}
 //                 </div>
 //                 <button
 //                   onClick={() => setIsBudgetModalOpen(true)}
@@ -1833,7 +2054,9 @@
 //                 <div className="text-center py-8">
 //                   <AccountBalanceIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
 //                   <p className="text-gray-500">No budgets set for this month</p>
-//                   <p className="text-gray-400 text-sm">Set a budget to start tracking your spending</p>
+//                   <p className="text-gray-400 text-sm">
+//                     Set a budget to start tracking your spending
+//                   </p>
 //                 </div>
 //               ) : (
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1858,10 +2081,17 @@
 //             <div className="p-6">
 //               <div className="flex justify-between items-center mb-6">
 //                 <div>
-//                   <h3 className="text-xl font-bold text-gray-800">Savings Goals</h3>
+//                   <h3 className="text-xl font-bold text-gray-800">
+//                     Savings Goals
+//                   </h3>
 //                   <p className="text-sm text-gray-500">
 //                     Track your progress towards financial goals
 //                   </p>
+//                   {user?.email && (
+//                     <p className="text-xs text-gray-400 mt-1">
+//                       Savings for: {user.email}
+//                     </p>
+//                   )}
 //                 </div>
 //                 <button
 //                   onClick={() => setIsSavingsModalOpen(true)}
@@ -1876,7 +2106,9 @@
 //                 <div className="text-center py-8">
 //                   <SavingsIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
 //                   <p className="text-gray-500">No savings goals set</p>
-//                   <p className="text-gray-400 text-sm">Start saving towards your financial goals</p>
+//                   <p className="text-gray-400 text-sm">
+//                     Start saving towards your financial goals
+//                   </p>
 //                 </div>
 //               ) : (
 //                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2076,15 +2308,21 @@
 //             <div className="bg-orange-50 p-4 rounded-xl">
 //               <p className="text-sm text-gray-500">Budget Status</p>
 //               <p className="text-2xl font-bold text-orange-600">
-//                 {stats.budgetStatus === "on-track" ? "On Track" :
-//                  stats.budgetStatus === "over-budget" ? "Over Budget" :
-//                  stats.budgetStatus === "approaching-limit" ? "Approaching" : "Under Budget"}
+//                 {stats.budgetStatus === "on-track"
+//                   ? "On Track"
+//                   : stats.budgetStatus === "over-budget"
+//                     ? "Over Budget"
+//                     : stats.budgetStatus === "approaching-limit"
+//                       ? "Approaching"
+//                       : "Under Budget"}
 //               </p>
 //             </div>
 //           </div>
 
 //           <div>
-//             <h4 className="font-semibold text-gray-800 mb-2">Top Income Source</h4>
+//             <h4 className="font-semibold text-gray-800 mb-2">
+//               Top Income Source
+//             </h4>
 //             <p className="text-lg text-gray-700">{stats.topIncomeSource}</p>
 //           </div>
 
@@ -2092,7 +2330,10 @@
 //             <h4 className="font-semibold text-gray-800 mb-2">Recent Incomes</h4>
 //             <div className="max-h-40 overflow-y-auto">
 //               {displayIncomes.slice(0, 5).map((income, index) => (
-//                 <div key={index} className="flex justify-between py-2 border-b border-gray-100">
+//                 <div
+//                   key={index}
+//                   className="flex justify-between py-2 border-b border-gray-100"
+//                 >
 //                   <span className="text-sm">{income.description || "N/A"}</span>
 //                   <span className="text-sm font-semibold text-green-600">
 //                     +{formatCurrency(income.amount)}
@@ -2103,16 +2344,22 @@
 //           </div>
 
 //           <div>
-//             <h4 className="font-semibold text-gray-800 mb-2">Savings Goals Summary</h4>
+//             <h4 className="font-semibold text-gray-800 mb-2">
+//               Savings Goals Summary
+//             </h4>
 //             {savings.length === 0 ? (
 //               <p className="text-gray-500 text-sm">No savings goals set</p>
 //             ) : (
 //               <div className="space-y-2">
 //                 {savings.map((saving, index) => (
-//                   <div key={index} className="flex justify-between items-center">
+//                   <div
+//                     key={index}
+//                     className="flex justify-between items-center"
+//                   >
 //                     <span className="text-sm">{saving.category}</span>
 //                     <span className="text-sm">
-//                       {formatCurrency(saving.currentAmount || 0)} / {formatCurrency(saving.targetAmount)}
+//                       {formatCurrency(saving.currentAmount || 0)} /{" "}
+//                       {formatCurrency(saving.targetAmount)}
 //                     </span>
 //                   </div>
 //                 ))}
@@ -2140,6 +2387,16 @@
 //     </div>
 //   );
 // };
+
+
+
+
+
+
+
+
+
+
 
 /* eslint-disable react-hooks/preserve-manual-memoization */
 /* eslint-disable react-hooks/immutability */
@@ -2170,7 +2427,6 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PersonIcon from "@mui/icons-material/Person";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import PieChartIcon from "@mui/icons-material/PieChart";
 import DownloadIcon from "@mui/icons-material/Download";
 
 // API Base URL
@@ -2189,7 +2445,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Income Categories
+// Income Categories - matches the model's enum
 const INCOME_CATEGORIES = [
   "Salary",
   "Freelance",
@@ -2238,6 +2494,12 @@ const BUDGET_CATEGORIES = [
   "Other",
 ];
 
+// Frequency options for recurring income
+const FREQUENCY_OPTIONS = ["weekly", "biweekly", "monthly", "quarterly", "annually"];
+
+// Priority options for savings
+const PRIORITY_OPTIONS = ["low", "medium", "high", "critical"];
+
 // Memoized Modal Component
 const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
   if (!isOpen) return null;
@@ -2284,7 +2546,7 @@ const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
   );
 });
 
-// Memoized Income Form Component
+// Memoized Income Form Component - matches Income model
 const IncomeForm = memo(
   ({
     formData,
@@ -2309,7 +2571,9 @@ const IncomeForm = memo(
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           placeholder="Enter description"
           required
+          maxLength={200}
         />
+        <p className="text-xs text-gray-500 mt-1">Max 200 characters</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2345,8 +2609,10 @@ const IncomeForm = memo(
               setFormData({ ...formData, source: e.target.value })
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            placeholder="Income source"
+            placeholder="Income source (e.g., Company name)"
+            maxLength={100}
           />
+          <p className="text-xs text-gray-500 mt-1">Max 100 characters</p>
         </div>
       </div>
 
@@ -2362,7 +2628,6 @@ const IncomeForm = memo(
             value={formData.amount}
             onChange={(e) => {
               const value = e.target.value;
-              // Only allow whole numbers (no decimals)
               if (value === "" || /^\d+$/.test(value)) {
                 setFormData({ ...formData, amount: value });
               }
@@ -2398,10 +2663,13 @@ const IncomeForm = memo(
           type="text"
           value={formData.user}
           onChange={(e) => setFormData({ ...formData, user: e.target.value })}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-gray-50"
           placeholder="Enter user name"
           required
+          maxLength={100}
+          readOnly
         />
+        <p className="text-xs text-gray-500 mt-1">Auto-filled from your profile</p>
       </div>
 
       <div className="flex items-center space-x-4">
@@ -2425,16 +2693,17 @@ const IncomeForm = memo(
             }
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
-            <option value="weekly">Weekly</option>
-            <option value="biweekly">Bi-weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
-            <option value="annually">Annually</option>
+            {FREQUENCY_OPTIONS.map((freq) => (
+              <option key={freq} value={freq}>
+                {freq.charAt(0).toUpperCase() + freq.slice(1)}
+              </option>
+            ))}
           </select>
         )}
       </div>
 
       <input type="hidden" value={formData.email} />
+      <input type="hidden" value={formData.userId} />
 
       <div className="flex justify-end space-x-3 pt-4">
         <button
@@ -2463,7 +2732,7 @@ const IncomeForm = memo(
   ),
 );
 
-// Memoized Budget Form Component
+// Memoized Budget Form Component - matches Budget model
 const BudgetForm = memo(
   ({
     budgetFormData,
@@ -2507,7 +2776,6 @@ const BudgetForm = memo(
           value={budgetFormData.allocatedAmount}
           onChange={(e) => {
             const value = e.target.value;
-            // Only allow whole numbers (no decimals)
             if (value === "" || /^\d+$/.test(value)) {
               setBudgetFormData({ ...budgetFormData, allocatedAmount: value });
             }
@@ -2524,7 +2792,7 @@ const BudgetForm = memo(
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Month
+            Month *
           </label>
           <select
             value={budgetFormData.month}
@@ -2535,6 +2803,7 @@ const BudgetForm = memo(
               })
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            required
           >
             {Array.from({ length: 12 }, (_, i) => (
               <option key={i} value={i}>
@@ -2546,7 +2815,7 @@ const BudgetForm = memo(
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Year
+            Year *
           </label>
           <input
             type="number"
@@ -2554,12 +2823,13 @@ const BudgetForm = memo(
             onChange={(e) =>
               setBudgetFormData({
                 ...budgetFormData,
-                year: parseInt(e.target.value),
+                year: parseInt(e.target.value) || new Date().getFullYear(),
               })
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-            min={2020}
+            min={2000}
             max={2030}
+            required
           />
         </div>
       </div>
@@ -2579,7 +2849,9 @@ const BudgetForm = memo(
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           rows="2"
           placeholder="Additional notes"
+          maxLength={500}
         />
+        <p className="text-xs text-gray-500 mt-1">Max 500 characters</p>
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
@@ -2609,7 +2881,7 @@ const BudgetForm = memo(
   ),
 );
 
-// Memoized Savings Form Component
+// Memoized Savings Form Component - matches Savings model
 const SavingsForm = memo(
   ({
     savingsFormData,
@@ -2649,11 +2921,10 @@ const SavingsForm = memo(
           <input
             type="number"
             step="1"
-            min="0"
+            min="1"
             value={savingsFormData.targetAmount}
             onChange={(e) => {
               const value = e.target.value;
-              // Only allow whole numbers (no decimals)
               if (value === "" || /^\d+$/.test(value)) {
                 setSavingsFormData({ ...savingsFormData, targetAmount: value });
               }
@@ -2678,7 +2949,6 @@ const SavingsForm = memo(
             value={savingsFormData.currentAmount}
             onChange={(e) => {
               const value = e.target.value;
-              // Only allow whole numbers (no decimals)
               if (value === "" || /^\d+$/.test(value)) {
                 setSavingsFormData({
                   ...savingsFormData,
@@ -2727,10 +2997,11 @@ const SavingsForm = memo(
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
+            {PRIORITY_OPTIONS.map((p) => (
+              <option key={p} value={p}>
+                {p.charAt(0).toUpperCase() + p.slice(1)}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -2750,7 +3021,9 @@ const SavingsForm = memo(
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           rows="2"
           placeholder="Additional notes about this savings goal"
+          maxLength={500}
         />
+        <p className="text-xs text-gray-500 mt-1">Max 500 characters</p>
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
@@ -2781,32 +3054,27 @@ const SavingsForm = memo(
 );
 
 // Memoized Budget Status Badge
-const BudgetStatusBadge = memo(({ allocated, actual }) => {
-  const percentage = allocated > 0 ? (actual / allocated) * 100 : 0;
-  let status = "On Track";
-  let color = "bg-green-100 text-green-800";
+const BudgetStatusBadge = memo(({ allocated, spent, status }) => {
+  const percentage = allocated > 0 ? (spent / allocated) * 100 : 0;
+  
+  const statusMap = {
+    "on-track": { label: "On Track", color: "bg-green-100 text-green-800" },
+    "approaching-limit": { label: "Approaching Limit", color: "bg-yellow-100 text-yellow-800" },
+    "over-budget": { label: "Over Budget", color: "bg-red-100 text-red-800" },
+  };
 
-  if (percentage > 100) {
-    status = "Over Budget";
-    color = "bg-red-100 text-red-800";
-  } else if (percentage > 80) {
-    status = "Approaching Limit";
-    color = "bg-yellow-100 text-yellow-800";
-  } else if (percentage < 50) {
-    status = "Under Budget";
-    color = "bg-blue-100 text-blue-800";
-  }
+  const currentStatus = statusMap[status] || statusMap["on-track"];
 
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${color}`}>
-      {status} ({percentage.toFixed(1)}%)
+    <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentStatus.color}`}>
+      {currentStatus.label} ({percentage.toFixed(1)}%)
     </span>
   );
 });
 
 // Memoized Savings Progress
-const SavingsProgress = memo(({ current, target, formatCurrency }) => {
-  const percentage = target > 0 ? Math.min((current / target) * 100, 100) : 0;
+const SavingsProgress = memo(({ current, target, formatCurrency, progress }) => {
+  const percentage = progress || (target > 0 ? Math.min((current / target) * 100, 100) : 0);
   return (
     <div className="w-full">
       <div className="flex justify-between text-xs text-gray-600 mb-1">
@@ -2824,7 +3092,7 @@ const SavingsProgress = memo(({ current, target, formatCurrency }) => {
                 ? "bg-blue-500"
                 : "bg-purple-500"
           }`}
-          style={{ width: `${percentage}%` }}
+          style={{ width: `${Math.min(percentage, 100)}%` }}
         />
       </div>
     </div>
@@ -2833,7 +3101,7 @@ const SavingsProgress = memo(({ current, target, formatCurrency }) => {
 
 export const MyIncome = () => {
   const navigate = useNavigate();
-  const { userName } = useParams(); // Get userName from route params
+  const { userName } = useParams();
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("userData") || "null");
@@ -2848,11 +3116,11 @@ export const MyIncome = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
-  const [filterUserName, setFilterUserName] = useState(userName || ""); // Filter by user name
-  const [filterMonth, setFilterMonth] = useState("");
-  const [filterYear, setFilterYear] = useState(new Date().getFullYear());
+  const [filterUserName, setFilterUserName] = useState("");
+  const [filterMonth, setFilterMonth] = useState(new Date().getMonth().toString());
+  const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
 
-  // Refs to track current filter values without causing re-renders
+  // Refs
   const searchTermRef = useRef(searchTerm);
   const filterCategoryRef = useRef(filterCategory);
   const selectedMonthRef = useRef(new Date().getMonth());
@@ -2891,9 +3159,9 @@ export const MyIncome = () => {
   const [selectedBudget, setSelectedBudget] = useState(null);
   const [selectedSavings, setSelectedSavings] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState("incomes"); // incomes, budgets, savings
+  const [activeTab, setActiveTab] = useState("incomes");
 
-  // Form data
+  // Form data - matches Income model
   const [formData, setFormData] = useState({
     description: "",
     category: "",
@@ -2902,11 +3170,12 @@ export const MyIncome = () => {
     date: new Date().toISOString().split("T")[0],
     user: "",
     email: "",
+    userId: "",
     isRecurring: false,
     frequency: "monthly",
   });
 
-  // Budget form data
+  // Budget form data - matches Budget model
   const [budgetFormData, setBudgetFormData] = useState({
     category: "",
     allocatedAmount: "",
@@ -2915,7 +3184,7 @@ export const MyIncome = () => {
     description: "",
   });
 
-  // Savings form data
+  // Savings form data - matches Savings model
   const [savingsFormData, setSavingsFormData] = useState({
     category: "",
     targetAmount: "",
@@ -2931,6 +3200,16 @@ export const MyIncome = () => {
   // Get user email
   const getUserEmail = useCallback(() => {
     return user?.email || "";
+  }, [user]);
+
+  // Get user ID
+  const getUserId = useCallback(() => {
+    return user?.id || user?._id || "";
+  }, [user]);
+
+  // Get user name
+  const getUserName = useCallback(() => {
+    return user?.name || "";
   }, [user]);
 
   // Get month name
@@ -2964,17 +3243,21 @@ export const MyIncome = () => {
 
     if (!user) setUser(userData);
 
-    // Set user name and email in form data
+    // Get the user name (from URL param or from user data)
     const targetUserName = userName || userData.name || "";
     setFilterUserName(targetUserName);
 
-    if (userData?.email) {
-      setFormData((prev) => ({
-        ...prev,
-        email: userData.email,
-        user: targetUserName || userData.name || "",
-      }));
-    }
+    // Auto-fill form data with user info
+    const userEmail = userData.email || "";
+    const userId = userData.id || userData._id || "";
+    const displayName = targetUserName || userData.name || "";
+
+    setFormData((prev) => ({
+      ...prev,
+      email: userEmail,
+      userId: userId,
+      user: displayName, // Auto-fill user name
+    }));
 
     // Load data only on initial mount
     if (isFirstLoadRef.current) {
@@ -2983,17 +3266,16 @@ export const MyIncome = () => {
       loadBudgets();
       loadSavings();
     }
-  }, [navigate, userName]);
+  }, [navigate, userName, user]);
 
-  // CRITICAL: Load incomes and filter by user name
+  // CRITICAL: Load incomes and filter by userId
   const loadIncomes = useCallback(async () => {
-    // Prevent concurrent loads
     if (isLoadingRef.current) return;
 
-    const targetUserName = userName || user?.name || "";
+    const userId = getUserId();
 
-    if (!targetUserName && !isAdmin) {
-      toast.warning("User name not found");
+    if (!userId && !isAdmin) {
+      toast.warning("User ID not found");
       return;
     }
 
@@ -3001,12 +3283,23 @@ export const MyIncome = () => {
     setIsLoading(true);
 
     try {
-      // Use refs to get current values
-      const search = searchTermRef.current;
-      const category = filterCategoryRef.current;
+      // Build query params
+      const params = {};
+      
+      // If not admin, filter by userId
+      if (!isAdmin && userId) {
+        params.userId = userId;
+      }
 
-      // Fetch ALL incomes from the API
-      const response = await api.get("/incomes");
+      // Add month/year filters if selected
+      if (selectedMonthRef.current !== undefined) {
+        params.month = selectedMonthRef.current;
+      }
+      if (selectedYearRef.current !== undefined) {
+        params.year = selectedYearRef.current;
+      }
+
+      const response = await api.get("/incomes", { params });
 
       let allIncomes = [];
 
@@ -3023,30 +3316,12 @@ export const MyIncome = () => {
 
       console.log(`✅ Found ${allIncomes.length} total incomes`);
 
-      // CRITICAL: Filter incomes by user name (case insensitive)
+      // Apply additional filters (category, search)
       let filteredData = allIncomes;
 
-      if (!isAdmin && targetUserName) {
-        filteredData = allIncomes.filter((inc) => {
-          const incomeUserName = inc.user || "";
-          return incomeUserName.toLowerCase() === targetUserName.toLowerCase();
-        });
-        console.log(
-          `✅ Filtered to ${filteredData.length} incomes for user: "${targetUserName}"`,
-        );
-      } else if (isAdmin) {
-        // Admin sees all incomes
-        console.log(`👑 Admin viewing all ${filteredData.length} incomes`);
-      }
+      const category = filterCategoryRef.current;
+      const search = searchTermRef.current;
 
-      // Log unique users found for debugging
-      const uniqueUsers = [
-        ...new Set(allIncomes.map((inc) => inc.user).filter(Boolean)),
-      ];
-      console.log("👥 All users found in incomes:", uniqueUsers);
-      console.log("🎯 Target user:", targetUserName);
-
-      // Apply additional filters (category, search)
       if (category && category !== "all") {
         filteredData = filteredData.filter((inc) => inc.category === category);
       }
@@ -3069,13 +3344,7 @@ export const MyIncome = () => {
       calculateStats(filteredData);
 
       if (filteredData.length === 0 && !isAdmin) {
-        toast.info(`No incomes found for user: "${targetUserName}"`);
-      } else if (filteredData.length === 0 && isAdmin) {
         toast.info("No incomes found");
-      } else {
-        toast.success(
-          `Loaded ${filteredData.length} incomes${!isAdmin ? ` for "${targetUserName}"` : ""}`,
-        );
       }
     } catch (error) {
       console.error("Load incomes error:", error);
@@ -3084,77 +3353,66 @@ export const MyIncome = () => {
       setIsLoading(false);
       isLoadingRef.current = false;
     }
-  }, [user?.name, isAdmin, userName]);
+  }, [getUserId, isAdmin]);
 
-  // Load budgets by email
+  // Load budgets by userId
   const loadBudgets = useCallback(async () => {
     try {
-      const userEmail = getUserEmail();
+      const userId = getUserId();
 
-      // If not admin and no email, show warning
-      if (!isAdmin && !userEmail) {
-        console.warn("No user email found for loading budgets");
+      if (!isAdmin && !userId) {
+        console.warn("No user ID found for loading budgets");
         return;
       }
 
-      // Build params
       const params = {
         month: selectedMonthRef.current,
         year: selectedYearRef.current,
       };
 
-      // If not admin, add email to params
-      if (!isAdmin && userEmail) {
-        params.email = userEmail;
+      if (!isAdmin && userId) {
+        params.userId = userId;
       }
 
       const response = await api.get("/budgets", { params });
 
       if (response.data.success) {
-        let budgetData = response.data.data || [];
+        const budgetData = response.data.data || [];
         setBudgets(budgetData);
-        console.log(
-          `✅ Loaded ${budgetData.length} budgets for email: ${userEmail || "all"}`,
-        );
+        console.log(`✅ Loaded ${budgetData.length} budgets`);
       }
     } catch (error) {
       console.error("Load budgets error:", error);
-      // Don't show error for budgets as it's a secondary feature
     }
-  }, [isAdmin, getUserEmail]);
+  }, [isAdmin, getUserId]);
 
-  // Load savings by email
+  // Load savings by userId
   const loadSavings = useCallback(async () => {
     try {
-      const userEmail = getUserEmail();
+      const userId = getUserId();
 
-      // If not admin and no email, show warning
-      if (!isAdmin && !userEmail) {
-        console.warn("No user email found for loading savings");
+      if (!isAdmin && !userId) {
+        console.warn("No user ID found for loading savings");
         return;
       }
 
-      // Build params
       const params = {};
 
-      // If not admin, add email to params
-      if (!isAdmin && userEmail) {
-        params.email = userEmail;
+      if (!isAdmin && userId) {
+        params.userId = userId;
       }
 
       const response = await api.get("/savings", { params });
 
       if (response.data.success) {
-        let savingsData = response.data.data || [];
+        const savingsData = response.data.data || [];
         setSavings(savingsData);
-        console.log(
-          `✅ Loaded ${savingsData.length} savings for email: ${userEmail || "all"}`,
-        );
+        console.log(`✅ Loaded ${savingsData.length} savings`);
       }
     } catch (error) {
       console.error("Load savings error:", error);
     }
-  }, [isAdmin, getUserEmail]);
+  }, [isAdmin, getUserId]);
 
   // Calculate stats
   const calculateStats = useCallback(
@@ -3195,7 +3453,7 @@ export const MyIncome = () => {
         }
       });
 
-      // Calculate savings rate (assuming 20% target savings rate)
+      // Calculate savings rate
       const totalSavings = savings.reduce(
         (sum, sav) => sum + (sav.currentAmount || 0),
         0,
@@ -3233,17 +3491,14 @@ export const MyIncome = () => {
     [savings, budgets],
   );
 
-  // Handle search and filter - update refs and trigger load with debounce
+  // Handle search and filter - update refs and trigger load
   useEffect(() => {
-    // Update refs with current values
     searchTermRef.current = searchTerm;
     filterCategoryRef.current = filterCategory;
     selectedMonthRef.current = selectedMonth;
     selectedYearRef.current = selectedYear;
 
-    // Debounce the load - only after user stops interacting
     const timer = setTimeout(() => {
-      // Skip if this is the initial load
       if (!isFirstLoadRef.current) {
         loadIncomes();
         loadBudgets();
@@ -3264,7 +3519,6 @@ export const MyIncome = () => {
   useEffect(() => {
     let filtered = [...incomes];
 
-    // Month filter
     if (selectedMonth !== undefined && selectedYear !== undefined) {
       filtered = filtered.filter((inc) => {
         const date = new Date(inc.date);
@@ -3278,12 +3532,11 @@ export const MyIncome = () => {
     setFilteredIncomes(filtered);
   }, [incomes, selectedMonth, selectedYear]);
 
-  // Handle add income
+  // Handle add income - matches Income model
   const handleAddIncome = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate amount is a whole number
     const amountValue = Number(formData.amount);
     if (!Number.isInteger(amountValue) || amountValue <= 0) {
       toast.error("Amount must be a positive whole number (no decimals)");
@@ -3293,16 +3546,24 @@ export const MyIncome = () => {
 
     try {
       const incomeData = {
-        description: formData.description,
+        description: formData.description.trim(),
         category: formData.category || formData.source,
         source: formData.source || formData.category,
         amount: amountValue,
         date: formData.date,
-        user: formData.user || user?.name || userName || "Unknown",
-        email: formData.email || user?.email,
-        isRecurring: formData.isRecurring,
-        frequency: formData.frequency,
+        user: formData.user || getUserName() || "Unknown",
+        email: formData.email || getUserEmail() || "",
+        userId: formData.userId || getUserId() || "",
+        isRecurring: formData.isRecurring || false,
+        frequency: formData.frequency || "monthly",
       };
+
+      // Validate userId
+      if (!incomeData.userId) {
+        toast.error("User ID is required");
+        setIsSubmitting(false);
+        return;
+      }
 
       const response = await api.post("/incomes", incomeData);
 
@@ -3310,7 +3571,6 @@ export const MyIncome = () => {
         toast.success("Income added successfully!");
         setIsAddModalOpen(false);
         resetForm();
-        // Reload after adding
         setTimeout(() => {
           loadIncomes();
           loadSavings();
@@ -3331,7 +3591,6 @@ export const MyIncome = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate amount is a whole number
     const amountValue = Number(formData.amount);
     if (!Number.isInteger(amountValue) || amountValue <= 0) {
       toast.error("Amount must be a positive whole number (no decimals)");
@@ -3341,15 +3600,16 @@ export const MyIncome = () => {
 
     try {
       const incomeData = {
-        description: formData.description,
+        description: formData.description.trim(),
         category: formData.category || formData.source,
         source: formData.source || formData.category,
         amount: amountValue,
         date: formData.date,
-        user: formData.user || user?.name || userName || "Unknown",
-        email: formData.email || user?.email,
-        isRecurring: formData.isRecurring,
-        frequency: formData.frequency,
+        user: formData.user || getUserName() || "Unknown",
+        email: formData.email || getUserEmail() || "",
+        userId: formData.userId || getUserId() || "",
+        isRecurring: formData.isRecurring || false,
+        frequency: formData.frequency || "monthly",
       };
 
       const response = await api.put(
@@ -3361,7 +3621,6 @@ export const MyIncome = () => {
         toast.success("Income updated successfully!");
         setIsEditModalOpen(false);
         resetForm();
-        // Reload after updating
         setTimeout(() => loadIncomes(), 100);
       } else {
         toast.error(response.data.message || "Failed to update income");
@@ -3385,7 +3644,6 @@ export const MyIncome = () => {
         toast.success("Income deleted successfully!");
         setIsDeleteModalOpen(false);
         setSelectedIncome(null);
-        // Reload after deleting
         setTimeout(() => {
           loadIncomes();
           loadSavings();
@@ -3401,12 +3659,11 @@ export const MyIncome = () => {
     }
   };
 
-  // Handle add budget
+  // Handle add budget - matches Budget model
   const handleAddBudget = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate allocated amount is a whole number
     const allocatedValue = Number(budgetFormData.allocatedAmount);
     if (!Number.isInteger(allocatedValue) || allocatedValue < 0) {
       toast.error("Allocated amount must be a whole number (no decimals)");
@@ -3416,13 +3673,20 @@ export const MyIncome = () => {
 
     try {
       const budgetData = {
-        ...budgetFormData,
+        category: budgetFormData.category.trim().toLowerCase(),
         allocatedAmount: allocatedValue,
-        email: user?.email,
-        user: user?.name || userName || "Unknown",
         month: parseInt(budgetFormData.month),
-        year: parseInt(budgetFormData.year),
+        year: parseInt(budgetFormData.year) || new Date().getFullYear(),
+        description: budgetFormData.description?.trim() || "",
+        email: getUserEmail() || "",
+        userId: getUserId() || "",
       };
+
+      if (!budgetData.userId) {
+        toast.error("User ID is required");
+        setIsSubmitting(false);
+        return;
+      }
 
       const response = await api.post("/budgets", budgetData);
 
@@ -3430,7 +3694,6 @@ export const MyIncome = () => {
         toast.success("Budget set successfully!");
         setIsBudgetModalOpen(false);
         resetBudgetForm();
-        // Reload after adding
         setTimeout(() => loadBudgets(), 100);
       } else {
         toast.error(response.data.message || "Failed to set budget");
@@ -3443,19 +3706,16 @@ export const MyIncome = () => {
     }
   };
 
-  // Handle add savings
+  // Handle add savings - matches Savings model
   const handleAddSavings = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate target amount is a whole number
     const targetValue = Number(savingsFormData.targetAmount);
     const currentValue = Number(savingsFormData.currentAmount) || 0;
 
     if (!Number.isInteger(targetValue) || targetValue <= 0) {
-      toast.error(
-        "Target amount must be a positive whole number (no decimals)",
-      );
+      toast.error("Target amount must be a positive whole number (no decimals)");
       setIsSubmitting(false);
       return;
     }
@@ -3468,12 +3728,21 @@ export const MyIncome = () => {
 
     try {
       const savingsData = {
-        ...savingsFormData,
+        category: savingsFormData.category.trim(),
         targetAmount: targetValue,
         currentAmount: currentValue,
-        email: user?.email,
-        user: user?.name || userName || "Unknown",
+        deadline: savingsFormData.deadline || null,
+        description: savingsFormData.description?.trim() || "",
+        priority: savingsFormData.priority || "medium",
+        email: getUserEmail() || "",
+        userId: getUserId() || "",
       };
+
+      if (!savingsData.userId) {
+        toast.error("User ID is required");
+        setIsSubmitting(false);
+        return;
+      }
 
       const response = await api.post("/savings", savingsData);
 
@@ -3481,19 +3750,16 @@ export const MyIncome = () => {
         toast.success("Savings goal set successfully!");
         setIsSavingsModalOpen(false);
         resetSavingsForm();
-        // Reload after adding
         setTimeout(() => {
           loadSavings();
-          loadIncomes(); // Refresh stats
+          loadIncomes();
         }, 100);
       } else {
         toast.error(response.data.message || "Failed to set savings goal");
       }
     } catch (error) {
       console.error("Add savings error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to set savings goal",
-      );
+      toast.error(error.response?.data?.message || "Failed to set savings goal");
     } finally {
       setIsSubmitting(false);
     }
@@ -3507,13 +3773,14 @@ export const MyIncome = () => {
       source: "",
       amount: "",
       date: new Date().toISOString().split("T")[0],
-      user: user?.name || userName || "",
-      email: user?.email || "",
+      user: getUserName() || filterUserName || "",
+      email: getUserEmail() || "",
+      userId: getUserId() || "",
       isRecurring: false,
       frequency: "monthly",
     });
     setSelectedIncome(null);
-  }, [user, userName]);
+  }, [getUserName, getUserEmail, getUserId, filterUserName]);
 
   const resetBudgetForm = useCallback(() => {
     setBudgetFormData({
@@ -3550,14 +3817,15 @@ export const MyIncome = () => {
         date: income.date
           ? income.date.split("T")[0]
           : new Date().toISOString().split("T")[0],
-        user: income.user || user?.name || userName || "",
-        email: income.email || user?.email || "",
+        user: income.user || getUserName() || filterUserName || "",
+        email: income.email || getUserEmail() || "",
+        userId: income.userId || getUserId() || "",
         isRecurring: income.isRecurring || false,
         frequency: income.frequency || "monthly",
       });
       setIsEditModalOpen(true);
     },
-    [user, userName],
+    [getUserName, getUserEmail, getUserId, filterUserName],
   );
 
   // Format currency (RWF - Rwandan Franc)
@@ -3592,7 +3860,7 @@ export const MyIncome = () => {
   // Export report data
   const exportReport = useCallback(() => {
     const data = {
-      user: userName || user?.name || "All Users",
+      user: userName || getUserName() || "All Users",
       generatedDate: new Date().toISOString(),
       stats,
       incomes: filteredIncomes,
@@ -3625,26 +3893,20 @@ export const MyIncome = () => {
 
     // Add budget summary
     csv += "\nBudget Summary\n";
-    csv += "Category,Allocated Amount (RWF),Actual Amount (RWF),Status\n";
+    csv += "Category,Allocated Amount (RWF),Spent Amount (RWF),Remaining,Status\n";
     budgets.forEach((budget) => {
-      const actual = filteredIncomes
-        .filter((inc) => inc.category === budget.category)
-        .reduce((sum, inc) => sum + (inc.amount || 0), 0);
-      const status =
-        actual <= budget.allocatedAmount ? "On Track" : "Over Budget";
-      csv += `${budget.category},${budget.allocatedAmount},${actual},${status}\n`;
+      const spent = budget.spentAmount || 0;
+      const remaining = budget.remainingAmount || 0;
+      csv += `${budget.category},${budget.allocatedAmount},${spent},${remaining},${budget.status || "on-track"}\n`;
     });
 
     // Add savings summary
     csv += "\nSavings Goals\n";
     csv +=
-      "Category,Target Amount (RWF),Current Amount (RWF),Progress,Deadline\n";
+      "Category,Target Amount (RWF),Current Amount (RWF),Progress,Deadline,Completed\n";
     savings.forEach((saving) => {
-      const progress = (
-        (saving.currentAmount / saving.targetAmount) *
-        100
-      ).toFixed(1);
-      csv += `${saving.category},${saving.targetAmount},${saving.currentAmount},${progress}%,${saving.deadline || "N/A"}\n`;
+      const progress = saving.progress || 0;
+      csv += `${saving.category},${saving.targetAmount},${saving.currentAmount},${progress}%,${saving.deadline || "N/A"},${saving.isCompleted ? "Yes" : "No"}\n`;
     });
 
     // Download
@@ -3658,26 +3920,14 @@ export const MyIncome = () => {
 
     toast.success("Report exported successfully!");
     setIsReportModalOpen(false);
-  }, [filteredIncomes, budgets, savings, stats, user, userName, formatDate]);
+  }, [filteredIncomes, budgets, savings, stats, userName, getUserName, formatDate]);
 
   // Get display data
   const displayIncomes = filteredIncomes.length > 0 ? filteredIncomes : incomes;
 
-  // Current month/year for filtering
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
-  // Filter incomes by month/year for budget comparison
-  const monthlyIncomes = displayIncomes.filter((inc) => {
-    const date = new Date(inc.date);
-    return (
-      date.getMonth() === selectedMonth && date.getFullYear() === selectedYear
-    );
-  });
-
   // Calculate actual spending per category for budget comparison
   const categoryActuals = {};
-  monthlyIncomes.forEach((inc) => {
+  displayIncomes.forEach((inc) => {
     const category = inc.category || "Other";
     categoryActuals[category] =
       (categoryActuals[category] || 0) + (inc.amount || 0);
@@ -3747,49 +3997,39 @@ export const MyIncome = () => {
   );
 
   // Memoized Budget Card
-  const BudgetCard = memo(({ budget, actual, formatCurrency }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-gray-50 rounded-xl p-4 border border-gray-200"
-    >
-      <div className="flex justify-between items-start mb-2">
-        <div>
-          <h4 className="font-semibold text-gray-800">{budget.category}</h4>
-          <p className="text-sm text-gray-500">
-            {budget.description || "No description"}
-          </p>
+  const BudgetCard = memo(({ budget, formatCurrency }) => {
+    const spent = budget.spentAmount || 0;
+    const remaining = budget.remainingAmount || 0;
+    const percentageUsed = budget.percentageUsed || 0;
+    const status = budget.status || "on-track";
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gray-50 rounded-xl p-4 border border-gray-200"
+      >
+        <div className="flex justify-between items-start mb-2">
+          <div>
+            <h4 className="font-semibold text-gray-800 capitalize">{budget.category}</h4>
+            <p className="text-sm text-gray-500">
+              {budget.description || "No description"}
+            </p>
+          </div>
+          <BudgetStatusBadge allocated={budget.allocatedAmount} spent={spent} status={status} />
         </div>
-        <BudgetStatusBadge allocated={budget.allocatedAmount} actual={actual} />
-      </div>
-      <div className="flex justify-between text-sm text-gray-600 mb-2">
-        <span>Budgeted: {formatCurrency(budget.allocatedAmount)}</span>
-        <span>Spent: {formatCurrency(actual)}</span>
-      </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
-        <div
-          className={`h-2 rounded-full transition-all duration-500 ${
-            actual > budget.allocatedAmount
-              ? "bg-red-500"
-              : actual > budget.allocatedAmount * 0.8
-                ? "bg-yellow-500"
-                : "bg-green-500"
-          }`}
-          style={{
-            width: `${Math.min((actual / budget.allocatedAmount) * 100, 100)}%`,
-          }}
-        />
-      </div>
-    </motion.div>
-  ));
+        <div className="flex justify-between text-sm text-gray-600 mb-2">
+          <span>Budgeted: {formatCurrency(budget.allocatedAmount)}</span>
+        </div>
+       
+      </motion.div>
+    );
+  });
 
   // Memoized Savings Card
   const SavingsCard = memo(({ saving, formatCurrency, formatDate }) => {
-    const progress =
-      saving.targetAmount > 0
-        ? Math.min((saving.currentAmount / saving.targetAmount) * 100, 100)
-        : 0;
-    const isComplete = progress >= 100;
+    const progress = saving.progress || 0;
+    const isComplete = saving.isCompleted || progress >= 100;
 
     return (
       <motion.div
@@ -3832,6 +4072,7 @@ export const MyIncome = () => {
           current={saving.currentAmount || 0}
           target={saving.targetAmount}
           formatCurrency={formatCurrency}
+          progress={progress}
         />
 
         <div className="flex justify-between text-xs text-gray-500 mt-2">
@@ -3840,6 +4081,11 @@ export const MyIncome = () => {
             <span>Deadline: {formatDate(saving.deadline)}</span>
           )}
         </div>
+        {saving.completedDate && (
+          <div className="mt-1 text-xs text-green-600">
+            Completed: {formatDate(saving.completedDate)}
+          </div>
+        )}
       </motion.div>
     );
   });
@@ -3883,8 +4129,8 @@ export const MyIncome = () => {
                 </span>
               </p>
             )}
-            {user?.email && !isAdmin && !userName && (
-              <p className="text-sm text-gray-500 mt-1">User: {user.email}</p>
+            {getUserEmail() && !isAdmin && !userName && (
+              <p className="text-sm text-gray-500 mt-1">User: {getUserEmail()}</p>
             )}
           </div>
           <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
@@ -3970,7 +4216,7 @@ export const MyIncome = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Budget Status</p>
-                <p className="text-2xl font-bold text-orange-600">
+                <p className="text-xs font-bold text-orange-600">
                   {stats.budgetStatus === "on-track" && "✓ On Track"}
                   {stats.budgetStatus === "over-budget" && "⚠ Over Budget"}
                   {stats.budgetStatus === "approaching-limit" &&
@@ -4044,7 +4290,7 @@ export const MyIncome = () => {
                     />
                   </div>
 
-                  <div className="flex space-x-3">
+                  <div className="flex flex-wrap gap-2">
                     <select
                       value={filterCategory}
                       onChange={(e) => setFilterCategory(e.target.value)}
@@ -4177,9 +4423,9 @@ export const MyIncome = () => {
                     {getMonthName(selectedMonth)} {selectedYear} - Track your
                     spending against budget
                   </p>
-                  {user?.email && (
+                  {getUserEmail() && (
                     <p className="text-xs text-gray-400 mt-1">
-                      Budgets for: {user.email}
+                      Budgets for: {getUserEmail()}
                     </p>
                   )}
                 </div>
@@ -4202,17 +4448,13 @@ export const MyIncome = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {budgets.map((budget, index) => {
-                    const actual = categoryActuals[budget.category] || 0;
-                    return (
-                      <BudgetCard
-                        key={budget._id || index}
-                        budget={budget}
-                        actual={actual}
-                        formatCurrency={formatCurrency}
-                      />
-                    );
-                  })}
+                  {budgets.map((budget, index) => (
+                    <BudgetCard
+                      key={budget._id || index}
+                      budget={budget}
+                      formatCurrency={formatCurrency}
+                    />
+                  ))}
                 </div>
               )}
             </div>
@@ -4229,9 +4471,9 @@ export const MyIncome = () => {
                   <p className="text-sm text-gray-500">
                     Track your progress towards financial goals
                   </p>
-                  {user?.email && (
+                  {getUserEmail() && (
                     <p className="text-xs text-gray-400 mt-1">
-                      Savings for: {user.email}
+                      Savings for: {getUserEmail()}
                     </p>
                   )}
                 </div>
