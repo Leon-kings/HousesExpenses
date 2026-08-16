@@ -292,6 +292,9 @@
 //   const [isLoadingIncomes, setIsLoadingIncomes] = useState(false);
 //   const [incomeError, setIncomeError] = useState(null);
 
+//   // State for initial page load
+//   const [isInitialLoading, setIsInitialLoading] = useState(true);
+
 //   // Filter states
 //   const [searchTerm, setSearchTerm] = useState("");
 //   const [filterCategory, setFilterCategory] = useState("all");
@@ -537,6 +540,7 @@
 //     }
 
 //     try {
+//       setIsLoading(true);
 //       setError(null);
 
 //       const token = localStorage.getItem("authToken");
@@ -639,6 +643,8 @@
 //       setExpenses([]);
 //       setFilteredExpenses([]);
 //       calculateStats([]);
+//     } finally {
+//       setIsLoading(false);
 //     }
 //   }, [calculateStats, navigate]);
 
@@ -757,12 +763,13 @@
 //     }
 
 //     // Load expenses and incomes
-//     console.log("📊 Calling loadExpenses...");
-//     loadExpenses();
-    
-//     console.log("💰 Calling loadIncomes...");
-//     loadIncomes();
+//     const loadInitialData = async () => {
+//       setIsInitialLoading(true);
+//       await Promise.all([loadExpenses(), loadIncomes()]);
+//       setIsInitialLoading(false);
+//     };
 
+//     loadInitialData();
 //     loadNotifications();
 
 //     // Cleanup
@@ -1207,6 +1214,19 @@
 //     totalIncomeFromApi,
 //   );
 
+//   // Show loading screen while initial data is being fetched
+//   if (isInitialLoading) {
+//     return (
+//       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+//         <div className="text-center">
+//           <div className="w-20 h-20 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+//           <h2 className="text-2xl font-bold text-gray-800">Loading Dashboard</h2>
+//           <p className="text-gray-600 mt-2">Please wait while we fetch your data...</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
 //       <ToastContainer
@@ -1492,7 +1512,12 @@
 
 //         {/* Expenses Table */}
 //         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-//           {displayExpenses.length === 0 ? (
+//           {isLoading ? (
+//             <div className="p-12 text-center">
+//               <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+//               <p className="text-gray-500 text-lg">Loading transactions...</p>
+//             </div>
+//           ) : displayExpenses.length === 0 ? (
 //             <div className="p-12 text-center">
 //               <ReceiptIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
 //               <p className="text-gray-500 text-lg">No transactions found</p>
@@ -1879,16 +1904,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-/* eslint-disable react-hooks/static-components */
 /* eslint-disable react-hooks/immutability */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable no-useless-assignment */
@@ -2175,9 +2190,9 @@ export const ExpensesDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // State for incomes (from /incomes endpoint)
-  const [incomes, setIncomes] = useState([]);
-  const [totalIncomeFromApi, setTotalIncomeFromApi] = useState(0);
+  // State for user-specific incomes (filtered by email - /:email)
+  const [userIncomes, setUserIncomes] = useState([]);
+  const [totalUserIncome, setTotalUserIncome] = useState(0);
   const [isLoadingIncomes, setIsLoadingIncomes] = useState(false);
   const [incomeError, setIncomeError] = useState(null);
 
@@ -2245,7 +2260,7 @@ export const ExpensesDashboard = () => {
     "Other",
   ];
 
-  // Generate months and years for filters
+  // Generate months and years for filters - ALL 12 months always visible
   const months = [
     { value: "01", label: "January" },
     { value: "02", label: "February" },
@@ -2273,7 +2288,7 @@ export const ExpensesDashboard = () => {
     incomeCount: 0,
   });
 
-  // Calculate stats from expenses and incomes
+  // Calculate stats from expenses and user-specific incomes
   const calculateStats = useCallback((expensesData) => {
     let totalExpenses = 0;
     let expenseCount = 0;
@@ -2288,8 +2303,8 @@ export const ExpensesDashboard = () => {
       }
     });
 
-    // Use total income from API
-    const totalIncome = totalIncomeFromApi;
+    // Use total income from user-specific API call (filtered by email)
+    const totalIncome = totalUserIncome;
 
     setStats({
       totalIncome,
@@ -2298,7 +2313,7 @@ export const ExpensesDashboard = () => {
       expenseCount,
       incomeCount,
     });
-  }, [totalIncomeFromApi]);
+  }, [totalUserIncome]);
 
   // Function to refresh the whole page
   const refreshPage = useCallback(() => {
@@ -2306,12 +2321,20 @@ export const ExpensesDashboard = () => {
     window.location.reload();
   }, []);
 
-  // Load incomes from /incomes endpoint
-  const loadIncomes = useCallback(async () => {
-    console.log("💰 Starting loadIncomes...");
+  // Load user-specific incomes from /incomes endpoint filtered by user email (/:email)
+  const loadUserIncomes = useCallback(async () => {
+    console.log("💰 Starting loadUserIncomes...");
 
     if (!isMountedRef.current) {
       console.log("⚠️ Component unmounted, skipping load");
+      return;
+    }
+
+    const userEmail = user?.email;
+    if (!userEmail) {
+      console.log("⚠️ No user email found, skipping income load");
+      setUserIncomes([]);
+      setTotalUserIncome(0);
       return;
     }
 
@@ -2326,72 +2349,81 @@ export const ExpensesDashboard = () => {
         throw new Error("No authentication token found");
       }
 
-      console.log("📤 Making API request to /incomes");
+      console.log(`📤 Making API request to /incomes for user: ${userEmail}`);
       const response = await api.get("/incomes");
 
       console.log("📦 Income response status:", response.status);
       console.log("📦 Full income response:", JSON.stringify(response.data, null, 2));
 
-      let incomeData = [];
+      let allIncomes = [];
+      let userSpecificIncomes = [];
       let totalIncome = 0;
 
       // Handle the response format properly
       if (response.data) {
-        // Check if response has success and data wrapper
         if (response.data.success === true && response.data.data && Array.isArray(response.data.data)) {
-          incomeData = response.data.data;
-          console.log(`✅ Found ${incomeData.length} incomes in response.data.data`);
+          allIncomes = response.data.data;
+          console.log(`✅ Found ${allIncomes.length} incomes in response.data.data`);
           
-          // Calculate total income from the data array
-          incomeData.forEach(inc => {
+          userSpecificIncomes = allIncomes.filter(inc => {
+            const incEmail = inc.email || inc.userEmail || '';
+            return incEmail.toLowerCase() === userEmail.toLowerCase();
+          });
+          console.log(`✅ Found ${userSpecificIncomes.length} incomes for user ${userEmail}`);
+          
+          userSpecificIncomes.forEach(inc => {
             totalIncome += inc.amount || 0;
           });
-          
-          // Also check if there's budgetSummary with totalMonthlyIncome
-          if (response.data.budgetSummary && response.data.budgetSummary.totalMonthlyIncome) {
-            totalIncome = response.data.budgetSummary.totalMonthlyIncome;
-            console.log(`💰 Total income from budgetSummary: ${totalIncome}`);
-          }
         } 
-        // Check if response has data property with array
         else if (response.data.data && Array.isArray(response.data.data)) {
-          incomeData = response.data.data;
-          console.log(`✅ Found ${incomeData.length} incomes in response.data.data (fallback)`);
+          allIncomes = response.data.data;
+          console.log(`✅ Found ${allIncomes.length} incomes in response.data.data (fallback)`);
           
-          incomeData.forEach(inc => {
+          userSpecificIncomes = allIncomes.filter(inc => {
+            const incEmail = inc.email || inc.userEmail || '';
+            return incEmail.toLowerCase() === userEmail.toLowerCase();
+          });
+          console.log(`✅ Found ${userSpecificIncomes.length} incomes for user ${userEmail}`);
+          
+          userSpecificIncomes.forEach(inc => {
             totalIncome += inc.amount || 0;
           });
         }
-        // Check if response is directly an array
         else if (Array.isArray(response.data)) {
-          incomeData = response.data;
-          console.log(`✅ Found ${incomeData.length} incomes as direct array`);
+          allIncomes = response.data;
+          console.log(`✅ Found ${allIncomes.length} incomes as direct array`);
           
-          incomeData.forEach(inc => {
+          userSpecificIncomes = allIncomes.filter(inc => {
+            const incEmail = inc.email || inc.userEmail || '';
+            return incEmail.toLowerCase() === userEmail.toLowerCase();
+          });
+          console.log(`✅ Found ${userSpecificIncomes.length} incomes for user ${userEmail}`);
+          
+          userSpecificIncomes.forEach(inc => {
             totalIncome += inc.amount || 0;
           });
         } 
         else {
           console.warn("⚠️ Unexpected income response format:", response.data);
-          incomeData = [];
+          userSpecificIncomes = [];
         }
       }
 
-      console.log(`💰 Total income calculated: ${totalIncome}`);
+      console.log(`💰 Total income for user ${userEmail}: ${totalIncome}`);
+      console.log(`📊 User-specific incomes:`, userSpecificIncomes);
 
-      setIncomes(incomeData);
-      setTotalIncomeFromApi(totalIncome);
+      setUserIncomes(userSpecificIncomes);
+      setTotalUserIncome(totalIncome);
       
-      // Recalculate stats with new income data
       calculateStats(expenses);
 
-      if (incomeData.length === 0) {
-        toast.info("No incomes found in database");
+      if (userSpecificIncomes.length === 0) {
+        toast.info(`No incomes found for user: ${userEmail}`);
       } else {
-        toast.success(`Loaded ${incomeData.length} incomes successfully (Total: ${totalIncome.toFixed(0)} RWF)`);
+        toast.success(`Loaded ${userSpecificIncomes.length} incomes for ${userEmail} (Total: ${totalIncome.toFixed(0)} RWF)`);
       }
     } catch (error) {
-      console.error("❌ Load incomes error:", error);
+      console.error("❌ Load user incomes error:", error);
 
       if (!isMountedRef.current) return;
 
@@ -2417,7 +2449,7 @@ export const ExpensesDashboard = () => {
     } finally {
       setIsLoadingIncomes(false);
     }
-  }, [expenses, calculateStats]);
+  }, [user, expenses, calculateStats]);
 
   // Load expenses from API
   const loadExpenses = useCallback(async () => {
@@ -2450,7 +2482,6 @@ export const ExpensesDashboard = () => {
 
       let expenseData = [];
 
-      // Handle the response format properly
       if (response.data) {
         if (
           response.data.success === true &&
@@ -2479,11 +2510,9 @@ export const ExpensesDashboard = () => {
 
       console.log(`📊 Setting ${expenseData.length} expenses to state`);
 
-      // Update expenses state
       setExpenses(expenseData);
       setFilteredExpenses(expenseData);
       
-      // Calculate stats with current income data
       calculateStats(expenseData);
       
       dataLoadedRef.current = true;
@@ -2651,17 +2680,15 @@ export const ExpensesDashboard = () => {
       }));
     }
 
-    // Load expenses and incomes
     const loadInitialData = async () => {
       setIsInitialLoading(true);
-      await Promise.all([loadExpenses(), loadIncomes()]);
+      await Promise.all([loadExpenses(), loadUserIncomes()]);
       setIsInitialLoading(false);
     };
 
     loadInitialData();
     loadNotifications();
 
-    // Cleanup
     return () => {
       console.log("🧹 Component unmounting");
       isMountedRef.current = false;
@@ -2683,7 +2710,7 @@ export const ExpensesDashboard = () => {
     }
   };
 
-  // Fetch user by ID - FIXED to handle both response formats
+  // Fetch user by ID
   const fetchUserById = async (userId) => {
     if (!userId) {
       toast.error("User ID is required");
@@ -2702,19 +2729,15 @@ export const ExpensesDashboard = () => {
 
       let userInfo = null;
 
-      // Handle different response formats
       if (response.data) {
-        // Check if response has success and data wrapper
         if (response.data.success === true && response.data.data) {
           userInfo = response.data.data;
           console.log("✅ User found in response.data.data");
         }
-        // Check if response is directly the user object
         else if (response.data._id || response.data.id) {
           userInfo = response.data;
           console.log("✅ User found as direct object");
         }
-        // Check if response has data property
         else if (
           response.data.data &&
           (response.data.data._id || response.data.data.id)
@@ -2722,7 +2745,6 @@ export const ExpensesDashboard = () => {
           userInfo = response.data.data;
           console.log("✅ User found in response.data");
         }
-        // Check if response has user property
         else if (
           response.data.user &&
           (response.data.user._id || response.data.user.id)
@@ -2731,7 +2753,6 @@ export const ExpensesDashboard = () => {
           console.log("✅ User found in response.user");
         } else {
           console.warn("⚠️ Unexpected user response format:", response.data);
-          // Try to see if the response itself is the user object
           if (typeof response.data === "object" && response.data !== null) {
             userInfo = response.data;
           }
@@ -2800,7 +2821,6 @@ export const ExpensesDashboard = () => {
         toast.success("Expense added successfully!");
         setIsAddModalOpen(false);
         resetForm();
-        // Refresh the whole page after successful addition
         setTimeout(() => refreshPage(), 500);
       } else {
         toast.error(response.data.message || "Failed to add expense");
@@ -2839,7 +2859,6 @@ export const ExpensesDashboard = () => {
         toast.success("Expense updated successfully!");
         setIsEditModalOpen(false);
         resetForm();
-        // Refresh the whole page after successful update
         setTimeout(() => refreshPage(), 500);
       } else {
         toast.error(response.data.message || "Failed to update expense");
@@ -2863,7 +2882,6 @@ export const ExpensesDashboard = () => {
         toast.success("Expense deleted successfully!");
         setIsDeleteModalOpen(false);
         setSelectedExpense(null);
-        // Refresh the whole page after successful deletion
         setTimeout(() => refreshPage(), 500);
       } else {
         toast.error(response.data.message || "Failed to delete expense");
@@ -2918,7 +2936,7 @@ export const ExpensesDashboard = () => {
     setIsDeleteModalOpen(true);
   }, []);
 
-  // Generate PDF Report
+  // Generate Professional PDF Report
   const generatePDFReport = useCallback(() => {
     const dataToExport =
       filteredExpenses.length > 0 ? filteredExpenses : expenses;
@@ -2928,99 +2946,173 @@ export const ExpensesDashboard = () => {
       return;
     }
 
-    const doc = new jsPDF();
+    const doc = new jsPDF('landscape');
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-    doc.setFillColor(59, 130, 246);
-    doc.rect(0, 0, pageWidth, 40, "F");
-
+    // === PROFESSIONAL HEADER ===
+    doc.setFillColor(25, 55, 109); // Dark blue
+    doc.rect(0, 0, pageWidth, 50, "F");
+    
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
-    doc.text("HEMS - Expenses Report", 14, 25);
-
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
+    doc.text("HOUSEHOLD EXPENSE MANAGEMENT SYSTEM", pageWidth / 2, 22, { align: 'center' });
+    
+    doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
+    doc.text("Expenses & Income Report", pageWidth / 2, 38, { align: 'center' });
 
+    // === REPORT INFORMATION ===
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    
     const today = new Date();
-    doc.text(
-      `Generated: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`,
-      14,
-      50,
-    );
-    doc.text(`User: ${user?.email || "All Users"}`, 14, 60);
+    const userEmail = user?.email || "All Users";
+    
+    const infoY = 60;
+    doc.setFillColor(240, 245, 255);
+    doc.roundedRect(14, infoY, pageWidth - 28, 35, 3, 3, "F");
+    
+    doc.text(`Report Generated: ${today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 20, infoY + 10);
+    doc.text(`Generated By: ${userEmail}`, 20, infoY + 20);
+    doc.text(`Time: ${today.toLocaleTimeString()}`, 20, infoY + 30);
+    
+    doc.text(`Total Transactions: ${dataToExport.length}`, pageWidth - 60, infoY + 10);
+    doc.text(`Report ID: HEMS-${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*10000)).padStart(4,'0')}`, pageWidth - 60, infoY + 20);
 
+    // === FINANCIAL SUMMARY ===
+    const summaryY = infoY + 45;
+    doc.setFillColor(245, 247, 250);
+    doc.roundedRect(14, summaryY, pageWidth - 28, 55, 3, 3, "F");
+    
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("Summary", 14, 75);
-
-    doc.setFontSize(12);
+    doc.setTextColor(25, 55, 109);
+    doc.text("FINANCIAL SUMMARY", 20, summaryY + 15);
+    
+    doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
+    
     const summaryData = [
-      ["Total Income", `RWF ${stats.totalIncome.toFixed(0)}`],
-      ["Total Expenses", `RWF ${stats.totalExpenses.toFixed(0)}`],
-      ["Net Balance", `RWF ${stats.netBalance.toFixed(0)}`],
-      ["Total Transactions", `${dataToExport.length}`],
+      { label: "Total Income", value: `RWF ${stats.totalIncome.toFixed(0)}`, color: [46, 125, 50] },
+      { label: "Total Expenses", value: `RWF ${stats.totalExpenses.toFixed(0)}`, color: [198, 40, 40] },
+      { label: "Net Balance", value: `RWF ${stats.netBalance.toFixed(0)}`, color: stats.netBalance >= 0 ? [25, 55, 109] : [198, 40, 40] },
+      { label: "Total Transactions", value: `${dataToExport.length}`, color: [123, 31, 162] },
     ];
-
-    let yPos = 85;
-    summaryData.forEach(([label, value]) => {
-      doc.text(`${label}:`, 20, yPos);
-      doc.text(value, 80, yPos);
-      yPos += 8;
+    
+    const colWidth = (pageWidth - 40) / 4;
+    let xPos = 20;
+    
+    summaryData.forEach((item, index) => {
+      const x = xPos + (index * colWidth);
+      
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(9);
+      doc.text(item.label, x, summaryY + 32);
+      
+      doc.setFontSize(13);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(item.color[0], item.color[1], item.color[2]);
+      doc.text(item.value, x, summaryY + 48);
     });
 
-    yPos += 10;
+    // === TRANSACTION DETAILS ===
+    const tableY = summaryY + 65;
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("Transaction Details", 14, yPos);
+    doc.setTextColor(25, 55, 109);
+    doc.text("TRANSACTION DETAILS", 14, tableY);
+    
+    const tableYStart = tableY + 10;
 
-    yPos += 10;
+    // Prepare table data
     const tableData = dataToExport.map((e) => [
-      e.date ? new Date(e.date).toLocaleDateString() : "N/A",
+      e.date ? new Date(e.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : "N/A",
       e.description || "N/A",
       e.category || "N/A",
       e.type ? e.type.charAt(0).toUpperCase() + e.type.slice(1) : "N/A",
       e.user || "N/A",
+      e.email || "N/A",
       `RWF ${e.amount ? e.amount.toFixed(0) : "0"}`,
     ]);
 
     doc.autoTable({
-      startY: yPos,
-      head: [["Date", "Description", "Category", "Type", "User", "Amount"]],
+      startY: tableYStart,
+      head: [["Date", "Description", "Category", "Type", "User", "Email", "Amount"]],
       body: tableData,
       theme: "striped",
       headStyles: {
-        fillColor: [59, 130, 246],
+        fillColor: [25, 55, 109],
         textColor: [255, 255, 255],
-        fontSize: 10,
+        fontSize: 9,
         fontStyle: "bold",
+        halign: "center",
       },
       bodyStyles: {
-        fontSize: 9,
+        fontSize: 8,
+        cellPadding: 3,
       },
       columnStyles: {
-        5: { halign: "right" },
+        0: { cellWidth: 25 },
+        1: { cellWidth: 35 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 18 },
+        4: { cellWidth: 25 },
+        5: { cellWidth: 30 },
+        6: { cellWidth: 25, halign: "right" },
+      },
+      didDrawPage: function (data) {
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(128, 128, 128);
+        doc.setFont("helvetica", "italic");
+        doc.text(
+          "Generated by HEMS - Household Expense Management System",
+          14,
+          pageHeight - 10,
+        );
+        doc.text(
+          `Page ${data.pageNumber}`,
+          pageWidth - 30,
+          pageHeight - 10,
+        );
+        doc.text(
+          `Confidential - For authorized use only`,
+          pageWidth / 2 - 40,
+          pageHeight - 10,
+        );
       },
     });
 
+    // === FOOTER SUMMARY ===
     const finalY = doc.lastAutoTable.finalY + 10;
-    doc.setFontSize(10);
-    doc.setTextColor(128, 128, 128);
-    doc.text(
-      `Generated by HEMS - Household Expense Management System`,
-      14,
-      finalY,
-    );
-    doc.text(
-      `Page ${doc.internal.getCurrentPageInfo().pageNumber}`,
-      pageWidth - 30,
-      finalY,
-    );
+    if (finalY + 20 < pageHeight) {
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.setFont("helvetica", "normal");
+      
+      // Add a summary line
+      doc.setDrawColor(200, 200, 200);
+      doc.line(14, finalY, pageWidth - 14, finalY);
+      
+      doc.text(
+        `This report contains ${dataToExport.length} transactions with total income of RWF ${stats.totalIncome.toFixed(0)} and total expenses of RWF ${stats.totalExpenses.toFixed(0)}`,
+        14,
+        finalY + 10,
+      );
+      doc.text(
+        `Net balance: RWF ${stats.netBalance.toFixed(0)}`,
+        14,
+        finalY + 18,
+      );
+    }
 
-    doc.save(`hems-expenses-report-${today.toISOString().split("T")[0]}.pdf`);
-    toast.success("PDF Report downloaded successfully!");
+    // Save the PDF
+    const fileName = `HEMS_Report_${userEmail.replace('@', '_')}_${today.toISOString().split("T")[0]}.pdf`;
+    doc.save(fileName);
+    toast.success("Professional PDF Report downloaded successfully!");
   }, [expenses, filteredExpenses, stats, user]);
 
   // Format currency
@@ -3099,8 +3191,10 @@ export const ExpensesDashboard = () => {
     expenses.length,
     "display:",
     displayExpenses.length,
-    "totalIncome:",
-    totalIncomeFromApi,
+    "totalUserIncome:",
+    totalUserIncome,
+    "userEmail:",
+    user?.email,
   );
 
   // Show loading screen while initial data is being fetched
@@ -3172,29 +3266,6 @@ export const ExpensesDashboard = () => {
               <span>Refresh</span>
             </button>
 
-            {/* Notification Button */}
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              <NotificationsIcon className="w-5 h-5" />
-              <span>Notifications</span>
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-
-            <NotificationPanel />
-
-            <button
-              onClick={generatePDFReport}
-              className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              <PictureAsPdfIcon className="w-5 h-5" />
-              <span>Export PDF</span>
-            </button>
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
@@ -3217,11 +3288,17 @@ export const ExpensesDashboard = () => {
                 {isLoadingIncomes && (
                   <span className="text-xs text-gray-400">Loading...</span>
                 )}
-                {incomes.length > 0 && (
+                {userIncomes.length > 0 && (
                   <span className="text-xs text-gray-400 block">
-                    From {incomes.length} income source(s)
+                    From {userIncomes.length} income source(s)
                   </span>
                 )}
+                <span className="text-xs text-blue-500 block font-medium">
+                  🔹 Filtered by: {user?.email || "N/A"}
+                </span>
+                <span className="text-xs text-gray-400 block">
+                  (Only incomes belonging to this user)
+                </span>
               </div>
               <TrendingUpIcon className="w-10 h-10 text-green-500 bg-green-100 p-2 rounded-full" />
             </div>
@@ -3248,6 +3325,9 @@ export const ExpensesDashboard = () => {
                 >
                   {formatCurrency(stats.netBalance)}
                 </p>
+                <span className="text-xs text-gray-400 block">
+                  (Income - Expenses)
+                </span>
               </div>
               <AttachMoneyIcon className="w-10 h-10 text-blue-500 bg-blue-100 p-2 rounded-full" />
             </div>
@@ -3338,7 +3418,7 @@ export const ExpensesDashboard = () => {
               </div>
             </div>
 
-            {/* Advanced Filters */}
+            {/* Advanced Filters - ALL 12 months shown always */}
             {showFilters && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -3369,6 +3449,7 @@ export const ExpensesDashboard = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   >
                     <option value="">All Months</option>
+                    {/* All 12 months always visible */}
                     {months.map((month) => (
                       <option key={month.value} value={month.value}>
                         {month.label}

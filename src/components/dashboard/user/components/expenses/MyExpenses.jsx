@@ -1,5 +1,4 @@
-/* eslint-disable no-useless-assignment */
-
+// /* eslint-disable no-useless-assignment */
 // /* eslint-disable no-unused-vars */
 // /* eslint-disable react-hooks/exhaustive-deps */
 // /* eslint-disable react-hooks/static-components */
@@ -92,7 +91,9 @@
 //         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
 //         placeholder="Enter description"
 //         required
+//         maxLength={200}
 //       />
+//       <p className="text-xs text-gray-500 mt-1">Max 200 characters</p>
 //     </div>
 
 //     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -177,10 +178,13 @@
 //         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
 //         placeholder="Enter user name"
 //         required
+//         maxLength={100}
 //       />
+//       <p className="text-xs text-gray-500 mt-1">Max 100 characters</p>
 //     </div>
 
 //     <input type="hidden" value={formData.email} />
+//     <input type="hidden" value={formData.userId} />
 
 //     <div className="flex justify-end space-x-3 pt-4">
 //       <button
@@ -254,7 +258,7 @@
 
 // export const MyExpense = () => {
 //   const navigate = useNavigate();
-//   const { userName } = useParams(); // Get userName from route params
+//   const { userName } = useParams();
 //   const [user, setUser] = useState(() => {
 //     try {
 //       return JSON.parse(localStorage.getItem("userData") || "null");
@@ -273,7 +277,7 @@
 //   const [searchTerm, setSearchTerm] = useState("");
 //   const [filterCategory, setFilterCategory] = useState("all");
 //   const [filterType, setFilterType] = useState("all");
-//   const [filterUserName, setFilterUserName] = useState(userName || ""); // Filter by user name
+//   const [filterUserName, setFilterUserName] = useState(userName || "");
 //   const [filterMonth, setFilterMonth] = useState("");
 //   const [filterYear, setFilterYear] = useState("");
 //   const [showFilters, setShowFilters] = useState(false);
@@ -301,7 +305,7 @@
 //   const [userData, setUserData] = useState(null);
 //   const [isUserLoading, setIsUserLoading] = useState(false);
 
-//   // Form data
+//   // Form data - matches the expense model
 //   const [formData, setFormData] = useState({
 //     description: "",
 //     category: "",
@@ -313,7 +317,7 @@
 //     userId: "",
 //   });
 
-//   // Categories for dropdown
+//   // Categories for dropdown - matches model enum
 //   const categories = [
 //     "Food",
 //     "Utilities",
@@ -387,152 +391,139 @@
 //     });
 //   }, []);
 
-//   // CRITICAL: Load expenses and filter by user name from the expense data
-//   const loadExpenses = useCallback(
-//     async () => {
-//       console.log("🔍 Starting loadExpenses...");
+//   // Load expenses - filter by userId from the expense data
+//   const loadExpenses = useCallback(async () => {
+//     console.log("🔍 Starting loadExpenses...");
 
-//       if (!isMountedRef.current) {
-//         console.log("⚠️ Component unmounted, skipping load");
-//         return;
+//     if (!isMountedRef.current) {
+//       console.log("⚠️ Component unmounted, skipping load");
+//       return;
+//     }
+
+//     try {
+//       setIsLoading(true);
+//       setError(null);
+
+//       const token = localStorage.getItem("authToken");
+//       console.log("🔑 Token present:", !!token);
+
+//       if (!token) {
+//         throw new Error("No authentication token found");
 //       }
 
-//       try {
-//         setIsLoading(true);
-//         setError(null);
-
-//         const token = localStorage.getItem("authToken");
-//         console.log("🔑 Token present:", !!token);
-
-//         if (!token) {
-//           throw new Error("No authentication token found");
-//         }
-
-//         // Get the user name to filter by (from params or from logged in user)
-//         const targetUserName = userName || user?.name || "";
-        
-//         if (!targetUserName) {
-//           toast.warning("No user name found to filter expenses");
-//           setExpenses([]);
-//           setFilteredExpenses([]);
-//           calculateStats([]);
-//           setIsLoading(false);
-//           return;
-//         }
-
-//         console.log(`🔍 Filtering expenses for user name: "${targetUserName}"`);
-
-//         // Fetch ALL expenses from the API (no userId filter)
-//         const url = `/expenses`;
-//         console.log(`📤 Making API request to ${url}`);
-
-//         const response = await api.get(url);
-
-//         console.log("📦 Response status:", response.status);
-
-//         let allExpenses = [];
-
-//         // Handle the response format properly
-//         if (response.data) {
-//           if (
-//             response.data.success === true &&
-//             response.data.data &&
-//             Array.isArray(response.data.data)
-//           ) {
-//             allExpenses = response.data.data;
-//             console.log(`✅ Found ${allExpenses.length} total expenses in response.data.data`);
-//           } else if (Array.isArray(response.data)) {
-//             allExpenses = response.data;
-//             console.log(`✅ Found ${allExpenses.length} total expenses as direct array`);
-//           } else if (
-//             response.data.data &&
-//             Array.isArray(response.data.data)
-//           ) {
-//             allExpenses = response.data.data;
-//             console.log(`✅ Found ${allExpenses.length} total expenses (fallback)`);
-//           } else {
-//             console.warn("⚠️ Unexpected response format:", response.data);
-//             allExpenses = [];
-//           }
-//         }
-
-//         // CRITICAL: Filter expenses by user name (case insensitive)
-//         // This is the key change - filter by the 'user' field in each expense
-//         const filteredByUser = allExpenses.filter(exp => {
-//           const expenseUserName = exp.user || "";
-//           return expenseUserName.toLowerCase() === targetUserName.toLowerCase();
-//         });
-
-//         console.log(`✅ Filtered to ${filteredByUser.length} expenses for user: "${targetUserName}"`);
-
-//         // Log all unique user names found in the data for debugging
-//         const uniqueUsers = [...new Set(allExpenses.map(exp => exp.user).filter(Boolean))];
-//         console.log("👥 All users found in expenses:", uniqueUsers);
-//         console.log("🎯 Target user:", targetUserName);
-
-//         // Update all states with filtered expenses
-//         setExpenses(filteredByUser);
-//         setFilteredExpenses(filteredByUser);
-//         calculateStats(filteredByUser);
-//         dataLoadedRef.current = true;
-
-//         if (filteredByUser.length === 0) {
-//           toast.info(`No expenses found for user: "${targetUserName}"`);
-//         } else {
-//           toast.success(
-//             `Loaded ${filteredByUser.length} expenses for "${targetUserName}"`
-//           );
-//         }
-//       } catch (error) {
-//         console.error("❌ Load expenses error:", error);
-
-//         if (!isMountedRef.current) return;
-
-//         let errorMessage = "Failed to load expenses";
-
-//         if (error.response) {
-//           console.error(
-//             "Server response:",
-//             error.response.status,
-//             error.response.data
-//           );
-
-//           if (error.response.status === 401) {
-//             errorMessage =
-//               "Authentication failed. Please log in again.";
-//             localStorage.removeItem("authToken");
-//             localStorage.removeItem("userData");
-//             setTimeout(() => navigate("/"), 2000);
-//           } else if (error.response.status === 403) {
-//             errorMessage =
-//               "You don't have permission to view expenses.";
-//           } else {
-//             errorMessage =
-//               error.response.data?.message ||
-//               `Server error: ${error.response.status}`;
-//           }
-//         } else if (error.request) {
-//           errorMessage =
-//             "No response from server. Please check your connection.";
-//         } else {
-//           errorMessage =
-//             error.message || "An unexpected error occurred";
-//         }
-
-//         setError(errorMessage);
-//         toast.error(errorMessage);
-
+//       // Get the logged-in user's ID
+//       const userData = JSON.parse(localStorage.getItem("userData") || "null");
+//       const currentUserId = userData?.id || userData?._id || "";
+      
+//       if (!currentUserId) {
+//         toast.warning("No user ID found to filter expenses");
 //         setExpenses([]);
 //         setFilteredExpenses([]);
 //         calculateStats([]);
-//       } finally {
 //         setIsLoading(false);
+//         return;
 //       }
-//     },
-//     [calculateStats, navigate, user, userName]
-//   );
 
-//   // Apply client-side filters (additional filtering on top of user name filter)
+//       console.log(`🔍 Filtering expenses for user ID: "${currentUserId}"`);
+
+//       // Fetch ALL expenses from the API with userId filter
+//       const url = `/expenses?userId=${currentUserId}`;
+//       console.log(`📤 Making API request to ${url}`);
+
+//       const response = await api.get(url);
+
+//       console.log("📦 Response status:", response.status);
+
+//       let allExpenses = [];
+
+//       // Handle the response format properly
+//       if (response.data) {
+//         if (
+//           response.data.success === true &&
+//           response.data.data &&
+//           Array.isArray(response.data.data)
+//         ) {
+//           allExpenses = response.data.data;
+//           console.log(`✅ Found ${allExpenses.length} total expenses in response.data.data`);
+//         } else if (Array.isArray(response.data)) {
+//           allExpenses = response.data;
+//           console.log(`✅ Found ${allExpenses.length} total expenses as direct array`);
+//         } else if (
+//           response.data.data &&
+//           Array.isArray(response.data.data)
+//         ) {
+//           allExpenses = response.data.data;
+//           console.log(`✅ Found ${allExpenses.length} total expenses (fallback)`);
+//         } else {
+//           console.warn("⚠️ Unexpected response format:", response.data);
+//           allExpenses = [];
+//         }
+//       }
+
+//       // Filter by userId to ensure we only get the current user's expenses
+//       // The API should already filter, but we double-check
+//       const filteredByUser = allExpenses.filter(exp => {
+//         const expenseUserId = exp.userId || exp.user?._id || exp._id || "";
+//         return String(expenseUserId) === String(currentUserId);
+//       });
+
+//       console.log(`✅ Filtered to ${filteredByUser.length} expenses for user ID: "${currentUserId}"`);
+
+//       // Update all states with filtered expenses
+//       setExpenses(filteredByUser);
+//       setFilteredExpenses(filteredByUser);
+//       calculateStats(filteredByUser);
+//       dataLoadedRef.current = true;
+
+//       if (filteredByUser.length === 0) {
+//         toast.info(`No expenses found for your account`);
+//       } else {
+//         toast.success(
+//           `Loaded ${filteredByUser.length} expenses`
+//         );
+//       }
+//     } catch (error) {
+//       console.error("❌ Load expenses error:", error);
+
+//       if (!isMountedRef.current) return;
+
+//       let errorMessage = "Failed to load expenses";
+
+//       if (error.response) {
+//         console.error(
+//           "Server response:",
+//           error.response.status,
+//           error.response.data
+//         );
+
+//         if (error.response.status === 401) {
+//           errorMessage = "Authentication failed. Please log in again.";
+//           localStorage.removeItem("authToken");
+//           localStorage.removeItem("userData");
+//           setTimeout(() => navigate("/"), 2000);
+//         } else if (error.response.status === 403) {
+//           errorMessage = "You don't have permission to view expenses.";
+//         } else {
+//           errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+//         }
+//       } else if (error.request) {
+//         errorMessage = "No response from server. Please check your connection.";
+//       } else {
+//         errorMessage = error.message || "An unexpected error occurred";
+//       }
+
+//       setError(errorMessage);
+//       toast.error(errorMessage);
+
+//       setExpenses([]);
+//       setFilteredExpenses([]);
+//       calculateStats([]);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }, [calculateStats, navigate]);
+
+//   // Apply client-side filters
 //   const applyFilters = useCallback(() => {
 //     let filtered = [...expenses];
 
@@ -628,7 +619,6 @@
 
 //     console.log("🔐 Auth token:", token ? "Present" : "Missing");
 //     console.log("👤 User data:", userData);
-//     console.log("👤 UserName from params:", userName);
 
 //     if (!token || !userData) {
 //       console.log("❌ No token or user data, redirecting to login");
@@ -638,20 +628,19 @@
 
 //     setUser(userData);
 
-//     // Set user name from params or user data
+//     // Set user name and ID from user data
 //     const targetUserName = userName || userData.name || "";
 //     setFilterUserName(targetUserName);
 
-//     if (targetUserName) {
-//       setFormData((prev) => ({
-//         ...prev,
-//         user: targetUserName,
-//         email: userData.email || "",
-//         userId: userData.id || userData._id || "",
-//       }));
-//     }
+//     // Set form data with user info
+//     setFormData((prev) => ({
+//       ...prev,
+//       user: targetUserName || userData.name || "",
+//       email: userData.email || "",
+//       userId: userData.id || userData._id || "",
+//     }));
 
-//     // Load expenses (will filter by user name)
+//     // Load expenses (will filter by userId)
 //     console.log("📊 Calling loadExpenses...");
 //     loadExpenses();
 
@@ -662,7 +651,7 @@
 //       console.log("🧹 Component unmounting");
 //       isMountedRef.current = false;
 //     };
-//   }, [userName]); // Re-run when userName param changes
+//   }, [userName]);
 
 //   // Load notifications
 //   const loadNotifications = async () => {
@@ -736,9 +725,7 @@
 //         if (error.response.status === 404) {
 //           errorMessage = "User not found";
 //         } else {
-//           errorMessage =
-//             error.response.data?.message ||
-//             `Server error: ${error.response.status}`;
+//           errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
 //         }
 //       } else if (error.request) {
 //         errorMessage = "No response from server. Please check your connection.";
@@ -752,7 +739,7 @@
 //     }
 //   };
 
-//   // Handle add expense
+//   // Handle add expense - matches the createExpense API
 //   const handleAddExpense = async (e) => {
 //     e.preventDefault();
 //     setIsSubmitting(true);
@@ -765,19 +752,32 @@
 //       return;
 //     }
 
+//     // Validate category
+//     if (!categories.includes(formData.category)) {
+//       toast.error("Invalid category selected");
+//       setIsSubmitting(false);
+//       return;
+//     }
+
 //     try {
+//       // Prepare expense data matching the model
 //       const expenseData = {
-//         description: formData.description,
+//         description: formData.description.trim(),
 //         category: formData.category,
-//         type: formData.type,
+//         type: "expense", // Always expense for this component
 //         amount: amountValue,
 //         date: formData.date,
-//         user: formData.user || user?.name || userName || "Unknown",
+//         user: formData.user.trim() || user?.name || userName || "Unknown",
 //         email: formData.email || user?.email || "",
 //         userId: formData.userId || user?.id || user?._id || "",
 //       };
 
+//       // Log the data being sent
+//       console.log("📤 Creating expense with data:", expenseData);
+
 //       const response = await api.post("/expenses", expenseData);
+      
+//       console.log("📥 Create expense response:", response.data);
       
 //       if (response.data.success) {
 //         toast.success("Expense added successfully!");
@@ -788,14 +788,20 @@
 //         toast.error(response.data.message || "Failed to add expense");
 //       }
 //     } catch (error) {
-//       console.error("Add expense error:", error);
-//       toast.error(error.response?.data?.message || "Failed to add expense");
+//       console.error("❌ Add expense error:", error);
+      
+//       // Handle validation errors from the backend
+//       if (error.response?.data?.message) {
+//         toast.error(error.response.data.message);
+//       } else {
+//         toast.error("Failed to add expense. Please try again.");
+//       }
 //     } finally {
 //       setIsSubmitting(false);
 //     }
 //   };
 
-//   // Handle edit expense
+//   // Handle edit expense - matches the updateExpense API
 //   const handleEditExpense = async (e) => {
 //     e.preventDefault();
 //     setIsSubmitting(true);
@@ -808,19 +814,30 @@
 //       return;
 //     }
 
+//     // Validate category
+//     if (!categories.includes(formData.category)) {
+//       toast.error("Invalid category selected");
+//       setIsSubmitting(false);
+//       return;
+//     }
+
 //     try {
 //       const expenseData = {
-//         description: formData.description,
+//         description: formData.description.trim(),
 //         category: formData.category,
-//         type: formData.type,
+//         type: "expense",
 //         amount: amountValue,
 //         date: formData.date,
-//         user: formData.user || user?.name || userName || "Unknown",
+//         user: formData.user.trim() || user?.name || userName || "Unknown",
 //         email: formData.email || user?.email || "",
 //         userId: formData.userId || user?.id || user?._id || "",
 //       };
 
+//       console.log("📤 Updating expense with data:", expenseData);
+
 //       const response = await api.put(`/expenses/${selectedExpense._id}`, expenseData);
+      
+//       console.log("📥 Update expense response:", response.data);
       
 //       if (response.data.success) {
 //         toast.success("Expense updated successfully!");
@@ -831,8 +848,13 @@
 //         toast.error(response.data.message || "Failed to update expense");
 //       }
 //     } catch (error) {
-//       console.error("Update expense error:", error);
-//       toast.error(error.response?.data?.message || "Failed to update expense");
+//       console.error("❌ Update expense error:", error);
+      
+//       if (error.response?.data?.message) {
+//         toast.error(error.response.data.message);
+//       } else {
+//         toast.error("Failed to update expense. Please try again.");
+//       }
 //     } finally {
 //       setIsSubmitting(false);
 //     }
@@ -854,7 +876,7 @@
 //         toast.error(response.data.message || "Failed to delete expense");
 //       }
 //     } catch (error) {
-//       console.error("Delete expense error:", error);
+//       console.error("❌ Delete expense error:", error);
 //       toast.error(error.response?.data?.message || "Failed to delete expense");
 //     } finally {
 //       setIsSubmitting(false);
@@ -880,10 +902,10 @@
 //   const openEditModal = useCallback((expense) => {
 //     setSelectedExpense(expense);
 //     setFormData({
-//       description: expense.description,
-//       category: expense.category,
-//       type: expense.type,
-//       amount: expense.amount.toString(),
+//       description: expense.description || "",
+//       category: expense.category || "",
+//       type: expense.type || "expense",
+//       amount: expense.amount ? expense.amount.toString() : "",
 //       date: expense.date ? expense.date.split("T")[0] : new Date().toISOString().split("T")[0],
 //       user: expense.user || user?.name || userName || "",
 //       email: expense.email || user?.email || "",
@@ -930,7 +952,7 @@
 //       14,
 //       50,
 //     );
-//     doc.text(`User: ${userName || user?.name || "N/A"}`, 14, 60);
+//     doc.text(`User: ${user?.name || userName || "N/A"}`, 14, 60);
 
 //     // Summary section
 //     doc.setFontSize(14);
@@ -1111,13 +1133,7 @@
 //             <p className="text-sm sm:text-base text-gray-600 mt-1">
 //               Manage and track your personal transactions
 //             </p>
-//             {userName ? (
-//               <p className="text-sm text-gray-500 mt-1">
-//                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium">
-//                   👤 Viewing expenses for: {userName}
-//                 </span>
-//               </p>
-//             ) : user?.name && (
+//             {user?.name && (
 //               <p className="text-sm text-gray-500 mt-1">
 //                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium">
 //                   👤 User: {user.name}
@@ -1438,7 +1454,7 @@
 //                           title="Click to view user details"
 //                         >
 //                           {expense.userId
-//                             ? expense.userId.substring(0, 10) + "..."
+//                             ? String(expense.userId).substring(0, 10) + "..."
 //                             : "N/A"}
 //                         </button>
 //                       </td>
@@ -1724,10 +1740,9 @@
 
 
 
-
+/* eslint-disable no-useless-assignment */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/static-components */
 /* eslint-disable react-hooks/immutability */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useCallback, useRef, memo } from "react";
@@ -1984,7 +1999,7 @@ const Modal = memo(({ isOpen, onClose, title, children, size = "md" }) => {
 
 export const MyExpense = () => {
   const navigate = useNavigate();
-  const { userName } = useParams();
+  const { userEmail } = useParams();
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("userData") || "null");
@@ -2003,7 +2018,7 @@ export const MyExpense = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterType, setFilterType] = useState("all");
-  const [filterUserName, setFilterUserName] = useState(userName || "");
+  const [filterUserEmail, setFilterUserEmail] = useState(userEmail || "");
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -2031,7 +2046,7 @@ export const MyExpense = () => {
   const [userData, setUserData] = useState(null);
   const [isUserLoading, setIsUserLoading] = useState(false);
 
-  // Form data - matches the expense model
+  // Form data
   const [formData, setFormData] = useState({
     description: "",
     category: "",
@@ -2043,7 +2058,7 @@ export const MyExpense = () => {
     userId: "",
   });
 
-  // Categories for dropdown - matches model enum
+  // Categories
   const categories = [
     "Food",
     "Utilities",
@@ -2057,10 +2072,11 @@ export const MyExpense = () => {
     "Investment",
     "Rent",
     "Insurance",
+    "Bonus",
     "Other",
   ];
 
-  // Generate months and years for filters
+  // Months and years for filters
   const months = [
     { value: "01", label: "January" },
     { value: "02", label: "February" },
@@ -2086,38 +2102,69 @@ export const MyExpense = () => {
     netBalance: 0,
     expenseCount: 0,
     incomeCount: 0,
+    userEmail: "",
+    userName: "",
   });
 
-  // User is always a regular user for this component
-  const isAdmin = false;
+  // Helper function to check if a transaction is income
+  const isIncomeTransaction = (expense) => {
+    // Check if category is in income categories
+    const incomeCategories = ['Salary', 'Bonus', 'Freelance', 'Investment'];
+    if (incomeCategories.includes(expense.category)) {
+      return true;
+    }
+    
+    // Check by type field
+    if (expense.type === 'income') {
+      return true;
+    }
+    
+    // Check by source field (for API data)
+    if (expense.source === 'Job' || expense.source === 'Salary' || expense.source === 'Bonus') {
+      return true;
+    }
+    
+    return false;
+  };
 
-  // Calculate stats from expenses
-  const calculateStats = useCallback((expensesData) => {
-    let totalIncome = 0;
+  // Calculate stats from expenses - FIXED to use income data for total income
+  const calculateStats = (expensesData, incomeTotal = 0) => {
     let totalExpenses = 0;
     let expenseCount = 0;
     let incomeCount = 0;
+    let userEmail = "";
+    let userName = "";
 
+    // Calculate expenses from the expenses data
     expensesData.forEach((exp) => {
-      if (exp.type === 'income') {
-        totalIncome += exp.amount;
+      const isIncome = isIncomeTransaction(exp);
+      
+      if (isIncome) {
         incomeCount++;
       } else {
-        totalExpenses += exp.amount;
+        totalExpenses += Number(exp.amount) || 0;
         expenseCount++;
+      }
+      
+      // Get user info from first expense
+      if (!userEmail && exp.email) {
+        userEmail = exp.email;
+        userName = exp.user || "";
       }
     });
 
     setStats({
-      totalIncome,
+      totalIncome: incomeTotal, // Use the incomeTotal from the API
       totalExpenses,
-      netBalance: totalIncome - totalExpenses,
+      netBalance: incomeTotal - totalExpenses,
       expenseCount,
       incomeCount,
+      userEmail: userEmail || user?.email || "",
+      userName: userName || user?.name || "",
     });
-  }, []);
+  };
 
-  // Load expenses - filter by userId from the expense data
+  // Load expenses - FIXED: Fetch expenses and incomes separately
   const loadExpenses = useCallback(async () => {
     console.log("🔍 Starting loadExpenses...");
 
@@ -2137,77 +2184,94 @@ export const MyExpense = () => {
         throw new Error("No authentication token found");
       }
 
-      // Get the logged-in user's ID
       const userData = JSON.parse(localStorage.getItem("userData") || "null");
-      const currentUserId = userData?.id || userData?._id || "";
       
-      if (!currentUserId) {
-        toast.warning("No user ID found to filter expenses");
+      // Get the email from URL param or user data
+      let targetEmail = userEmail;
+      
+      // If no email in URL, use the logged-in user's email
+      if (!targetEmail) {
+        targetEmail = userData?.email || "";
+      }
+      
+      console.log("📧 Target email for filtering:", targetEmail);
+      
+      if (!targetEmail) {
+        toast.warning("No email found to filter expenses");
         setExpenses([]);
         setFilteredExpenses([]);
-        calculateStats([]);
+        calculateStats([], 0);
         setIsLoading(false);
         return;
       }
 
-      console.log(`🔍 Filtering expenses for user ID: "${currentUserId}"`);
-
-      // Fetch ALL expenses from the API with userId filter
-      const url = `/expenses?userId=${currentUserId}`;
-      console.log(`📤 Making API request to ${url}`);
-
-      const response = await api.get(url);
-
-      console.log("📦 Response status:", response.status);
+      // Fetch expenses
+      console.log("📤 Fetching expenses...");
+      const expensesResponse = await api.get(`/expenses?email=${encodeURIComponent(targetEmail)}`);
+      
+      // Fetch incomes (only for statistics)
+      console.log("📤 Fetching incomes for statistics...");
+      const incomesResponse = await api.get(`/incomes/email/${encodeURIComponent(targetEmail)}`);
+      
+      console.log("📦 Expenses response status:", expensesResponse.status);
+      console.log("📦 Incomes response status:", incomesResponse.status);
 
       let allExpenses = [];
+      let incomeTotal = 0;
+      let incomeCount = 0;
 
-      // Handle the response format properly
-      if (response.data) {
-        if (
-          response.data.success === true &&
-          response.data.data &&
-          Array.isArray(response.data.data)
-        ) {
-          allExpenses = response.data.data;
-          console.log(`✅ Found ${allExpenses.length} total expenses in response.data.data`);
-        } else if (Array.isArray(response.data)) {
-          allExpenses = response.data;
-          console.log(`✅ Found ${allExpenses.length} total expenses as direct array`);
-        } else if (
-          response.data.data &&
-          Array.isArray(response.data.data)
-        ) {
-          allExpenses = response.data.data;
-          console.log(`✅ Found ${allExpenses.length} total expenses (fallback)`);
-        } else {
-          console.warn("⚠️ Unexpected response format:", response.data);
-          allExpenses = [];
+      // Process expenses
+      if (expensesResponse.data) {
+        if (expensesResponse.data.success === true && expensesResponse.data.data && Array.isArray(expensesResponse.data.data)) {
+          allExpenses = expensesResponse.data.data;
+          console.log(`✅ Found ${allExpenses.length} expenses from API`);
+        } else if (Array.isArray(expensesResponse.data)) {
+          allExpenses = expensesResponse.data;
+          console.log(`✅ Found ${allExpenses.length} expenses as direct array`);
         }
       }
 
-      // Filter by userId to ensure we only get the current user's expenses
-      // The API should already filter, but we double-check
-      const filteredByUser = allExpenses.filter(exp => {
-        const expenseUserId = exp.userId || exp.user?._id || exp._id || "";
-        return String(expenseUserId) === String(currentUserId);
-      });
+      // Process incomes (only for statistics, not for display)
+      if (incomesResponse.data) {
+        let incomes = [];
+        if (incomesResponse.data.success === true && incomesResponse.data.data && Array.isArray(incomesResponse.data.data)) {
+          incomes = incomesResponse.data.data;
+          console.log(`✅ Found ${incomes.length} incomes from API`);
+        } else if (Array.isArray(incomesResponse.data)) {
+          incomes = incomesResponse.data;
+          console.log(`✅ Found ${incomes.length} incomes as direct array`);
+        }
+        
+        // Calculate total income from the incomes data
+        incomeTotal = incomes.reduce((sum, inc) => sum + (Number(inc.amount) || 0), 0);
+        incomeCount = incomes.length;
+        console.log(`💰 Total income from API: ${incomeTotal}`);
+        console.log(`💰 Income count: ${incomeCount}`);
+      }
 
-      console.log(`✅ Filtered to ${filteredByUser.length} expenses for user ID: "${currentUserId}"`);
+      console.log(`📋 Total expenses: ${allExpenses.length}`);
+      console.log(`📋 Total income (from incomes API): ${incomeTotal}`);
 
-      // Update all states with filtered expenses
-      setExpenses(filteredByUser);
-      setFilteredExpenses(filteredByUser);
-      calculateStats(filteredByUser);
+      if (allExpenses.length === 0 && incomeTotal === 0) {
+        console.warn(`⚠️ No transactions found for email: ${targetEmail}`);
+        setExpenses([]);
+        setFilteredExpenses([]);
+        calculateStats([], 0);
+        toast.info(`No transactions found for ${targetEmail}`);
+        setIsLoading(false);
+        return;
+      }
+
+      // Set the expenses data (only expenses, not incomes)
+      setExpenses(allExpenses);
+      setFilteredExpenses(allExpenses);
+      
+      // Calculate stats with the income total from the incomes API
+      calculateStats(allExpenses, incomeTotal);
       dataLoadedRef.current = true;
 
-      if (filteredByUser.length === 0) {
-        toast.info(`No expenses found for your account`);
-      } else {
-        toast.success(
-          `Loaded ${filteredByUser.length} expenses`
-        );
-      }
+      toast.success(`Loaded ${allExpenses.length} expenses, Total Income: RWF ${incomeTotal.toLocaleString()}`);
+      
     } catch (error) {
       console.error("❌ Load expenses error:", error);
 
@@ -2243,11 +2307,11 @@ export const MyExpense = () => {
 
       setExpenses([]);
       setFilteredExpenses([]);
-      calculateStats([]);
+      calculateStats([], 0);
     } finally {
       setIsLoading(false);
     }
-  }, [calculateStats, navigate]);
+  }, [navigate, userEmail]);
 
   // Apply client-side filters
   const applyFilters = useCallback(() => {
@@ -2269,13 +2333,19 @@ export const MyExpense = () => {
     }
 
     if (filterType && filterType !== "all") {
-      filtered = filtered.filter((exp) => exp.type === filterType);
+      filtered = filtered.filter((exp) => {
+        const isIncome = isIncomeTransaction(exp);
+        
+        if (filterType === 'income') return isIncome;
+        if (filterType === 'expense') return !isIncome;
+        return true;
+      });
     }
 
-    if (filterUserName) {
-      const userNameFilter = filterUserName.toLowerCase();
+    if (filterUserEmail) {
+      const emailFilter = filterUserEmail.toLowerCase();
       filtered = filtered.filter(
-        (exp) => exp.user && exp.user.toLowerCase().includes(userNameFilter),
+        (exp) => exp.email && exp.email.toLowerCase().includes(emailFilter),
       );
     }
 
@@ -2297,16 +2367,19 @@ export const MyExpense = () => {
     }
 
     setFilteredExpenses(filtered);
-    calculateStats(filtered);
+    // Recalculate stats with the filtered data, but keep the income total from the API
+    // We need to get the income total from the stats
+    const currentIncomeTotal = stats.totalIncome;
+    calculateStats(filtered, currentIncomeTotal);
   }, [
     expenses,
     searchTerm,
     filterCategory,
     filterType,
-    filterUserName,
+    filterUserEmail,
     filterMonth,
     filterYear,
-    calculateStats,
+    stats.totalIncome,
   ]);
 
   // Apply filters when expenses or filter values change
@@ -2318,7 +2391,7 @@ export const MyExpense = () => {
     searchTerm,
     filterCategory,
     filterType,
-    filterUserName,
+    filterUserEmail,
     filterMonth,
     filterYear,
     expenses,
@@ -2330,13 +2403,13 @@ export const MyExpense = () => {
     setSearchTerm("");
     setFilterCategory("all");
     setFilterType("all");
-    setFilterUserName(userName || "");
+    setFilterUserEmail(userEmail || "");
     setFilterMonth("");
     setFilterYear("");
     toast.info("All filters cleared");
   };
 
-  // INITIAL LOAD - Runs only once
+  // INITIAL LOAD
   useEffect(() => {
     console.log("🚀 Component mounted, starting initial load...");
 
@@ -2354,30 +2427,26 @@ export const MyExpense = () => {
 
     setUser(userData);
 
-    // Set user name and ID from user data
-    const targetUserName = userName || userData.name || "";
-    setFilterUserName(targetUserName);
+    const targetEmail = userEmail || userData.email || "";
+    setFilterUserEmail(targetEmail);
 
-    // Set form data with user info
     setFormData((prev) => ({
       ...prev,
-      user: targetUserName || userData.name || "",
+      user: userData.name || "",
       email: userData.email || "",
       userId: userData.id || userData._id || "",
     }));
 
-    // Load expenses (will filter by userId)
     console.log("📊 Calling loadExpenses...");
     loadExpenses();
 
     loadNotifications();
 
-    // Cleanup
     return () => {
       console.log("🧹 Component unmounting");
       isMountedRef.current = false;
     };
-  }, [userName]);
+  }, [userEmail]);
 
   // Load notifications
   const loadNotifications = async () => {
@@ -2465,12 +2534,11 @@ export const MyExpense = () => {
     }
   };
 
-  // Handle add expense - matches the createExpense API
+  // Handle add expense
   const handleAddExpense = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate amount is a whole number
     const amountValue = Number(formData.amount);
     if (!Number.isInteger(amountValue) || amountValue <= 0) {
       toast.error("Amount must be a positive whole number (no decimals)");
@@ -2478,7 +2546,6 @@ export const MyExpense = () => {
       return;
     }
 
-    // Validate category
     if (!categories.includes(formData.category)) {
       toast.error("Invalid category selected");
       setIsSubmitting(false);
@@ -2486,53 +2553,51 @@ export const MyExpense = () => {
     }
 
     try {
-      // Prepare expense data matching the model
       const expenseData = {
         description: formData.description.trim(),
         category: formData.category,
-        type: "expense", // Always expense for this component
+        type: formData.type,
         amount: amountValue,
         date: formData.date,
-        user: formData.user.trim() || user?.name || userName || "Unknown",
+        user: formData.user.trim() || user?.name || "Unknown",
         email: formData.email || user?.email || "",
         userId: formData.userId || user?.id || user?._id || "",
       };
 
-      // Log the data being sent
       console.log("📤 Creating expense with data:", expenseData);
 
-      const response = await api.post("/expenses", expenseData);
+      // Choose endpoint based on type
+      const endpoint = formData.type === 'income' ? '/incomes' : '/expenses';
+      const response = await api.post(endpoint, expenseData);
       
-      console.log("📥 Create expense response:", response.data);
+      console.log("📥 Create response:", response.data);
       
       if (response.data.success) {
-        toast.success("Expense added successfully!");
+        toast.success(`${formData.type === 'income' ? 'Income' : 'Expense'} added successfully!`);
         setIsAddModalOpen(false);
         resetForm();
-        await loadExpenses();
+        loadExpenses();
       } else {
-        toast.error(response.data.message || "Failed to add expense");
+        toast.error(response.data.message || "Failed to add transaction");
       }
     } catch (error) {
       console.error("❌ Add expense error:", error);
       
-      // Handle validation errors from the backend
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
-        toast.error("Failed to add expense. Please try again.");
+        toast.error("Failed to add transaction. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handle edit expense - matches the updateExpense API
+  // Handle edit expense
   const handleEditExpense = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate amount is a whole number
     const amountValue = Number(formData.amount);
     if (!Number.isInteger(amountValue) || amountValue <= 0) {
       toast.error("Amount must be a positive whole number (no decimals)");
@@ -2540,7 +2605,6 @@ export const MyExpense = () => {
       return;
     }
 
-    // Validate category
     if (!categories.includes(formData.category)) {
       toast.error("Invalid category selected");
       setIsSubmitting(false);
@@ -2551,27 +2615,30 @@ export const MyExpense = () => {
       const expenseData = {
         description: formData.description.trim(),
         category: formData.category,
-        type: "expense",
+        type: formData.type,
         amount: amountValue,
         date: formData.date,
-        user: formData.user.trim() || user?.name || userName || "Unknown",
+        user: formData.user.trim() || user?.name || "Unknown",
         email: formData.email || user?.email || "",
         userId: formData.userId || user?.id || user?._id || "",
       };
 
       console.log("📤 Updating expense with data:", expenseData);
 
-      const response = await api.put(`/expenses/${selectedExpense._id}`, expenseData);
+      // Choose endpoint based on type
+      const isIncome = isIncomeTransaction(selectedExpense);
+      const endpoint = isIncome ? '/incomes' : '/expenses';
+      const response = await api.put(`${endpoint}/${selectedExpense._id}`, expenseData);
       
-      console.log("📥 Update expense response:", response.data);
+      console.log("📥 Update response:", response.data);
       
       if (response.data.success) {
-        toast.success("Expense updated successfully!");
+        toast.success(`${isIncome ? 'Income' : 'Expense'} updated successfully!`);
         setIsEditModalOpen(false);
         resetForm();
-        await loadExpenses();
+        loadExpenses();
       } else {
-        toast.error(response.data.message || "Failed to update expense");
+        toast.error(response.data.message || "Failed to update transaction");
       }
     } catch (error) {
       console.error("❌ Update expense error:", error);
@@ -2579,7 +2646,7 @@ export const MyExpense = () => {
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
-        toast.error("Failed to update expense. Please try again.");
+        toast.error("Failed to update transaction. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
@@ -2591,19 +2658,22 @@ export const MyExpense = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await api.delete(`/expenses/${selectedExpense._id}`);
+      // Choose endpoint based on type
+      const isIncome = isIncomeTransaction(selectedExpense);
+      const endpoint = isIncome ? '/incomes' : '/expenses';
+      const response = await api.delete(`${endpoint}/${selectedExpense._id}`);
       
       if (response.data.success) {
-        toast.success("Expense deleted successfully!");
+        toast.success(`${isIncome ? 'Income' : 'Expense'} deleted successfully!`);
         setIsDeleteModalOpen(false);
         setSelectedExpense(null);
-        await loadExpenses();
+        loadExpenses();
       } else {
-        toast.error(response.data.message || "Failed to delete expense");
+        toast.error(response.data.message || "Failed to delete transaction");
       }
     } catch (error) {
       console.error("❌ Delete expense error:", error);
-      toast.error(error.response?.data?.message || "Failed to delete expense");
+      toast.error(error.response?.data?.message || "Failed to delete transaction");
     } finally {
       setIsSubmitting(false);
     }
@@ -2617,28 +2687,30 @@ export const MyExpense = () => {
       type: "expense",
       amount: "",
       date: new Date().toISOString().split("T")[0],
-      user: user?.name || userName || "",
+      user: user?.name || "",
       email: user?.email || "",
       userId: user?.id || user?._id || "",
     });
     setSelectedExpense(null);
-  }, [user, userName]);
+  }, [user]);
 
   // Open edit modal
   const openEditModal = useCallback((expense) => {
     setSelectedExpense(expense);
+    const isIncome = isIncomeTransaction(expense);
+    
     setFormData({
       description: expense.description || "",
       category: expense.category || "",
-      type: expense.type || "expense",
+      type: isIncome ? 'income' : 'expense',
       amount: expense.amount ? expense.amount.toString() : "",
       date: expense.date ? expense.date.split("T")[0] : new Date().toISOString().split("T")[0],
-      user: expense.user || user?.name || userName || "",
+      user: expense.user || user?.name || "",
       email: expense.email || user?.email || "",
       userId: expense.userId || user?.id || user?._id || "",
     });
     setIsEditModalOpen(true);
-  }, [user, userName]);
+  }, [user]);
 
   // Open delete modal
   const openDeleteModal = useCallback((expense) => {
@@ -2658,7 +2730,6 @@ export const MyExpense = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Header
     doc.setFillColor(59, 130, 246);
     doc.rect(0, 0, pageWidth, 40, "F");
 
@@ -2671,19 +2742,18 @@ export const MyExpense = () => {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
 
-    // Report info
     const today = new Date();
     doc.text(
       `Generated: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`,
       14,
       50,
     );
-    doc.text(`User: ${user?.name || userName || "N/A"}`, 14, 60);
+    doc.text(`User Email: ${stats.userEmail || userEmail || "N/A"}`, 14, 60);
+    doc.text(`User Name: ${stats.userName || user?.name || "N/A"}`, 14, 70);
 
-    // Summary section
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("Summary", 14, 75);
+    doc.text("Summary", 14, 85);
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
@@ -2692,30 +2762,34 @@ export const MyExpense = () => {
       ["Total Expenses", `RWF ${stats.totalExpenses.toFixed(0)}`],
       ["Net Balance", `RWF ${stats.netBalance.toFixed(0)}`],
       ["Total Transactions", `${dataToExport.length}`],
+      ["Income Transactions", `${stats.incomeCount}`],
+      ["Expense Transactions", `${stats.expenseCount}`],
     ];
 
-    let yPos = 85;
+    let yPos = 95;
     summaryData.forEach(([label, value]) => {
       doc.text(`${label}:`, 20, yPos);
       doc.text(value, 80, yPos);
       yPos += 8;
     });
 
-    // Transactions table
     yPos += 10;
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.text("Transaction Details", 14, yPos);
 
     yPos += 10;
-    const tableData = dataToExport.map((e) => [
-      e.date ? new Date(e.date).toLocaleDateString() : "N/A",
-      e.description || "N/A",
-      e.category || "N/A",
-      e.type ? e.type.charAt(0).toUpperCase() + e.type.slice(1) : "N/A",
-      e.user || "N/A",
-      `RWF ${e.amount ? e.amount.toFixed(0) : "0"}`,
-    ]);
+    const tableData = dataToExport.map((e) => {
+      const isIncome = isIncomeTransaction(e);
+      return [
+        e.date ? new Date(e.date).toLocaleDateString() : "N/A",
+        e.description || "N/A",
+        e.category || "N/A",
+        isIncome ? "Income" : "Expense",
+        e.user || "N/A",
+        `RWF ${e.amount ? e.amount.toFixed(0) : "0"}`,
+      ];
+    });
 
     doc.autoTable({
       startY: yPos,
@@ -2736,7 +2810,6 @@ export const MyExpense = () => {
       },
     });
 
-    // Footer
     const finalY = doc.lastAutoTable.finalY + 10;
     doc.setFontSize(10);
     doc.setTextColor(128, 128, 128);
@@ -2751,12 +2824,11 @@ export const MyExpense = () => {
       finalY,
     );
 
-    // Save PDF
-    doc.save(`hems-my-expenses-${today.toISOString().split("T")[0]}.pdf`);
+    doc.save(`hems-expenses-${stats.userEmail || userEmail || "user"}-${today.toISOString().split("T")[0]}.pdf`);
     toast.success("PDF Report downloaded successfully!");
-  }, [expenses, filteredExpenses, stats, user, userName]);
+  }, [expenses, filteredExpenses, stats, user, userEmail]);
 
-  // Format currency (RWF - Rwandan Franc)
+  // Format currency
   const formatCurrency = useCallback((amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -2779,6 +2851,16 @@ export const MyExpense = () => {
       return "N/A";
     }
   }, []);
+
+  // Debug stats
+  useEffect(() => {
+    if (expenses.length > 0 || stats.totalIncome > 0) {
+      console.log("📊 Final stats:", stats);
+      console.log("📊 Total Income:", stats.totalIncome);
+      console.log("📊 Total Expenses:", stats.totalExpenses);
+      console.log("📊 Net Balance:", stats.netBalance);
+    }
+  }, [expenses, stats]);
 
   // Notification Panel Component
   const NotificationPanel = memo(() => {
@@ -2821,17 +2903,7 @@ export const MyExpense = () => {
     );
   });
 
-  // Get display data
   const displayExpenses = filteredExpenses.length > 0 ? filteredExpenses : expenses;
-
-  console.log(
-    "🖥️ Rendering - isLoading:",
-    isLoading,
-    "expenses:",
-    expenses.length,
-    "display:",
-    displayExpenses.length,
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -2859,20 +2931,34 @@ export const MyExpense = () => {
             <p className="text-sm sm:text-base text-gray-600 mt-1">
               Manage and track your personal transactions
             </p>
-            {user?.name && (
+            {stats.userEmail && (
               <p className="text-sm text-gray-500 mt-1">
                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium">
-                  👤 User: {user.name}
+                  📧 {stats.userEmail}
                 </span>
+                {stats.userName && (
+                  <span className="ml-2 bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-medium">
+                    👤 {stats.userName}
+                  </span>
+                )}
               </p>
             )}
             <p className="text-xs text-gray-400 mt-1">
               Total: {expenses.length} expenses | Showing: {displayExpenses.length}
+              {stats.totalIncome > 0 && (
+                <span className="ml-2 text-green-600 font-medium">
+                  | Total Income: {formatCurrency(stats.totalIncome)}
+                </span>
+              )}
+              {stats.totalExpenses > 0 && (
+                <span className="ml-2 text-red-600 font-medium">
+                  | Total Expenses: {formatCurrency(stats.totalExpenses)}
+                </span>
+              )}
             </p>
             {error && <p className="text-sm text-red-500 mt-1">⚠️ {error}</p>}
           </div>
           <div className="flex flex-wrap gap-2 mt-3 sm:mt-0">
-            {/* Refresh Button */}
             <button
               onClick={() => loadExpenses()}
               disabled={isLoading}
@@ -2881,31 +2967,7 @@ export const MyExpense = () => {
               <RefreshIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Refresh</span>
             </button>
-
-            {/* Notification Button */}
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm sm:text-base"
-            >
-              <NotificationsIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden xs:inline">Notifications</span>
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* Notification Panel */}
-            <NotificationPanel />
-
-            <button
-              onClick={generatePDFReport}
-              className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
-            >
-              <PictureAsPdfIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden xs:inline">Export PDF</span>
-            </button>
+            
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm sm:text-base"
@@ -2925,6 +2987,7 @@ export const MyExpense = () => {
                 <p className="text-base sm:text-xs font-bold text-green-600 truncate">
                   {formatCurrency(stats.totalIncome)}
                 </p>
+                <p className="text-xs text-gray-400 mt-1">{stats.incomeCount} transactions</p>
               </div>
               <TrendingUpIcon className="w-8 h-8 sm:w-10 sm:h-10 text-green-500 bg-green-100 p-1.5 sm:p-2 rounded-full flex-shrink-0" />
             </div>
@@ -2937,6 +3000,7 @@ export const MyExpense = () => {
                 <p className="text-base sm:text-xs font-bold text-red-600 truncate">
                   {formatCurrency(stats.totalExpenses)}
                 </p>
+                <p className="text-xs text-gray-400 mt-1">{stats.expenseCount} transactions</p>
               </div>
               <TrendingDownIcon className="w-8 h-8 sm:w-10 sm:h-10 text-red-500 bg-red-100 p-1.5 sm:p-2 rounded-full flex-shrink-0" />
             </div>
@@ -2960,6 +3024,9 @@ export const MyExpense = () => {
                 <p className="text-xs sm:text-sm text-gray-500 truncate">Transactions</p>
                 <p className="text-base sm:text-xs font-bold text-purple-600 truncate">
                   {displayExpenses.length}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {stats.userEmail ? `User: ${stats.userEmail}` : ''}
                 </p>
               </div>
               <ReceiptIcon className="w-8 h-8 sm:w-10 sm:h-10 text-purple-500 bg-purple-100 p-1.5 sm:p-2 rounded-full flex-shrink-0" />
@@ -3012,14 +3079,14 @@ export const MyExpense = () => {
                 >
                   <FilterListIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Filters</span>
-                  {(filterUserName || filterMonth || filterYear) && (
+                  {(filterUserEmail || filterMonth || filterYear) && (
                     <span className="ml-1 bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {[filterUserName, filterMonth, filterYear].filter(Boolean).length}
+                      {[filterUserEmail, filterMonth, filterYear].filter(Boolean).length}
                     </span>
                   )}
                 </button>
 
-                {(filterUserName || filterMonth || filterYear || searchTerm || filterCategory !== "all" || filterType !== "all") && (
+                {(filterUserEmail || filterMonth || filterYear || searchTerm || filterCategory !== "all" || filterType !== "all") && (
                   <button
                     onClick={clearAllFilters}
                     className="flex items-center space-x-1 px-3 sm:px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-sm sm:text-base"
@@ -3041,13 +3108,13 @@ export const MyExpense = () => {
               >
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Filter by User Name
+                    Filter by Email
                   </label>
                   <input
                     type="text"
-                    placeholder="Enter user name..."
-                    value={filterUserName}
-                    onChange={(e) => setFilterUserName(e.target.value)}
+                    placeholder="Enter email..."
+                    value={filterUserEmail}
+                    onChange={(e) => setFilterUserEmail(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -3102,11 +3169,11 @@ export const MyExpense = () => {
           ) : displayExpenses.length === 0 ? (
             <div className="p-8 sm:p-12 text-center">
               <ReceiptIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No transactions found</p>
+              <p className="text-gray-500 text-lg">No expenses found</p>
               <p className="text-gray-400 text-sm mt-1">
                 {expenses.length > 0
                   ? "Try adjusting your filters"
-                  : "Add a new transaction to get started"}
+                  : "Add a new expense to get started"}
               </p>
               {error && (
                 <div className="mt-4 p-4 bg-red-50 rounded-lg">
@@ -3137,83 +3204,88 @@ export const MyExpense = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {displayExpenses.map((expense, index) => (
-                    <motion.tr
-                      key={expense._id || expense.id || index}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
-                        {formatDate(expense.date)}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-800 font-medium text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">
-                        {expense.description || "N/A"}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4">
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium whitespace-nowrap">
-                          {expense.category || "Uncategorized"}
-                        </span>
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                            expense.type === "income"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
+                  {displayExpenses.map((expense, index) => {
+                    const isIncome = isIncomeTransaction(expense);
+                    return (
+                      <motion.tr
+                        key={expense._id || expense.id || index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
+                          {formatDate(expense.date)}
+                        </td>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-800 font-medium text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">
+                          {expense.description || "N/A"}
+                        </td>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                            isIncome ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {expense.category || "Uncategorized"}
+                          </span>
+                        </td>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                              isIncome
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {isIncome ? "Income" : "Expense"}
+                          </span>
+                        </td>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
+                          {expense.user || "Unknown"}
+                        </td>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
+                          {expense.email || "N/A"}
+                        </td>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
+                          <button
+                            onClick={() => fetchUserById(expense.userId)}
+                            className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer transition-colors"
+                            title="Click to view user details"
+                          >
+                            {expense.userId
+                              ? String(expense.userId).substring(0, 10) + "..."
+                              : "N/A"}
+                          </button>
+                        </td>
+                        <td
+                          className={`py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-xs sm:text-sm ${
+                            isIncome
+                              ? "text-green-600"
+                              : "text-red-600"
                           }`}
                         >
-                          {expense.type ? expense.type.charAt(0).toUpperCase() + expense.type.slice(1) : "N/A"}
-                        </span>
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
-                        {expense.user || "Unknown"}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
-                        {expense.email || "N/A"}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-gray-600 text-xs sm:text-sm">
-                        <button
-                          onClick={() => fetchUserById(expense.userId)}
-                          className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer transition-colors"
-                          title="Click to view user details"
-                        >
-                          {expense.userId
-                            ? String(expense.userId).substring(0, 10) + "..."
-                            : "N/A"}
-                        </button>
-                      </td>
-                      <td
-                        className={`py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-xs sm:text-sm ${
-                          expense.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {expense.type === "income" ? "+" : "-"}
-                        {formatCurrency(expense.amount)}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">
-                        <div className="flex items-center justify-center space-x-1 sm:space-x-2">
-                          <button
-                            onClick={() => openEditModal(expense)}
-                            className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                          </button>
-                          <button
-                            onClick={() => openDeleteModal(expense)}
-                            className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <DeleteIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
+                          {isIncome ? "+" : "-"}
+                          {formatCurrency(expense.amount)}
+                        </td>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">
+                          <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+                            <button
+                              onClick={() => openEditModal(expense)}
+                              className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </button>
+                            <button
+                              onClick={() => openDeleteModal(expense)}
+                              className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <DeleteIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
