@@ -2122,12 +2122,12 @@ const Sidebar = ({
       icon: <SavingsIcon />,
       path: "/dashboard/savings",
     },
-    {
-      id: "budget",
-      label: "Budget",
-      icon: <Money />,
-      path: "/dashboard/budget",
-    },
+    // {
+    //   id: "budget",
+    //   label: "Budget",
+    //   icon: <Money />,
+    //   path: "/dashboard/budget",
+    // },
     {
       id: "reports",
       label: "Reports",
@@ -2155,12 +2155,12 @@ const Sidebar = ({
       icon: <TrendingUpIcon />,
       path: "/user/income",
     },
-    {
-      id: "budget",
-      label: "My Budget",
-      icon: <Money />,
-      path: "/user/budget",
-    },
+    // {
+    //   id: "budget",
+    //   label: "My Budget",
+    //   icon: <Money />,
+    //   path: "/user/budget",
+    // },
     {
       id: "savings",
       label: "My Savings",

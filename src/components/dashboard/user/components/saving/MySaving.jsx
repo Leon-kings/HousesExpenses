@@ -2899,13 +2899,7 @@ export const MySaving = () => {
             )}
           </div>
           <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-            <button
-              onClick={exportReport}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              <DownloadIcon className="w-5 h-5" />
-              <span>Export</span>
-            </button>
+     
             <button
               onClick={() => {
                 isFirstLoadRef.current = false;
