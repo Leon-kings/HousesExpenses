@@ -13,8 +13,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import SavingsIcon from "@mui/icons-material/Savings";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import WarningIcon from "@mui/icons-material/Warning";
@@ -36,7 +34,7 @@ const formatCurrency = (amount) => {
   if (amount === undefined || amount === null) return "FRw 0";
   return new Intl.NumberFormat("rw-RW", {
     style: "currency",
-    currency: "RWF",
+    currency: "Rwf",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
@@ -1441,16 +1439,14 @@ export const Dashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 font-medium">
                       Total Income
                     </p>
-                    <p className="text-xl font-bold text-gray-800 mt-1 truncate">
+                    <p className="text-xs font-bold text-gray-800 mt-1 truncate">
                       {formatCurrency(stats.totalIncome)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <TrendingUpIcon className="text-blue-600 w-6 h-6" />
-                  </div>
+             
                 </div>
               </motion.div>
 
@@ -1460,16 +1456,14 @@ export const Dashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 font-medium">
                       Total Expenses
                     </p>
-                    <p className="text-xl font-bold text-gray-800 mt-1 truncate">
+                    <p className="text-xs font-bold text-gray-800 mt-1 truncate">
                       {formatCurrency(stats.totalExpenses)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <TrendingDownIcon className="text-red-600 w-6 h-6" />
-                  </div>
+               
                 </div>
               </motion.div>
 
@@ -1479,14 +1473,12 @@ export const Dashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">Savings</p>
-                    <p className="text-xl font-bold text-gray-800 mt-1 truncate">
+                    <p className="text-xs text-gray-500 font-medium">Savings</p>
+                    <p className="text-xs font-bold text-gray-800 mt-1 truncate">
                       {formatCurrency(stats.savings)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <SavingsIcon className="text-green-600 w-6 h-6" />
-                  </div>
+              
                 </div>
               </motion.div>
 
@@ -1496,16 +1488,14 @@ export const Dashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 font-medium">
                       Monthly Expenses
                     </p>
-                    <p className="text-xl font-bold text-gray-800 mt-1 truncate">
+                    <p className="text-xs font-bold text-gray-800 mt-1 truncate">
                       {formatCurrency(stats.monthlyExpenses)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CalendarTodayIcon className="text-purple-600 w-6 h-6" />
-                  </div>
+              
                 </div>
               </motion.div>
             </div>
@@ -1613,9 +1603,7 @@ export const Dashboard = () => {
                 <h3 className="text-sm sm:text-base font-bold text-gray-800 flex items-center mb-4 sm:mb-6">
                   <FamilyRestroomIcon className="mr-2 w-5 h-5 sm:w-6 sm:h-6" />
                   Household Summary
-                  <span className="ml-2 text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full flex-shrink-0">
-                    Click for details
-                  </span>
+                  
                 </h3>
 
                 <div className="space-y-3 sm:space-y-4">

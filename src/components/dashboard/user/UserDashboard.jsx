@@ -1466,7 +1466,7 @@ export const UserDashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 font-medium">
                       Total Income
                     </p>
                     <p className="text-xs font-bold text-gray-800 mt-1 truncate">
@@ -1474,7 +1474,7 @@ export const UserDashboard = () => {
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <TrendingUpIcon className="text-blue-600 w-6 h-6" />
+                    <TrendingUpIcon className="text-blue-600 w-2 h-2" />
                   </div>
                 </div>
               </motion.div>
@@ -1485,7 +1485,7 @@ export const UserDashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 font-medium">
                       Total Expenses
                     </p>
                     <p className="text-xs font-bold text-gray-800 mt-1 truncate">
@@ -1493,7 +1493,7 @@ export const UserDashboard = () => {
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <TrendingDownIcon className="text-red-600 w-6 h-6" />
+                    <TrendingDownIcon className="text-red-600 w-2 h-2" />
                   </div>
                 </div>
               </motion.div>
@@ -1504,13 +1504,13 @@ export const UserDashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">Savings</p>
+                    <p className="text-xs text-gray-500 font-medium">Savings</p>
                     <p className="text-xs font-bold text-gray-800 mt-1 truncate">
                       {formatCurrency(stats.savings)}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <SavingsIcon className="text-green-600 w-6 h-6" />
+                    <SavingsIcon className="text-green-600 w-2 h-2" />
                   </div>
                 </div>
               </motion.div>
@@ -1521,7 +1521,7 @@ export const UserDashboard = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 font-medium">
                       Monthly Expenses
                     </p>
                     <p className="text-xs font-bold text-gray-800 mt-1 truncate">
@@ -1529,7 +1529,7 @@ export const UserDashboard = () => {
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CalendarTodayIcon className="text-purple-600 w-6 h-6" />
+                    <CalendarTodayIcon className="text-purple-600 w-2 h-2" />
                   </div>
                 </div>
               </motion.div>
