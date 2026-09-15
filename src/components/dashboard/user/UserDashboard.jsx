@@ -12,8 +12,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import SavingsIcon from "@mui/icons-material/Savings";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import WarningIcon from "@mui/icons-material/Warning";
@@ -645,7 +643,7 @@ export const UserDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
@@ -1473,9 +1471,7 @@ export const UserDashboard = () => {
                       {formatCurrency(stats.totalIncome)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <TrendingUpIcon className="text-blue-600 w-2 h-2" />
-                  </div>
+                
                 </div>
               </motion.div>
 
@@ -1492,9 +1488,7 @@ export const UserDashboard = () => {
                       {formatCurrency(stats.totalExpenses)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <TrendingDownIcon className="text-red-600 w-2 h-2" />
-                  </div>
+       
                 </div>
               </motion.div>
 
@@ -1509,9 +1503,7 @@ export const UserDashboard = () => {
                       {formatCurrency(stats.savings)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <SavingsIcon className="text-green-600 w-2 h-2" />
-                  </div>
+                
                 </div>
               </motion.div>
 
@@ -1528,9 +1520,7 @@ export const UserDashboard = () => {
                       {formatCurrency(stats.monthlyExpenses)}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CalendarTodayIcon className="text-purple-600 w-2 h-2" />
-                  </div>
+                
                 </div>
               </motion.div>
             </div>
